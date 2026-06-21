@@ -36,7 +36,7 @@ const nav: NavItem[] = [
 ];
 
 // Primary tabs surfaced in floating mobile dock — all sections
-const mobileNav = [
+const mobileNav: NavItem[] = [
   { to: "/", label: "Home", icon: LayoutDashboard },
   { to: "/profile", label: "Profil", icon: User },
   { to: "/training", label: "Training", icon: Dumbbell },
