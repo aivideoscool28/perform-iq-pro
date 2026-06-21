@@ -70,12 +70,13 @@ export function Sidebar() {
         </Link>
 
         <nav className="flex flex-col gap-1 flex-1">
-          {nav.map(({ to, label, icon: Icon }) => {
+          {nav.map(({ to, label, icon: Icon, tour }) => {
             const active = pathname === to;
             return (
               <Link
                 key={to}
                 to={to}
+                data-tour={tour}
                 className={[
                   "group relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-all",
                   active
