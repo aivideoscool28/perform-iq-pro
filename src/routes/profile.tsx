@@ -157,6 +157,45 @@ function Page() {
         { label: "Athletenprofil" },
       ]}
     >
+      {/* DEV-ONLY: reset to a brand-new-user state (keeps onboarding profile) */}
+      {showDevTools && (
+        <div className="fixed bottom-24 right-4 lg:bottom-6 lg:right-6 z-30">
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => setDevResetOpen(true)}
+            className="border-neon-amber/50 text-neon-amber bg-background/80 backdrop-blur hover:bg-neon-amber/10 shadow-lg"
+          >
+            <FlaskConical className="h-4 w-4 mr-1.5" /> Reset to New User
+          </Button>
+        </div>
+      )}
+
+      <AlertDialog open={devResetOpen} onOpenChange={setDevResetOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Auf neuen Nutzer zurücksetzen?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Dies setzt deine Check-ins, deinen Streak und deine Analyse-Historie zurück.
+              Dein Onboarding-Profil (Name, Disziplin, Ziele usw.) bleibt unverändert. Fortfahren?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={devReset.isPending}>Abbrechen</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => {
+                e.preventDefault();
+                devReset.mutate();
+              }}
+              disabled={devReset.isPending}
+            >
+              {devReset.isPending && <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />}
+              Zurücksetzen
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       {/* ONBOARDING DATA from DB */}
       <div className="glass-strong rounded-3xl p-6 mb-4 relative overflow-hidden">
         <div className="absolute -top-24 -left-24 h-64 w-64 rounded-full bg-neon-cyan/15 blur-3xl pointer-events-none" />
