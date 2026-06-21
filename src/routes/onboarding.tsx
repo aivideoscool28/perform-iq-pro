@@ -4,6 +4,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useAuth } from "@/hooks/use-auth";
 import { saveOnboarding, generateGoalReply } from "@/lib/athletic.functions";
+import { markTourPending } from "@/lib/tour";
 import { supabase } from "@/integrations/supabase/client";
 import { Activity, Camera, Loader2, Send, Sparkles, User } from "lucide-react";
 import { toast } from "sonner";
@@ -118,6 +119,7 @@ function OnboardingPage() {
         return { ...o, profile: { ...(o.profile ?? {}), onboarded_at: new Date().toISOString() } };
       });
       await qc.refetchQueries({ queryKey: ["dashboard"] });
+      markTourPending();
       toast.success("Profil gespeichert!");
       navigate({ to: "/" });
     },

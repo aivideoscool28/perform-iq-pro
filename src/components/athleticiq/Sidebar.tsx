@@ -15,8 +15,11 @@ import {
   Footprints,
   BarChart3,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
-const nav = [
+type NavItem = { to: string; label: string; icon: LucideIcon; tour?: string };
+
+const nav: NavItem[] = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard },
   { to: "/profile", label: "Athletenprofil", icon: User },
   { to: "/training", label: "KI-Training", icon: Dumbbell },
@@ -24,16 +27,16 @@ const nav = [
   { to: "/diagnostics", label: "Diagnostik", icon: LineChart },
   { to: "/recovery", label: "Regeneration", icon: HeartPulse },
   { to: "/video", label: "Videoanalyse", icon: Video },
-  { to: "/workout-analysis", label: "Workout Analysis", icon: BarChart3 },
+  { to: "/workout-analysis", label: "Workout Analysis", icon: BarChart3, tour: "nav-analysis" },
   { to: "/devices", label: "Geräte", icon: Watch },
   { to: "/competition", label: "Wettkampf", icon: Trophy },
   { to: "/coach", label: "KI-Coach", icon: Sparkles },
   { to: "/gear", label: "Schuhe & Spikes", icon: Footprints },
-  { to: "/gamification", label: "Freunde & Streaks", icon: Gamepad2 },
+  { to: "/gamification", label: "Freunde & Streaks", icon: Gamepad2, tour: "nav-friends" },
 ];
 
 // Primary tabs surfaced in floating mobile dock — all sections
-const mobileNav = [
+const mobileNav: NavItem[] = [
   { to: "/", label: "Home", icon: LayoutDashboard },
   { to: "/profile", label: "Profil", icon: User },
   { to: "/training", label: "Training", icon: Dumbbell },
@@ -41,12 +44,12 @@ const mobileNav = [
   { to: "/diagnostics", label: "Diag", icon: LineChart },
   { to: "/recovery", label: "Reco", icon: HeartPulse },
   { to: "/video", label: "Video", icon: Video },
-  { to: "/workout-analysis", label: "Analyse", icon: BarChart3 },
+  { to: "/workout-analysis", label: "Analyse", icon: BarChart3, tour: "nav-analysis" },
   { to: "/devices", label: "Geräte", icon: Watch },
   { to: "/competition", label: "Wettk.", icon: Trophy },
   { to: "/coach", label: "Coach", icon: Sparkles },
   { to: "/gear", label: "Spikes", icon: Footprints },
-  { to: "/gamification", label: "Streaks", icon: Gamepad2 },
+  { to: "/gamification", label: "Streaks", icon: Gamepad2, tour: "nav-friends" },
 ];
 
 export function Sidebar() {
@@ -70,12 +73,13 @@ export function Sidebar() {
         </Link>
 
         <nav className="flex flex-col gap-1 flex-1">
-          {nav.map(({ to, label, icon: Icon }) => {
+          {nav.map(({ to, label, icon: Icon, tour }) => {
             const active = pathname === to;
             return (
               <Link
                 key={to}
                 to={to}
+                data-tour={tour}
                 className={[
                   "group relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-all",
                   active
@@ -108,12 +112,13 @@ export function Sidebar() {
       <nav className="lg:hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-40 w-[min(94vw,520px)]">
         <div className="glass-strong rounded-3xl px-2 py-2 shadow-[0_20px_60px_-20px_rgba(0,0,0,0.8)] overflow-x-auto scrollbar-hide">
           <div className="flex items-center gap-1 min-w-max">
-            {mobileNav.map(({ to, label, icon: Icon }) => {
+            {mobileNav.map(({ to, label, icon: Icon, tour }) => {
               const active = pathname === to;
               return (
                 <Link
                   key={to}
                   to={to}
+                  data-tour={tour}
                   className={[
                     "relative flex flex-col items-center gap-0.5 py-2 px-3 rounded-2xl transition-all min-w-[64px]",
                     active

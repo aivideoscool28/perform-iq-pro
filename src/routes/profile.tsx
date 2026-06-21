@@ -8,11 +8,16 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
-import { fetchMyProfile, resetOnboarding } from "@/lib/athletic.functions";
+import { fetchMyProfile, resetOnboarding, resetToNewUser } from "@/lib/athletic.functions";
+import { isDevPreview, markTourPending } from "@/lib/tour";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import {
   User, MapPin, Calendar, Ruler, Weight, Flag, Sparkles, Watch, Activity,
   Heart, Settings, Check, Plus, Trash2, Pencil, Trophy, Star, Target,
-  Dumbbell, RefreshCcw, Loader2, HeartPulse,
+  Dumbbell, RefreshCcw, Loader2, HeartPulse, FlaskConical,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -79,10 +84,13 @@ function EditableText({
 function Page() {
   const [editing, setEditing] = useState(false);
   const [state, setState] = useState<State>(defaults);
+  const [devResetOpen, setDevResetOpen] = useState(false);
   const navigate = useNavigate();
   const qc = useQueryClient();
   const fetchProfileFn = useServerFn(fetchMyProfile);
   const resetFn = useServerFn(resetOnboarding);
+  const resetNewUserFn = useServerFn(resetToNewUser);
+  const showDevTools = isDevPreview();
 
   const { data: profileData } = useQuery({
     queryKey: ["my-profile"],
@@ -97,6 +105,18 @@ function Page() {
       await qc.invalidateQueries({ queryKey: ["my-profile"] });
       toast.success("Onboarding zurückgesetzt – los geht's!");
       navigate({ to: "/onboarding" });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const devReset = useMutation({
+    mutationFn: () => resetNewUserFn(),
+    onSuccess: async () => {
+      setDevResetOpen(false);
+      markTourPending();
+      await qc.invalidateQueries();
+      toast.success("Auf neuen Nutzer zurückgesetzt – Tour startet.");
+      navigate({ to: "/" });
     },
     onError: (e: Error) => toast.error(e.message),
   });
@@ -137,6 +157,45 @@ function Page() {
         { label: "Athletenprofil" },
       ]}
     >
+      {/* DEV-ONLY: reset to a brand-new-user state (keeps onboarding profile) */}
+      {showDevTools && (
+        <div className="fixed bottom-24 right-4 lg:bottom-6 lg:right-6 z-30">
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => setDevResetOpen(true)}
+            className="border-neon-amber/50 text-neon-amber bg-background/80 backdrop-blur hover:bg-neon-amber/10 shadow-lg"
+          >
+            <FlaskConical className="h-4 w-4 mr-1.5" /> Reset to New User
+          </Button>
+        </div>
+      )}
+
+      <AlertDialog open={devResetOpen} onOpenChange={setDevResetOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Auf neuen Nutzer zurücksetzen?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Dies setzt deine Check-ins, deinen Streak und deine Analyse-Historie zurück.
+              Dein Onboarding-Profil (Name, Disziplin, Ziele usw.) bleibt unverändert. Fortfahren?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={devReset.isPending}>Abbrechen</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => {
+                e.preventDefault();
+                devReset.mutate();
+              }}
+              disabled={devReset.isPending}
+            >
+              {devReset.isPending && <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />}
+              Zurücksetzen
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       {/* ONBOARDING DATA from DB */}
       <div className="glass-strong rounded-3xl p-6 mb-4 relative overflow-hidden">
         <div className="absolute -top-24 -left-24 h-64 w-64 rounded-full bg-neon-cyan/15 blur-3xl pointer-events-none" />

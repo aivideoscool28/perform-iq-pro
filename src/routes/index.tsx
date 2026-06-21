@@ -14,6 +14,9 @@ import { AnalysisBoard } from "@/components/athleticiq/AnalysisBoard";
 import { HeroPerformance } from "@/components/athleticiq/HeroPerformance";
 import { fetchDashboard, fetchTodayCheckin, deleteTodayCheckin } from "@/lib/athletic.functions";
 import { DailyCheckin } from "@/components/athleticiq/DailyCheckin";
+import { EmptyDashboard } from "@/components/athleticiq/EmptyDashboard";
+import { FeatureTour } from "@/components/athleticiq/FeatureTour";
+import { isTourPending, clearTourPending } from "@/lib/tour";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import {
@@ -38,6 +41,7 @@ function Dashboard() {
   const resetCheckinFn = useServerFn(deleteTodayCheckin);
   const qc = useQueryClient();
   const [checkinOpen, setCheckinOpen] = useState(false);
+  const [showTour, setShowTour] = useState(false);
 
   useEffect(() => {
     if (!loading && !session) navigate({ to: "/auth" });
@@ -70,6 +74,16 @@ function Dashboard() {
     }
   }, [data, navigate]);
 
+  // Trigger the first-run feature tour after onboarding or a dev reset.
+  useEffect(() => {
+    if (!loading && session && isTourPending()) setShowTour(true);
+  }, [loading, session]);
+
+  const closeTour = () => {
+    clearTourPending();
+    setShowTour(false);
+  };
+
 
   if (loading || !session) {
     return (
@@ -86,6 +100,7 @@ function Dashboard() {
   const currentStreak = data?.computedStreak ?? 0;
   const name = profile?.display_name ?? "Athlet";
   const today = new Date().toLocaleDateString("de", { weekday: "long", day: "2-digit", month: "long" });
+  const isNewUser = checkins.length === 0 && workouts.length === 0 && boards.length === 0;
 
   return (
     <AppShell title={`Hallo ${name}`} subtitle={today}>
@@ -98,6 +113,7 @@ function Dashboard() {
           {/* Daily check-in button */}
           <section className="mb-6">
             <Button
+              data-tour="checkin"
               size="lg"
               disabled={doneToday}
               onClick={() => setCheckinOpen(true)}
@@ -131,7 +147,7 @@ function Dashboard() {
           </section>
 
           {/* Streak */}
-          <section className="mb-6">
+          <section data-tour="streak" className="mb-6">
             <StreakCard
               current={currentStreak}
               longest={Math.max(profile?.longest_streak ?? 0, currentStreak)}
@@ -140,70 +156,68 @@ function Dashboard() {
             />
           </section>
 
-          <section className="mb-6">
-            <StreakManager workouts={workouts} checkins={checkins} />
-          </section>
+          {isNewUser ? (
+            <EmptyDashboard profile={profile} />
+          ) : (
+            <>
+              <section className="mb-6">
+                <StreakManager workouts={workouts} checkins={checkins} />
+              </section>
 
-          {/* HERO — Performance Command Center */}
-          <HeroPerformance name={name} />
+              {/* HERO — Performance Command Center */}
+              <HeroPerformance name={name} />
 
+              {/* KPI */}
+              <section className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                <KpiCard label="Energielevel" value={87} unit="%" delta="+4" trend="up" icon={Battery}>
+                  <Sparkline data={[60, 65, 70, 68, 75, 82, 87]} color="var(--accent)" />
+                </KpiCard>
+                <KpiCard label="HRV" value={74} unit="ms" delta="Baseline 68" trend="up" icon={HeartPulse}>
+                  <Sparkline data={[62, 68, 65, 70, 72, 74, 74]} color="var(--foreground)" />
+                </KpiCard>
+                <KpiCard label="Belastung" value="546" unit="TSS" delta="optimal" trend="flat" icon={Flame}>
+                  <Sparkline data={[400, 450, 500, 480, 520, 540, 546]} color="var(--muted-foreground)" />
+                </KpiCard>
+                <KpiCard label="Schlaf" value="7.8" unit="h" delta="Tief 1h42m" trend="up" icon={Moon}>
+                  <Sparkline data={[6.2, 6.8, 7.1, 6.9, 7.4, 7.6, 7.8]} color="var(--foreground)" />
+                </KpiCard>
+              </section>
 
+              <section className="grid lg:grid-cols-3 gap-6 mb-6">
+                <div className="lg:col-span-2 rounded-2xl border border-border bg-card p-6 shadow-sm">
+                  <div className="mb-4">
+                    <h3 className="font-semibold">Performance · 7 Tage</h3>
+                    <p className="text-xs text-muted-foreground">Form, Belastung & HRV</p>
+                  </div>
+                  <PerformanceChart />
+                </div>
+                <AiInsights />
+              </section>
 
-          {/* KPI */}
-          <section className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-            <KpiCard label="Energielevel" value={87} unit="%" delta="+4" trend="up" icon={Battery}>
-              <Sparkline data={[60, 65, 70, 68, 75, 82, 87]} color="var(--accent)" />
-            </KpiCard>
-            <KpiCard label="HRV" value={74} unit="ms" delta="Baseline 68" trend="up" icon={HeartPulse}>
-              <Sparkline data={[62, 68, 65, 70, 72, 74, 74]} color="var(--foreground)" />
-            </KpiCard>
-            <KpiCard label="Belastung" value="546" unit="TSS" delta="optimal" trend="flat" icon={Flame}>
-              <Sparkline data={[400, 450, 500, 480, 520, 540, 546]} color="var(--muted-foreground)" />
-            </KpiCard>
-            <KpiCard label="Schlaf" value="7.8" unit="h" delta="Tief 1h42m" trend="up" icon={Moon}>
-              <Sparkline data={[6.2, 6.8, 7.1, 6.9, 7.4, 7.6, 7.8]} color="var(--foreground)" />
-            </KpiCard>
-          </section>
-
-          <section className="grid lg:grid-cols-3 gap-6 mb-6">
-            <div className="lg:col-span-2 rounded-2xl border border-border bg-card p-6 shadow-sm">
-              <div className="mb-4">
-                <h3 className="font-semibold">Performance · 7 Tage</h3>
-                <p className="text-xs text-muted-foreground">Form, Belastung & HRV</p>
-              </div>
-              <PerformanceChart />
-            </div>
-            <AiInsights />
-          </section>
-
-          {/* ANALYSIS BOARDS */}
-          <section className="mb-6">
-            <div className="flex items-baseline justify-between mb-4">
-              <h2 className="text-xl font-bold tracking-tight">Workout-Analysen</h2>
-              <span className="text-xs text-muted-foreground">{boards.length} Sessions</span>
-            </div>
-            {boards.length === 0 ? (
-              <div className="rounded-2xl border border-border bg-card p-8 text-center text-sm text-muted-foreground shadow-sm">
-                Noch keine Analysen. Logge oben dein erstes Workout per Chat — die KI erstellt
-                automatisch dein erstes Board.
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {boards.slice(0, 5).map((b) => (
-                  <AnalysisBoard
-                    key={b.id}
-                    board={b as never}
-                    workout={workouts.find((w) => w.id === b.workout_id) as never}
-                  />
-                ))}
-              </div>
-            )}
-          </section>
+              {/* ANALYSIS BOARDS */}
+              <section className="mb-6">
+                <div className="flex items-baseline justify-between mb-4">
+                  <h2 className="text-xl font-bold tracking-tight">Workout-Analysen</h2>
+                  <span className="text-xs text-muted-foreground">{boards.length} Sessions</span>
+                </div>
+                <div className="space-y-4">
+                  {boards.slice(0, 5).map((b) => (
+                    <AnalysisBoard
+                      key={b.id}
+                      board={b as never}
+                      workout={workouts.find((w) => w.id === b.workout_id) as never}
+                    />
+                  ))}
+                </div>
+              </section>
+            </>
+          )}
         </>
       )}
       {checkinOpen && (
         <DailyCheckin name={name} onClose={() => setCheckinOpen(false)} />
       )}
+      {showTour && <FeatureTour onClose={closeTour} />}
     </AppShell>
   );
 }
