@@ -113,6 +113,7 @@ function Dashboard() {
           {/* Daily check-in button */}
           <section className="mb-6">
             <Button
+              data-tour="checkin"
               size="lg"
               disabled={doneToday}
               onClick={() => setCheckinOpen(true)}
