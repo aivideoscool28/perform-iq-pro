@@ -14,6 +14,9 @@ import { AnalysisBoard } from "@/components/athleticiq/AnalysisBoard";
 import { HeroPerformance } from "@/components/athleticiq/HeroPerformance";
 import { fetchDashboard, fetchTodayCheckin, deleteTodayCheckin } from "@/lib/athletic.functions";
 import { DailyCheckin } from "@/components/athleticiq/DailyCheckin";
+import { EmptyDashboard } from "@/components/athleticiq/EmptyDashboard";
+import { FeatureTour } from "@/components/athleticiq/FeatureTour";
+import { isTourPending, clearTourPending } from "@/lib/tour";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import {
