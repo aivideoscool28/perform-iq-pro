@@ -74,6 +74,16 @@ function Dashboard() {
     }
   }, [data, navigate]);
 
+  // Trigger the first-run feature tour after onboarding or a dev reset.
+  useEffect(() => {
+    if (!loading && session && isTourPending()) setShowTour(true);
+  }, [loading, session]);
+
+  const closeTour = () => {
+    clearTourPending();
+    setShowTour(false);
+  };
+
 
   if (loading || !session) {
     return (
