@@ -100,6 +100,7 @@ function Dashboard() {
   const currentStreak = data?.computedStreak ?? 0;
   const name = profile?.display_name ?? "Athlet";
   const today = new Date().toLocaleDateString("de", { weekday: "long", day: "2-digit", month: "long" });
+  const isNewUser = checkins.length === 0 && workouts.length === 0 && boards.length === 0;
 
   return (
     <AppShell title={`Hallo ${name}`} subtitle={today}>
