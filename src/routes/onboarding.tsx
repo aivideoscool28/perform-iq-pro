@@ -119,6 +119,7 @@ function OnboardingPage() {
         return { ...o, profile: { ...(o.profile ?? {}), onboarded_at: new Date().toISOString() } };
       });
       await qc.refetchQueries({ queryKey: ["dashboard"] });
+      markTourPending();
       toast.success("Profil gespeichert!");
       navigate({ to: "/" });
     },
