@@ -363,6 +363,36 @@ export const resetOnboarding = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+/* Dev helper: reset the account to a "new user" state WITHOUT touching the
+   onboarding profile (name, discipline, goals, body data, photo). Wipes
+   check-ins, streak and analysis history so the empty dashboard + tour show. */
+export const resetToNewUser = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { supabase, userId } = context;
+
+    const [checkins, boards, workouts] = await Promise.all([
+      supabase.from("daily_checkins").delete().eq("user_id", userId),
+      supabase.from("analysis_boards").delete().eq("user_id", userId),
+      supabase.from("workouts").delete().eq("user_id", userId),
+    ]);
+    const delErr = checkins.error || boards.error || workouts.error;
+    if (delErr) throw new Error(delErr.message);
+
+    const { error } = await supabase
+      .from("profiles")
+      .update({
+        current_streak: 0,
+        longest_streak: 0,
+        last_workout_date: null,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", userId);
+    if (error) throw new Error(error.message);
+
+    return { ok: true };
+  });
+
 /* ------------------------ FRIENDS ------------------------ */
 export const fetchFriends = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
