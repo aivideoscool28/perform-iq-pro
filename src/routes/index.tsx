@@ -41,6 +41,7 @@ function Dashboard() {
   const resetCheckinFn = useServerFn(deleteTodayCheckin);
   const qc = useQueryClient();
   const [checkinOpen, setCheckinOpen] = useState(false);
+  const [showTour, setShowTour] = useState(false);
 
   useEffect(() => {
     if (!loading && !session) navigate({ to: "/auth" });
