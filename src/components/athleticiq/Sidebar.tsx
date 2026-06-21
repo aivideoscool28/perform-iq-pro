@@ -109,12 +109,13 @@ export function Sidebar() {
       <nav className="lg:hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-40 w-[min(94vw,520px)]">
         <div className="glass-strong rounded-3xl px-2 py-2 shadow-[0_20px_60px_-20px_rgba(0,0,0,0.8)] overflow-x-auto scrollbar-hide">
           <div className="flex items-center gap-1 min-w-max">
-            {mobileNav.map(({ to, label, icon: Icon }) => {
+            {mobileNav.map(({ to, label, icon: Icon, tour }) => {
               const active = pathname === to;
               return (
                 <Link
                   key={to}
                   to={to}
+                  data-tour={tour}
                   className={[
                     "relative flex flex-col items-center gap-0.5 py-2 px-3 rounded-2xl transition-all min-w-[64px]",
                     active
