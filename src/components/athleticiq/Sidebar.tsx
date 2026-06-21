@@ -15,8 +15,11 @@ import {
   Footprints,
   BarChart3,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
-const nav = [
+type NavItem = { to: string; label: string; icon: LucideIcon; tour?: string };
+
+const nav: NavItem[] = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard },
   { to: "/profile", label: "Athletenprofil", icon: User },
   { to: "/training", label: "KI-Training", icon: Dumbbell },
