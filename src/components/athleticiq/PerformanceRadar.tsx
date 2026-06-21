@@ -29,6 +29,7 @@ export function PerformanceRadar({ values }: Props) {
             dataKey="axis"
             tick={{ fill: "var(--muted-foreground)", fontSize: 11 }}
           />
+          <PolarRadiusAxis domain={[0, 100]} tick={false} axisLine={false} />
           <Radar
             dataKey="value"
             stroke="var(--accent)"
@@ -36,7 +37,6 @@ export function PerformanceRadar({ values }: Props) {
             fill="var(--accent)"
             fillOpacity={0.18}
             isAnimationActive
-            domain={[0, 100]}
           />
         </RadarChart>
       </ResponsiveContainer>
