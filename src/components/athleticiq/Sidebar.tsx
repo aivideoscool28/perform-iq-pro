@@ -24,12 +24,12 @@ const nav = [
   { to: "/diagnostics", label: "Diagnostik", icon: LineChart },
   { to: "/recovery", label: "Regeneration", icon: HeartPulse },
   { to: "/video", label: "Videoanalyse", icon: Video },
-  { to: "/workout-analysis", label: "Workout Analysis", icon: BarChart3 },
+  { to: "/workout-analysis", label: "Workout Analysis", icon: BarChart3, tour: "nav-analysis" },
   { to: "/devices", label: "Geräte", icon: Watch },
   { to: "/competition", label: "Wettkampf", icon: Trophy },
   { to: "/coach", label: "KI-Coach", icon: Sparkles },
   { to: "/gear", label: "Schuhe & Spikes", icon: Footprints },
-  { to: "/gamification", label: "Freunde & Streaks", icon: Gamepad2 },
+  { to: "/gamification", label: "Freunde & Streaks", icon: Gamepad2, tour: "nav-friends" },
 ];
 
 // Primary tabs surfaced in floating mobile dock — all sections
@@ -41,12 +41,12 @@ const mobileNav = [
   { to: "/diagnostics", label: "Diag", icon: LineChart },
   { to: "/recovery", label: "Reco", icon: HeartPulse },
   { to: "/video", label: "Video", icon: Video },
-  { to: "/workout-analysis", label: "Analyse", icon: BarChart3 },
+  { to: "/workout-analysis", label: "Analyse", icon: BarChart3, tour: "nav-analysis" },
   { to: "/devices", label: "Geräte", icon: Watch },
   { to: "/competition", label: "Wettk.", icon: Trophy },
   { to: "/coach", label: "Coach", icon: Sparkles },
   { to: "/gear", label: "Spikes", icon: Footprints },
-  { to: "/gamification", label: "Streaks", icon: Gamepad2 },
+  { to: "/gamification", label: "Streaks", icon: Gamepad2, tour: "nav-friends" },
 ];
 
 export function Sidebar() {
