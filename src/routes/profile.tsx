@@ -8,11 +8,16 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
-import { fetchMyProfile, resetOnboarding } from "@/lib/athletic.functions";
+import { fetchMyProfile, resetOnboarding, resetToNewUser } from "@/lib/athletic.functions";
+import { isDevPreview, markTourPending } from "@/lib/tour";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import {
   User, MapPin, Calendar, Ruler, Weight, Flag, Sparkles, Watch, Activity,
   Heart, Settings, Check, Plus, Trash2, Pencil, Trophy, Star, Target,
-  Dumbbell, RefreshCcw, Loader2, HeartPulse,
+  Dumbbell, RefreshCcw, Loader2, HeartPulse, FlaskConical,
 } from "lucide-react";
 import { toast } from "sonner";
 
