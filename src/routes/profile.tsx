@@ -84,10 +84,13 @@ function EditableText({
 function Page() {
   const [editing, setEditing] = useState(false);
   const [state, setState] = useState<State>(defaults);
+  const [devResetOpen, setDevResetOpen] = useState(false);
   const navigate = useNavigate();
   const qc = useQueryClient();
   const fetchProfileFn = useServerFn(fetchMyProfile);
   const resetFn = useServerFn(resetOnboarding);
+  const resetNewUserFn = useServerFn(resetToNewUser);
+  const showDevTools = isDevPreview();
 
   const { data: profileData } = useQuery({
     queryKey: ["my-profile"],
@@ -102,6 +105,18 @@ function Page() {
       await qc.invalidateQueries({ queryKey: ["my-profile"] });
       toast.success("Onboarding zurückgesetzt – los geht's!");
       navigate({ to: "/onboarding" });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const devReset = useMutation({
+    mutationFn: () => resetNewUserFn(),
+    onSuccess: async () => {
+      setDevResetOpen(false);
+      markTourPending();
+      await qc.invalidateQueries();
+      toast.success("Auf neuen Nutzer zurückgesetzt – Tour startet.");
+      navigate({ to: "/" });
     },
     onError: (e: Error) => toast.error(e.message),
   });
