@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
+import { useNavigate } from "@tanstack/react-router";
 import { saveDailyCheckin } from "@/lib/athletic.functions";
 import { Button } from "@/components/ui/button";
 import { X, ArrowLeft, Loader2, Check } from "lucide-react";
