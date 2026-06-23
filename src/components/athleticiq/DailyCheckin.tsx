@@ -263,7 +263,16 @@ export function DailyCheckin({ name, onClose }: Props) {
             <p className="text-white/80 leading-relaxed mb-8 max-w-md mx-auto">
               {aiSummary ?? "Tagescheck gespeichert."}
             </p>
-            <Button size="lg" className="w-full max-w-sm" onClick={onClose}>Zurück zum Dashboard</Button>
+            <Button
+              size="lg"
+              className="w-full max-w-sm"
+              onClick={() => {
+                onClose();
+                navigate({ to: "/workout-analysis" });
+              }}
+            >
+              Workout-Analyse ansehen
+            </Button>
           </div>
         )}
       </div>
