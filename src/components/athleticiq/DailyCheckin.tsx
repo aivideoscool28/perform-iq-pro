@@ -46,6 +46,7 @@ const disciplines = [
 
 export function DailyCheckin({ name, onClose }: Props) {
   const qc = useQueryClient();
+  const navigate = useNavigate();
   const saveFn = useServerFn(saveDailyCheckin);
   const [step, setStep] = useState(0); // 0 = greeting, 1..N = questions, last = summary
   const [a, setA] = useState<Answers>(empty);
