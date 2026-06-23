@@ -20,37 +20,23 @@ import type { LucideIcon } from "lucide-react";
 type NavItem = { to: string; label: string; icon: LucideIcon; tour?: string };
 
 const nav: NavItem[] = [
-  { to: "/", label: "Dashboard", icon: LayoutDashboard },
-  { to: "/profile", label: "Athletenprofil", icon: User },
-  { to: "/training", label: "KI-Training", icon: Dumbbell },
-  { to: "/nutrition", label: "Food Scanner", icon: Scan },
-  { to: "/diagnostics", label: "Diagnostik", icon: LineChart },
-  { to: "/recovery", label: "Regeneration", icon: HeartPulse },
-  { to: "/video", label: "Videoanalyse", icon: Video },
-  { to: "/workout-analysis", label: "Workout Analysis", icon: BarChart3, tour: "nav-analysis" },
-  { to: "/devices", label: "Geräte", icon: Watch },
-  { to: "/competition", label: "Wettkampf", icon: Trophy },
-  { to: "/coach", label: "KI-Coach", icon: Sparkles },
-  { to: "/gear", label: "Schuhe & Spikes", icon: Footprints },
-  { to: "/gamification", label: "Freunde & Streaks", icon: Gamepad2, tour: "nav-friends" },
-];
-
-// Primary tabs surfaced in floating mobile dock — all sections
-const mobileNav: NavItem[] = [
   { to: "/", label: "Home", icon: LayoutDashboard },
   { to: "/profile", label: "Profil", icon: User },
   { to: "/training", label: "Training", icon: Dumbbell },
-  { to: "/nutrition", label: "Scan", icon: Scan },
-  { to: "/diagnostics", label: "Diag", icon: LineChart },
-  { to: "/recovery", label: "Reco", icon: HeartPulse },
-  { to: "/video", label: "Video", icon: Video },
-  { to: "/workout-analysis", label: "Analyse", icon: BarChart3, tour: "nav-analysis" },
-  { to: "/devices", label: "Geräte", icon: Watch },
-  { to: "/competition", label: "Wettk.", icon: Trophy },
-  { to: "/coach", label: "Coach", icon: Sparkles },
-  { to: "/gear", label: "Spikes", icon: Footprints },
-  { to: "/gamification", label: "Streaks", icon: Gamepad2, tour: "nav-friends" },
+  { to: "/workout-analysis", label: "Workout Analysis", icon: BarChart3, tour: "nav-analysis" },
+  { to: "/diagnostics", label: "Diagnostik", icon: LineChart },
+  { to: "/video", label: "Videoanalyse", icon: Video },
+  { to: "/nutrition", label: "Food Scanner", icon: Scan },
+  { to: "/recovery", label: "Regeneration", icon: HeartPulse },
+  { to: "/devices", label: "Geräte und Wearables", icon: Watch },
+  { to: "/gear", label: "Schuhe und Spikes", icon: Footprints },
+  { to: "/competition", label: "Wettkämpfe", icon: Trophy },
+  { to: "/coach", label: "KI Coach", icon: Sparkles },
+  { to: "/gamification", label: "Friends & Streak", icon: Gamepad2, tour: "nav-friends" },
 ];
+
+// Floating mobile dock — same order & full names as desktop (horizontally scrollable)
+const mobileNav: NavItem[] = nav;
 
 export function Sidebar() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
