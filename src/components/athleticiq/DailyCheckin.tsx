@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
+import { useNavigate } from "@tanstack/react-router";
 import { saveDailyCheckin } from "@/lib/athletic.functions";
 import { Button } from "@/components/ui/button";
 import { X, ArrowLeft, Loader2, Check } from "lucide-react";
@@ -45,6 +46,7 @@ const disciplines = [
 
 export function DailyCheckin({ name, onClose }: Props) {
   const qc = useQueryClient();
+  const navigate = useNavigate();
   const saveFn = useServerFn(saveDailyCheckin);
   const [step, setStep] = useState(0); // 0 = greeting, 1..N = questions, last = summary
   const [a, setA] = useState<Answers>(empty);
@@ -261,7 +263,16 @@ export function DailyCheckin({ name, onClose }: Props) {
             <p className="text-white/80 leading-relaxed mb-8 max-w-md mx-auto">
               {aiSummary ?? "Tagescheck gespeichert."}
             </p>
-            <Button size="lg" className="w-full max-w-sm" onClick={onClose}>Zurück zum Dashboard</Button>
+            <Button
+              size="lg"
+              className="w-full max-w-sm"
+              onClick={() => {
+                onClose();
+                navigate({ to: "/workout-analysis" });
+              }}
+            >
+              Workout-Analyse ansehen
+            </Button>
           </div>
         )}
       </div>

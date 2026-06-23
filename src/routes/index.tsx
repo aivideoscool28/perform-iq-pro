@@ -1,26 +1,19 @@
-import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { AppShell } from "@/components/athleticiq/AppShell";
-import { KpiCard } from "@/components/athleticiq/KpiCard";
-
-import { PerformanceChart } from "@/components/athleticiq/PerformanceChart";
-import { AiInsights } from "@/components/athleticiq/AiInsights";
 import { Sparkline } from "@/components/athleticiq/Sparkline";
 import { StreakCard } from "@/components/athleticiq/StreakCard";
-import { StreakManager } from "@/components/athleticiq/StreakManager";
-import { AnalysisBoard } from "@/components/athleticiq/AnalysisBoard";
-import { HeroPerformance } from "@/components/athleticiq/HeroPerformance";
+import { AthleteQuoteCard } from "@/components/athleticiq/AthleteQuoteCard";
 import { fetchDashboard, fetchTodayCheckin, deleteTodayCheckin } from "@/lib/athletic.functions";
 import { DailyCheckin } from "@/components/athleticiq/DailyCheckin";
-import { EmptyDashboard } from "@/components/athleticiq/EmptyDashboard";
 import { FeatureTour } from "@/components/athleticiq/FeatureTour";
 import { isTourPending, clearTourPending } from "@/lib/tour";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import {
-  Battery, Flame, HeartPulse, Moon, Loader2, CheckCircle2, Sparkles, RotateCcw,
+  Loader2, CheckCircle2, Sparkles, RotateCcw, Dumbbell, TrendingUp, Activity,
 } from "lucide-react";
 
 export const Route = createFileRoute("/")({
@@ -32,6 +25,20 @@ export const Route = createFileRoute("/")({
   }),
   component: Dashboard,
 });
+
+/** Count non-rest check-ins within the current calendar week (Mon–Sun). */
+function trainingsThisWeek(checkins: Array<{ checkin_date: string; is_rest_day?: boolean | null }>): number {
+  const now = new Date();
+  const day = (now.getDay() + 6) % 7; // 0 = Monday
+  const monday = new Date(now);
+  monday.setHours(0, 0, 0, 0);
+  monday.setDate(now.getDate() - day);
+  return checkins.filter((c) => {
+    if (c.is_rest_day) return false;
+    const d = new Date(c.checkin_date);
+    return d >= monday;
+  }).length;
+}
 
 function Dashboard() {
   const { session, loading } = useAuth();
@@ -84,7 +91,6 @@ function Dashboard() {
     setShowTour(false);
   };
 
-
   if (loading || !session) {
     return (
       <div className="min-h-screen grid place-items-center">
@@ -94,13 +100,12 @@ function Dashboard() {
   }
 
   const profile = data?.profile;
-  const boards = data?.boards ?? [];
-  const workouts = data?.workouts ?? [];
   const checkins = data?.checkins ?? [];
   const currentStreak = data?.computedStreak ?? 0;
   const name = profile?.display_name ?? "Athlet";
   const today = new Date().toLocaleDateString("de", { weekday: "long", day: "2-digit", month: "long" });
-  const isNewUser = checkins.length === 0 && workouts.length === 0 && boards.length === 0;
+  const weeklyGoal = (profile as { training_days_per_week?: number | null } | undefined)?.training_days_per_week ?? 4;
+  const trainings = trainingsThisWeek(checkins as Array<{ checkin_date: string; is_rest_day?: boolean | null }>);
 
   return (
     <AppShell title={`Hallo ${name}`} subtitle={today}>
@@ -156,62 +161,73 @@ function Dashboard() {
             />
           </section>
 
-          {isNewUser ? (
-            <EmptyDashboard profile={profile} />
-          ) : (
-            <>
-              <section className="mb-6">
-                <StreakManager workouts={workouts} checkins={checkins} />
-              </section>
+          {/* Favorite athlete quote / news */}
+          <AthleteQuoteCard />
 
-              {/* HERO — Performance Command Center */}
-              <HeroPerformance name={name} />
-
-              {/* KPI */}
-              <section className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                <KpiCard label="Energielevel" value={87} unit="%" delta="+4" trend="up" icon={Battery}>
-                  <Sparkline data={[60, 65, 70, 68, 75, 82, 87]} color="var(--accent)" />
-                </KpiCard>
-                <KpiCard label="HRV" value={74} unit="ms" delta="Baseline 68" trend="up" icon={HeartPulse}>
-                  <Sparkline data={[62, 68, 65, 70, 72, 74, 74]} color="var(--foreground)" />
-                </KpiCard>
-                <KpiCard label="Belastung" value="546" unit="TSS" delta="optimal" trend="flat" icon={Flame}>
-                  <Sparkline data={[400, 450, 500, 480, 520, 540, 546]} color="var(--muted-foreground)" />
-                </KpiCard>
-                <KpiCard label="Schlaf" value="7.8" unit="h" delta="Tief 1h42m" trend="up" icon={Moon}>
-                  <Sparkline data={[6.2, 6.8, 7.1, 6.9, 7.4, 7.6, 7.8]} color="var(--foreground)" />
-                </KpiCard>
-              </section>
-
-              <section className="grid lg:grid-cols-3 gap-6 mb-6">
-                <div className="lg:col-span-2 rounded-2xl border border-border bg-card p-6 shadow-sm">
-                  <div className="mb-4">
-                    <h3 className="font-semibold">Performance · 7 Tage</h3>
-                    <p className="text-xs text-muted-foreground">Form, Belastung & HRV</p>
+          {/* Trainings diese Woche */}
+          <section data-tour="performance" className="mb-6">
+            <div className="relative overflow-hidden rounded-2xl border border-border bg-card p-5 shadow-sm">
+              <div className="flex items-start justify-between">
+                <div className="min-w-0">
+                  <div className="text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
+                    Trainings diese Woche
                   </div>
-                  <PerformanceChart />
+                  <div className="mt-2 flex items-baseline gap-1.5">
+                    <span className="text-3xl font-semibold tabular-nums">{trainings}</span>
+                    <span className="text-sm text-muted-foreground">/ {weeklyGoal}</span>
+                  </div>
+                  <div className="mt-1 text-xs text-muted-foreground/80">
+                    {trainings === 0 ? "Start logging!" : "Dein Wochenziel"}
+                  </div>
                 </div>
-                <AiInsights />
-              </section>
+                <div className="h-10 w-10 shrink-0 rounded-xl border border-border bg-secondary grid place-items-center">
+                  <Dumbbell className="h-4 w-4 text-muted-foreground" />
+                </div>
+              </div>
+              <div className="mt-4 opacity-60">
+                <Sparkline data={[0, 1, 1, 2, 2, 3, trainings]} color="var(--accent)" />
+              </div>
+            </div>
+          </section>
 
-              {/* ANALYSIS BOARDS */}
-              <section className="mb-6">
-                <div className="flex items-baseline justify-between mb-4">
-                  <h2 className="text-xl font-bold tracking-tight">Workout-Analysen</h2>
-                  <span className="text-xs text-muted-foreground">{boards.length} Sessions</span>
+          {/* Single latest KI-Insight */}
+          <section className="mb-6">
+            <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+              <div className="flex items-center gap-2.5 mb-4">
+                <div className="h-8 w-8 rounded-lg bg-foreground grid place-items-center">
+                  <Sparkles className="h-4 w-4 text-background" />
                 </div>
-                <div className="space-y-4">
-                  {boards.slice(0, 5).map((b) => (
-                    <AnalysisBoard
-                      key={b.id}
-                      board={b as never}
-                      workout={workouts.find((w) => w.id === b.workout_id) as never}
-                    />
-                  ))}
+                <div>
+                  <div className="font-semibold text-sm">KI-Insight</div>
+                  <div className="text-[11px] text-muted-foreground">Neuester Tipp</div>
                 </div>
-              </section>
-            </>
-          )}
+              </div>
+              <div className="rounded-xl border border-border bg-background p-4">
+                <div className="flex gap-3">
+                  {trainings === 0 ? (
+                    <Activity className="h-5 w-5 text-accent shrink-0 mt-0.5" />
+                  ) : (
+                    <TrendingUp className="h-5 w-5 text-accent shrink-0 mt-0.5" />
+                  )}
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <h4 className="font-medium text-sm">
+                        {trainings === 0 ? "Leg los" : "Sprintform im Aufwärtstrend"}
+                      </h4>
+                      <span className="text-[10px] uppercase tracking-wider text-muted-foreground border border-border rounded px-1.5 py-0.5">
+                        {trainings === 0 ? "Onboarding" : "Performance"}
+                      </span>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+                      {trainings === 0
+                        ? "Logge dein erstes Workout, damit die KI dein persönliches Profil aufbauen kann."
+                        : "Deine Belastung sitzt im optimalen Bereich. Halte Hard-Tage scharf und Easy-Tage wirklich easy."}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
         </>
       )}
       {checkinOpen && (

@@ -20,37 +20,23 @@ import type { LucideIcon } from "lucide-react";
 type NavItem = { to: string; label: string; icon: LucideIcon; tour?: string };
 
 const nav: NavItem[] = [
-  { to: "/", label: "Dashboard", icon: LayoutDashboard },
-  { to: "/profile", label: "Athletenprofil", icon: User },
-  { to: "/training", label: "KI-Training", icon: Dumbbell },
-  { to: "/nutrition", label: "Food Scanner", icon: Scan },
-  { to: "/diagnostics", label: "Diagnostik", icon: LineChart },
-  { to: "/recovery", label: "Regeneration", icon: HeartPulse },
-  { to: "/video", label: "Videoanalyse", icon: Video },
-  { to: "/workout-analysis", label: "Workout Analysis", icon: BarChart3, tour: "nav-analysis" },
-  { to: "/devices", label: "Geräte", icon: Watch },
-  { to: "/competition", label: "Wettkampf", icon: Trophy },
-  { to: "/coach", label: "KI-Coach", icon: Sparkles },
-  { to: "/gear", label: "Schuhe & Spikes", icon: Footprints },
-  { to: "/gamification", label: "Freunde & Streaks", icon: Gamepad2, tour: "nav-friends" },
-];
-
-// Primary tabs surfaced in floating mobile dock — all sections
-const mobileNav: NavItem[] = [
   { to: "/", label: "Home", icon: LayoutDashboard },
   { to: "/profile", label: "Profil", icon: User },
   { to: "/training", label: "Training", icon: Dumbbell },
-  { to: "/nutrition", label: "Scan", icon: Scan },
-  { to: "/diagnostics", label: "Diag", icon: LineChart },
-  { to: "/recovery", label: "Reco", icon: HeartPulse },
-  { to: "/video", label: "Video", icon: Video },
-  { to: "/workout-analysis", label: "Analyse", icon: BarChart3, tour: "nav-analysis" },
-  { to: "/devices", label: "Geräte", icon: Watch },
-  { to: "/competition", label: "Wettk.", icon: Trophy },
-  { to: "/coach", label: "Coach", icon: Sparkles },
-  { to: "/gear", label: "Spikes", icon: Footprints },
-  { to: "/gamification", label: "Streaks", icon: Gamepad2, tour: "nav-friends" },
+  { to: "/workout-analysis", label: "Workout Analysis", icon: BarChart3, tour: "nav-analysis" },
+  { to: "/diagnostics", label: "Diagnostik", icon: LineChart },
+  { to: "/video", label: "Videoanalyse", icon: Video },
+  { to: "/nutrition", label: "Food Scanner", icon: Scan },
+  { to: "/recovery", label: "Regeneration", icon: HeartPulse },
+  { to: "/devices", label: "Geräte und Wearables", icon: Watch },
+  { to: "/gear", label: "Schuhe und Spikes", icon: Footprints },
+  { to: "/competition", label: "Wettkämpfe", icon: Trophy },
+  { to: "/coach", label: "KI Coach", icon: Sparkles },
+  { to: "/gamification", label: "Friends & Streak", icon: Gamepad2, tour: "nav-friends" },
 ];
+
+// Floating mobile dock — same order & full names as desktop (horizontally scrollable)
+const mobileNav: NavItem[] = nav;
 
 export function Sidebar() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
@@ -120,7 +106,7 @@ export function Sidebar() {
                   to={to}
                   data-tour={tour}
                   className={[
-                    "relative flex flex-col items-center gap-0.5 py-2 px-3 rounded-2xl transition-all min-w-[64px]",
+                    "relative flex flex-col items-center gap-0.5 py-2 px-3 rounded-2xl transition-all min-w-max",
                     active
                       ? "text-neon-cyan bg-neon-cyan/10"
                       : "text-muted-foreground hover:text-foreground hover:bg-white/[0.03]",
@@ -133,7 +119,7 @@ export function Sidebar() {
                     className="h-5 w-5"
                     strokeWidth={active ? 2.5 : 2}
                   />
-                  <span className="text-[10px] font-semibold tracking-wide">{label}</span>
+                  <span className="text-[10px] font-semibold tracking-wide whitespace-nowrap">{label}</span>
                 </Link>
               );
             })}
