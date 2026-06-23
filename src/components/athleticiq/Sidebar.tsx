@@ -106,7 +106,7 @@ export function Sidebar() {
                   to={to}
                   data-tour={tour}
                   className={[
-                    "relative flex flex-col items-center gap-0.5 py-2 px-3 rounded-2xl transition-all min-w-[64px]",
+                    "relative flex flex-col items-center gap-0.5 py-2 px-3 rounded-2xl transition-all min-w-max",
                     active
                       ? "text-neon-cyan bg-neon-cyan/10"
                       : "text-muted-foreground hover:text-foreground hover:bg-white/[0.03]",
@@ -119,7 +119,7 @@ export function Sidebar() {
                     className="h-5 w-5"
                     strokeWidth={active ? 2.5 : 2}
                   />
-                  <span className="text-[10px] font-semibold tracking-wide">{label}</span>
+                  <span className="text-[10px] font-semibold tracking-wide whitespace-nowrap">{label}</span>
                 </Link>
               );
             })}
