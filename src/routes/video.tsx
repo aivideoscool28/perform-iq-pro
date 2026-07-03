@@ -176,63 +176,126 @@ async function extractFrames(file: File, count = 6): Promise<{ frames: { t: numb
     video.preload = "auto";
     video.muted = true;
     video.playsInline = true;
-    video.crossOrigin = "anonymous";
+    // Do NOT set crossOrigin for a same-origin blob URL — it can taint the canvas on some browsers.
     video.src = url;
 
+    let settled = false;
     const cleanup = () => URL.revokeObjectURL(url);
+    const fail = (msg: string) => {
+      if (settled) return;
+      settled = true;
+      cleanup();
+      reject(new Error(msg));
+    };
+
+    // Overall safety timeout so the UI never hangs forever.
+    const hardTimeout = setTimeout(
+      () => fail("Zeitüberschreitung beim Lesen des Videos. Bitte ein anderes Format (MP4/H.264) versuchen."),
+      45000,
+    );
+
+    // Many phone/streamed videos report duration = Infinity until you seek past the end.
+    const resolveDuration = (): Promise<number> =>
+      new Promise((res) => {
+        const d = video.duration;
+        if (isFinite(d) && d > 0) return res(d);
+        const onDur = () => {
+          if (isFinite(video.duration) && video.duration > 0) {
+            video.removeEventListener("durationchange", onDur);
+            video.currentTime = 0;
+            res(video.duration);
+          }
+        };
+        video.addEventListener("durationchange", onDur);
+        // Nudge the browser to compute the real duration.
+        try {
+          video.currentTime = 1e6;
+        } catch {
+          /* ignore */
+        }
+        // Fallback after 4s: give up on exact duration.
+        setTimeout(() => {
+          video.removeEventListener("durationchange", onDur);
+          res(isFinite(video.duration) && video.duration > 0 ? video.duration : 0);
+        }, 4000);
+      });
+
+    const seekTo = (t: number): Promise<void> =>
+      new Promise((res, rej) => {
+        const to = setTimeout(() => {
+          video.removeEventListener("seeked", onSeeked);
+          rej(new Error("seek-timeout"));
+        }, 8000);
+        const onSeeked = () => {
+          clearTimeout(to);
+          video.removeEventListener("seeked", onSeeked);
+          res();
+        };
+        video.addEventListener("seeked", onSeeked, { once: true });
+        try {
+          video.currentTime = t;
+        } catch (e) {
+          clearTimeout(to);
+          rej(e as Error);
+        }
+      });
 
     video.onloadedmetadata = async () => {
-      const duration = isFinite(video.duration) && video.duration > 0 ? video.duration : 0;
-      if (!duration) {
+      try {
+        const duration = await resolveDuration();
+        if (!duration || duration < 0.1) {
+          return fail("Videodauer konnte nicht ermittelt werden. Bitte ein anderes Video versuchen.");
+        }
+
+        const canvas = document.createElement("canvas");
+        const maxW = 640;
+        const vw = video.videoWidth || maxW;
+        const vh = video.videoHeight || 360;
+        const scale = Math.min(1, maxW / vw);
+        canvas.width = Math.max(2, Math.round(vw * scale));
+        canvas.height = Math.max(2, Math.round(vh * scale));
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return fail("Canvas nicht verfügbar.");
+
+        const frames: { t: number; image: string }[] = [];
+        const times = Array.from({ length: count }, (_, i) =>
+          Math.max(0, Math.min(duration - 0.05, (duration * (i + 0.5)) / count)),
+        );
+
+        for (const t of times) {
+          try {
+            await seekTo(t);
+            // Give the frame a tick to paint before drawing.
+            await new Promise((r) => requestAnimationFrame(() => r(null)));
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            frames.push({ t, image: canvas.toDataURL("image/jpeg", 0.72) });
+          } catch {
+            // Skip a bad frame instead of failing the whole run.
+          }
+        }
+
+        if (frames.length < 2) {
+          return fail("Es konnten nicht genug Bilder aus dem Video gelesen werden. Bitte ein anderes Video versuchen.");
+        }
+
+        settled = true;
+        clearTimeout(hardTimeout);
         cleanup();
-        return reject(new Error("Videodauer konnte nicht ermittelt werden."));
+        resolve({ frames, duration });
+      } catch (e) {
+        fail(e instanceof Error ? e.message : "Frames konnten nicht extrahiert werden.");
       }
-      const canvas = document.createElement("canvas");
-      const maxW = 640;
-      const scale = Math.min(1, maxW / (video.videoWidth || maxW));
-      canvas.width = Math.round((video.videoWidth || maxW) * scale);
-      canvas.height = Math.round((video.videoHeight || 360) * scale);
-      const ctx = canvas.getContext("2d");
-      if (!ctx) {
-        cleanup();
-        return reject(new Error("Canvas nicht verfügbar."));
-      }
-
-      const frames: { t: number; image: string }[] = [];
-      const times = Array.from({ length: count }, (_, i) =>
-        Math.min(duration - 0.05, (duration * (i + 0.5)) / count),
-      );
-
-      for (const t of times) {
-        await new Promise<void>((res, rej) => {
-          const onSeeked = () => {
-            video.removeEventListener("seeked", onSeeked);
-            try {
-              ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-              frames.push({ t, image: canvas.toDataURL("image/jpeg", 0.72) });
-              res();
-            } catch (e) {
-              rej(e);
-            }
-          };
-          video.addEventListener("seeked", onSeeked, { once: true });
-          video.currentTime = t;
-        });
-      }
-
-      cleanup();
-      resolve({ frames, duration });
     };
 
-    video.onerror = () => {
-      cleanup();
-      reject(new Error("Video konnte nicht geladen werden."));
-    };
+    video.onerror = () =>
+      fail("Video konnte nicht geladen werden. Unterstützte Formate: MP4/H.264, MOV, WebM.");
   });
 }
 
+
 function Page() {
   const [open, setOpen] = useState<Finding | null>(null);
+
   const [scoreOpen, setScoreOpen] = useState(false);
 
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
@@ -243,8 +306,10 @@ function Page() {
   const [analysisError, setAnalysisError] = useState<string | null>(null);
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [showInsights, setShowInsights] = useState(true);
+  const [discipline, setDiscipline] = useState("Sprint");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const runAnalysis = useServerFn(analyzeVideoFrames);
+
 
   const currentFindings = result?.findings ?? defaultFindings;
   const currentOverall = result?.overall ?? defaultOverall;
@@ -274,8 +339,9 @@ function Page() {
       setAnalysisState("analyzing");
 
       const data = await runAnalysis({
-        data: { discipline: "Sprint", durationSec: duration, frames },
+        data: { discipline, durationSec: duration, frames },
       });
+
 
       const overall: OverallScore = {
         score: Math.round(data.overall_score * 10) / 10,
@@ -429,9 +495,10 @@ function Page() {
                     ausblenden
                   </button>
                 </div>
-                {topInsights.map((f) => (
+                {topInsights.map((f, i) => (
                   <button
-                    key={f.joint}
+                    key={`${f.joint}-${i}`}
+
                     type="button"
                     onClick={() => setOpen(f)}
                     className="pointer-events-auto flex items-center justify-between gap-3 rounded-xl bg-black/65 backdrop-blur border border-neon-amber/40 px-3 py-2 text-left hover:border-neon-amber transition"
@@ -485,19 +552,52 @@ function Page() {
           />
 
 
-          <div className="flex items-center justify-between mt-4">
+          <div className="flex flex-wrap items-end justify-between gap-3 mt-4">
             <div>
               <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Aktuelle Analyse</div>
               <h3 className="text-lg font-bold mt-1">{videoName ?? "Sprintstart · Block 3"}</h3>
             </div>
-            <Button
-              variant="outline"
-              className="border-neon-cyan/40 text-neon-cyan"
-              onClick={() => fileInputRef.current?.click()}
-            >
-              <Upload className="h-4 w-4 mr-1.5" /> {videoUrl ? "Anderes Video" : "Video hochladen"}
-            </Button>
+            <div className="flex items-end gap-2">
+              <label className="flex flex-col gap-1">
+                <span className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Disziplin</span>
+                <select
+                  value={discipline}
+                  onChange={(e) => setDiscipline(e.target.value)}
+                  disabled={analysisState === "extracting" || analysisState === "analyzing"}
+                  className="h-9 rounded-lg bg-black/40 border border-neon-cyan/30 text-sm px-2.5 text-foreground focus:outline-none focus:border-neon-cyan disabled:opacity-50"
+                >
+                  {[
+                    "Sprint",
+                    "Sprintstart aus dem Block",
+                    "Hürdenlauf",
+                    "Mittel-/Langstrecke",
+                    "Weitsprung",
+                    "Hochsprung",
+                    "Dreisprung",
+                    "Stabhochsprung",
+                    "Kugelstoßen",
+                    "Speerwurf",
+                    "Diskuswurf",
+                    "Kraftraum / Kniebeuge",
+                    "Kraftraum / Kreuzheben",
+                    "Sonstige Bewegung",
+                  ].map((d) => (
+                    <option key={d} value={d}>
+                      {d}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <Button
+                variant="outline"
+                className="border-neon-cyan/40 text-neon-cyan"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <Upload className="h-4 w-4 mr-1.5" /> {videoUrl ? "Anderes Video" : "Video hochladen"}
+              </Button>
+            </div>
           </div>
+
         </div>
 
         <div className="glass-strong rounded-3xl p-6">
@@ -525,10 +625,11 @@ function Page() {
           </button>
 
           <div className="mt-5 space-y-2.5">
-            {currentFindings.map((f) => (
+            {currentFindings.map((f, i) => (
               <button
                 type="button"
-                key={f.joint}
+                key={`${f.joint}-${i}`}
+
                 onClick={() => setOpen(f)}
                 className="w-full flex items-center justify-between rounded-xl border border-border/50 bg-white/[0.02] px-3 py-2.5 hover:bg-white/[0.05] hover:border-neon-cyan/40 transition text-left group"
               >
@@ -565,7 +666,7 @@ function Page() {
         {currentKpis.map((s, i) => {
           const Icon = [Gauge, Activity, Sparkles][i % 3];
           return (
-            <div key={s.title} className="glass rounded-3xl p-5 flex items-center gap-4">
+            <div key={`${s.title}-${i}`} className="glass rounded-3xl p-5 flex items-center gap-4">
               <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-neon-cyan/20 to-neon-violet/20 grid place-items-center">
                 <Icon className="h-5 w-5 text-neon-cyan" />
               </div>
@@ -612,8 +713,9 @@ function Page() {
                   Zugrunde liegende Daten
                 </div>
                 <div className="rounded-xl border border-border/50 divide-y divide-border/40">
-                  {open.data.map((d) => (
-                    <div key={d.label} className="flex justify-between px-3 py-2 text-sm">
+                  {open.data.map((d, i) => (
+                    <div key={`${d.label}-${i}`} className="flex justify-between px-3 py-2 text-sm">
+
                       <span className="text-muted-foreground">{d.label}</span>
                       <span className="font-semibold tabular-nums">{d.value}</span>
                     </div>
@@ -653,8 +755,9 @@ function Page() {
               Score-Zusammensetzung
             </div>
             <div className="rounded-xl border border-border/50 divide-y divide-border/40">
-              {currentOverall.data.map((d) => (
-                <div key={d.label} className="flex justify-between px-3 py-2 text-sm">
+              {currentOverall.data.map((d, i) => (
+                <div key={`${d.label}-${i}`} className="flex justify-between px-3 py-2 text-sm">
+
                   <span className="text-muted-foreground">{d.label}</span>
                   <span className="font-semibold tabular-nums">{d.value}</span>
                 </div>
