@@ -2,8 +2,10 @@ import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
-import { Activity, Loader2 } from "lucide-react";
+import { setRememberMe, markJustLoggedIn } from "@/lib/auth-session";
+import { Activity, Loader2, Check } from "lucide-react";
 import { toast } from "sonner";
+
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -22,6 +24,7 @@ function AuthPage() {
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
+  const [remember, setRemember] = useState(true);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -34,7 +37,7 @@ function AuthPage() {
     setLoading(true);
     try {
       if (mode === "signup") {
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
@@ -43,10 +46,18 @@ function AuthPage() {
           },
         });
         if (error) throw error;
+        if (data.session) {
+          setRememberMe(remember);
+          markJustLoggedIn();
+          navigate({ to: "/" });
+          return;
+        }
         toast.success("Konto erstellt! Check deine E-Mails zum Verifizieren.");
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
+        setRememberMe(remember);
+        markJustLoggedIn();
         navigate({ to: "/" });
       }
     } catch (err) {
@@ -58,6 +69,8 @@ function AuthPage() {
 
   const handleGoogle = async () => {
     setLoading(true);
+    setRememberMe(remember);
+    markJustLoggedIn();
     const res = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin });
     if (res.error) {
       toast.error(res.error instanceof Error ? res.error.message : "Google-Login fehlgeschlagen");
@@ -67,6 +80,8 @@ function AuthPage() {
     if (res.redirected) return;
     navigate({ to: "/" });
   };
+
+
 
   return (
     <div className="min-h-screen grid place-items-center px-4 relative overflow-hidden">
@@ -136,6 +151,24 @@ function AuthPage() {
               className="w-full h-11 px-4 rounded-xl bg-elevated border border-border focus:outline-none focus:ring-2 focus:ring-neon-cyan/50 text-sm"
             />
             <button
+              type="button"
+              onClick={() => setRemember(!remember)}
+              className="flex items-center gap-2.5 text-xs text-muted-foreground hover:text-foreground transition w-full py-1"
+            >
+              <span
+                className={[
+                  "h-4 w-4 rounded-[5px] border grid place-items-center transition",
+                  remember
+                    ? "bg-gradient-to-br from-neon-cyan to-neon-violet border-transparent"
+                    : "border-border",
+                ].join(" ")}
+              >
+                {remember && <Check className="h-3 w-3 text-background" strokeWidth={3} />}
+              </span>
+              Angemeldet bleiben
+            </button>
+            <button
+
               type="submit"
               disabled={loading}
               className="w-full h-11 rounded-xl bg-gradient-to-r from-neon-cyan to-neon-violet text-background font-semibold text-sm hover:opacity-90 transition glow-cyan flex items-center justify-center gap-2 disabled:opacity-60"

@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { AppShell } from "@/components/athleticiq/AppShell";
 import { Bell, Globe, Lock, Moon, Palette, Shield } from "lucide-react";
+import { SignOutButton } from "@/components/athleticiq/SignOutButton";
 
 export const Route = createFileRoute("/settings")({
   head: () => ({
@@ -168,6 +169,9 @@ function SettingsPage() {
             <ActionButton icon={<Lock className="h-4 w-4" />} label="Passwort ändern" />
             <ActionButton icon={<Globe className="h-4 w-4" />} label="Sessions anzeigen" />
             <ActionButton icon={<Moon className="h-4 w-4" />} label="Daten exportieren" />
+          </div>
+          <div className="pt-2">
+            <SignOutButton className="w-full sm:w-auto" />
           </div>
         </SettingsCard>
       </div>

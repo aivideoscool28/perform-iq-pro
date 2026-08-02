@@ -9,6 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
 import { fetchMyProfile, resetOnboarding, resetToNewUser } from "@/lib/athletic.functions";
+import { SignOutButton } from "@/components/athleticiq/SignOutButton";
 import { isDevPreview, markTourPending } from "@/lib/tour";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
@@ -157,6 +158,11 @@ function Page() {
         { label: "Athletenprofil" },
       ]}
     >
+      {/* Account actions */}
+      <div className="flex justify-end mb-4">
+        <SignOutButton />
+      </div>
+
       {/* DEV-ONLY: reset to a brand-new-user state (keeps onboarding profile) */}
       {showDevTools && (
         <div className="fixed bottom-24 right-4 lg:bottom-6 lg:right-6 z-30">
