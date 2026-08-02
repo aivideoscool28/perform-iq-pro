@@ -24,6 +24,7 @@ function AuthPage() {
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
+  const [remember, setRemember] = useState(true);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -36,7 +37,7 @@ function AuthPage() {
     setLoading(true);
     try {
       if (mode === "signup") {
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
@@ -45,10 +46,18 @@ function AuthPage() {
           },
         });
         if (error) throw error;
+        if (data.session) {
+          setRememberMe(remember);
+          markJustLoggedIn();
+          navigate({ to: "/" });
+          return;
+        }
         toast.success("Konto erstellt! Check deine E-Mails zum Verifizieren.");
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
+        setRememberMe(remember);
+        markJustLoggedIn();
         navigate({ to: "/" });
       }
     } catch (err) {
@@ -60,6 +69,8 @@ function AuthPage() {
 
   const handleGoogle = async () => {
     setLoading(true);
+    setRememberMe(remember);
+    markJustLoggedIn();
     const res = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin });
     if (res.error) {
       toast.error(res.error instanceof Error ? res.error.message : "Google-Login fehlgeschlagen");
@@ -69,6 +80,8 @@ function AuthPage() {
     if (res.redirected) return;
     navigate({ to: "/" });
   };
+
+
 
   return (
     <div className="min-h-screen grid place-items-center px-4 relative overflow-hidden">
