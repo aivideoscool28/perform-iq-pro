@@ -11,6 +11,8 @@ import { DailyCheckin } from "@/components/athleticiq/DailyCheckin";
 import { FeatureTour } from "@/components/athleticiq/FeatureTour";
 import { isTourPending, clearTourPending } from "@/lib/tour";
 import { useAuth } from "@/hooks/use-auth";
+import { consumeJustLoggedIn } from "@/lib/auth-session";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
   Loader2, CheckCircle2, Sparkles, RotateCcw, Dumbbell, TrendingUp, Activity,
@@ -80,6 +82,27 @@ function Dashboard() {
       navigate({ to: "/onboarding" });
     }
   }, [data, navigate]);
+
+  // Greet the user once per login: new users get onboarding, returning users a welcome back.
+  const [greeted, setGreeted] = useState(false);
+  useEffect(() => {
+    if (greeted || !data?.profile) return;
+    if (!consumeJustLoggedIn()) {
+      setGreeted(true);
+      return;
+    }
+    setGreeted(true);
+    const p = data.profile as { onboarded_at?: string | null; display_name?: string | null };
+    if (p.onboarded_at) {
+      toast.success(`Willkommen zurück, ${p.display_name ?? "Athlet"}! 👋`, {
+        description: "Schön, dass du wieder da bist – setze deinen Streak fort.",
+      });
+    } else {
+      toast.success("Willkommen bei Athleticiq!", {
+        description: "Lass uns kurz dein Athletenprofil einrichten.",
+      });
+    }
+  }, [data, greeted]);
 
   // Trigger the first-run feature tour after onboarding or a dev reset.
   useEffect(() => {
