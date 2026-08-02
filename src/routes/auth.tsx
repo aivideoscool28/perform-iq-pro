@@ -130,89 +130,142 @@ function AuthPage() {
 
         <div className="glass-strong rounded-3xl p-7">
           <h1 className="text-2xl font-bold tracking-tight">
-            {mode === "login" ? "Willkommen zurück" : "Konto erstellen"}
+            {mode === "login" ? "Willkommen zurück" : mode === "signup" ? "Konto erstellen" : "Passwort vergessen"}
           </h1>
           <p className="text-sm text-muted-foreground mt-1">
-            {mode === "login" ? "Setze deinen Streak fort." : "Starte heute deinen ersten Streak."}
+            {mode === "login"
+              ? "Setze deinen Streak fort."
+              : mode === "signup"
+                ? "Starte heute deinen ersten Streak."
+                : "Wir senden dir einen Link zum Zurücksetzen."}
           </p>
 
-          <button
-            onClick={handleGoogle}
-            disabled={loading}
-            className="mt-5 w-full h-11 rounded-xl glass border border-border hover:bg-white/5 transition flex items-center justify-center gap-2 text-sm font-medium"
-          >
-            <svg viewBox="0 0 24 24" className="h-4 w-4" aria-hidden>
-              <path fill="#EA4335" d="M12 10.2v3.9h5.5c-.24 1.4-1.7 4.1-5.5 4.1-3.3 0-6-2.7-6-6.1s2.7-6.1 6-6.1c1.9 0 3.1.8 3.8 1.5l2.6-2.5C16.8 3.5 14.6 2.5 12 2.5 6.7 2.5 2.5 6.7 2.5 12s4.2 9.5 9.5 9.5c5.5 0 9.1-3.9 9.1-9.3 0-.6-.07-1.1-.2-2H12z" />
-            </svg>
-            Mit Google fortfahren
-          </button>
-
-          <div className="flex items-center gap-3 my-5 text-xs text-muted-foreground">
-            <div className="h-px bg-border flex-1" />
-            <span>oder</span>
-            <div className="h-px bg-border flex-1" />
-          </div>
-
-          <form onSubmit={handleEmail} className="space-y-3">
-            {mode === "signup" && (
-              <input
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Dein Name"
-                className="w-full h-11 px-4 rounded-xl bg-elevated border border-border focus:outline-none focus:ring-2 focus:ring-neon-cyan/50 text-sm"
-              />
-            )}
-            <input
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="E-Mail"
-              className="w-full h-11 px-4 rounded-xl bg-elevated border border-border focus:outline-none focus:ring-2 focus:ring-neon-cyan/50 text-sm"
-            />
-            <input
-              type="password"
-              required
-              minLength={6}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Passwort (min. 6 Zeichen)"
-              className="w-full h-11 px-4 rounded-xl bg-elevated border border-border focus:outline-none focus:ring-2 focus:ring-neon-cyan/50 text-sm"
-            />
-            <button
-              type="button"
-              onClick={() => setRemember(!remember)}
-              className="flex items-center gap-2.5 text-xs text-muted-foreground hover:text-foreground transition w-full py-1"
-            >
-              <span
-                className={[
-                  "h-4 w-4 rounded-[5px] border grid place-items-center transition",
-                  remember
-                    ? "bg-gradient-to-br from-neon-cyan to-neon-violet border-transparent"
-                    : "border-border",
-                ].join(" ")}
+          {sentTo ? (
+            <div className="mt-6 space-y-4">
+              <div className="rounded-2xl border border-border bg-elevated p-4 flex gap-3">
+                <MailCheck className="h-5 w-5 text-neon-cyan shrink-0 mt-0.5" />
+                <p className="text-sm text-muted-foreground">
+                  {sentTo.kind === "confirm"
+                    ? "Wir haben dir eine Bestätigungs-Mail geschickt an "
+                    : "Wir haben dir einen Reset-Link geschickt an "}
+                  <span className="text-foreground font-medium">{sentTo.email}</span>.
+                </p>
+              </div>
+              <button
+                onClick={() => switchMode("login")}
+                className="w-full h-11 rounded-xl glass border border-border hover:bg-white/5 transition text-sm font-medium"
               >
-                {remember && <Check className="h-3 w-3 text-background" strokeWidth={3} />}
-              </span>
-              Angemeldet bleiben
-            </button>
-            <button
+                Zurück zum Login
+              </button>
+            </div>
+          ) : (
+            <>
+              {mode !== "forgot" && (
+                <>
+                  <button
+                    onClick={handleGoogle}
+                    disabled={loading}
+                    className="mt-5 w-full h-11 rounded-xl glass border border-border hover:bg-white/5 transition flex items-center justify-center gap-2 text-sm font-medium"
+                  >
+                    <svg viewBox="0 0 24 24" className="h-4 w-4" aria-hidden>
+                      <path fill="#EA4335" d="M12 10.2v3.9h5.5c-.24 1.4-1.7 4.1-5.5 4.1-3.3 0-6-2.7-6-6.1s2.7-6.1 6-6.1c1.9 0 3.1.8 3.8 1.5l2.6-2.5C16.8 3.5 14.6 2.5 12 2.5 6.7 2.5 2.5 6.7 2.5 12s4.2 9.5 9.5 9.5c5.5 0 9.1-3.9 9.1-9.3 0-.6-.07-1.1-.2-2H12z" />
+                    </svg>
+                    Mit Google fortfahren
+                  </button>
 
-              type="submit"
-              disabled={loading}
-              className="w-full h-11 rounded-xl bg-gradient-to-r from-neon-cyan to-neon-violet text-background font-semibold text-sm hover:opacity-90 transition glow-cyan flex items-center justify-center gap-2 disabled:opacity-60"
-            >
-              {loading && <Loader2 className="h-4 w-4 animate-spin" />}
-              {mode === "login" ? "Anmelden" : "Konto erstellen"}
-            </button>
-          </form>
+                  <div className="flex items-center gap-3 my-5 text-xs text-muted-foreground">
+                    <div className="h-px bg-border flex-1" />
+                    <span>oder</span>
+                    <div className="h-px bg-border flex-1" />
+                  </div>
+                </>
+              )}
 
-          <button
-            onClick={() => setMode(mode === "login" ? "signup" : "login")}
-            className="mt-5 text-xs text-muted-foreground hover:text-foreground w-full text-center"
-          >
-            {mode === "login" ? "Noch kein Konto? Jetzt registrieren" : "Schon registriert? Anmelden"}
-          </button>
+              <form onSubmit={handleEmail} className={mode === "forgot" ? "space-y-3 mt-5" : "space-y-3"}>
+                {mode === "signup" && (
+                  <input
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Dein Name"
+                    className="w-full h-11 px-4 rounded-xl bg-elevated border border-border focus:outline-none focus:ring-2 focus:ring-neon-cyan/50 text-sm"
+                  />
+                )}
+                <input
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="E-Mail"
+                  className="w-full h-11 px-4 rounded-xl bg-elevated border border-border focus:outline-none focus:ring-2 focus:ring-neon-cyan/50 text-sm"
+                />
+                {mode !== "forgot" && (
+                  <div className="relative">
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      required
+                      minLength={6}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="Passwort (min. 6 Zeichen)"
+                      className="w-full h-11 pl-4 pr-11 rounded-xl bg-elevated border border-border focus:outline-none focus:ring-2 focus:ring-neon-cyan/50 text-sm"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      aria-label={showPassword ? "Passwort verbergen" : "Passwort anzeigen"}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition"
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  </div>
+                )}
+                {mode !== "forgot" && (
+                  <button
+                    type="button"
+                    onClick={() => setRemember(!remember)}
+                    className="flex items-center gap-2.5 text-xs text-muted-foreground hover:text-foreground transition w-full py-1"
+                  >
+                    <span
+                      className={[
+                        "h-4 w-4 rounded-[5px] border grid place-items-center transition",
+                        remember
+                          ? "bg-gradient-to-br from-neon-cyan to-neon-violet border-transparent"
+                          : "border-border",
+                      ].join(" ")}
+                    >
+                      {remember && <Check className="h-3 w-3 text-background" strokeWidth={3} />}
+                    </span>
+                    Angemeldet bleiben
+                  </button>
+                )}
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full h-11 rounded-xl bg-gradient-to-r from-neon-cyan to-neon-violet text-background font-semibold text-sm hover:opacity-90 transition glow-cyan flex items-center justify-center gap-2 disabled:opacity-60"
+                >
+                  {loading && <Loader2 className="h-4 w-4 animate-spin" />}
+                  {mode === "login" ? "Anmelden" : mode === "signup" ? "Konto erstellen" : "Reset-Link senden"}
+                </button>
+              </form>
+
+              {mode === "login" && (
+                <button
+                  onClick={() => switchMode("forgot")}
+                  className="mt-4 text-xs text-muted-foreground hover:text-foreground w-full text-center"
+                >
+                  Passwort vergessen?
+                </button>
+              )}
+
+              <button
+                onClick={() => switchMode(mode === "login" ? "signup" : "login")}
+                className="mt-3 text-xs text-muted-foreground hover:text-foreground w-full text-center"
+              >
+                {mode === "login" ? "Noch kein Konto? Jetzt registrieren" : "Schon registriert? Anmelden"}
+              </button>
+            </>
+          )}
+
         </div>
       </div>
     </div>
