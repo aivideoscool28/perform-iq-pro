@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { setRememberMe, markJustLoggedIn } from "@/lib/auth-session";
-import { Activity, Loader2, Check } from "lucide-react";
+import { Activity, Loader2, Check, Eye, EyeOff, MailCheck } from "lucide-react";
 import { toast } from "sonner";
 
 
@@ -19,12 +19,14 @@ export const Route = createFileRoute("/auth")({
 
 function AuthPage() {
   const navigate = useNavigate();
-  const [mode, setMode] = useState<"login" | "signup">("login");
+  const [mode, setMode] = useState<"login" | "signup" | "forgot">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
   const [remember, setRemember] = useState(true);
+  const [sentTo, setSentTo] = useState<null | { kind: "confirm" | "reset"; email: string }>(null);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -34,32 +36,52 @@ function AuthPage() {
 
   const handleEmail = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (loading) return;
     setLoading(true);
     try {
+      if (mode === "forgot") {
+        const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+          redirectTo: `${window.location.origin}/reset-password`,
+        });
+        if (error) throw error;
+        setSentTo({ kind: "reset", email: email.trim() });
+        toast.success("Reset-Link gesendet. Check deine E-Mails.");
+        return;
+      }
+
       if (mode === "signup") {
         const { data, error } = await supabase.auth.signUp({
-          email,
+          email: email.trim(),
           password,
           options: {
-            emailRedirectTo: window.location.origin,
-            data: { display_name: name || email.split("@")[0] },
+            emailRedirectTo: `${window.location.origin}/`,
+            data: { display_name: name.trim() || email.split("@")[0] },
           },
         });
         if (error) throw error;
+
         if (data.session) {
           setRememberMe(remember);
           markJustLoggedIn();
           navigate({ to: "/" });
           return;
         }
+        // Supabase returns an obfuscated user with no identities when the email exists.
+        if (data.user && (data.user.identities?.length ?? 0) === 0) {
+          toast.error("Diese E-Mail ist bereits registriert. Bitte melde dich an.");
+          setMode("login");
+          return;
+        }
+        setSentTo({ kind: "confirm", email: email.trim() });
         toast.success("Konto erstellt! Check deine E-Mails zum Verifizieren.");
-      } else {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
-        setRememberMe(remember);
-        markJustLoggedIn();
-        navigate({ to: "/" });
+        return;
       }
+
+      const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
+      if (error) throw error;
+      setRememberMe(remember);
+      markJustLoggedIn();
+      navigate({ to: "/" });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Fehler beim Login");
     } finally {
@@ -80,6 +102,13 @@ function AuthPage() {
     if (res.redirected) return;
     navigate({ to: "/" });
   };
+
+  const switchMode = (m: "login" | "signup" | "forgot") => {
+    setSentTo(null);
+    setMode(m);
+  };
+
+
 
 
 
