@@ -151,6 +151,24 @@ function AuthPage() {
               className="w-full h-11 px-4 rounded-xl bg-elevated border border-border focus:outline-none focus:ring-2 focus:ring-neon-cyan/50 text-sm"
             />
             <button
+              type="button"
+              onClick={() => setRemember(!remember)}
+              className="flex items-center gap-2.5 text-xs text-muted-foreground hover:text-foreground transition w-full py-1"
+            >
+              <span
+                className={[
+                  "h-4 w-4 rounded-[5px] border grid place-items-center transition",
+                  remember
+                    ? "bg-gradient-to-br from-neon-cyan to-neon-violet border-transparent"
+                    : "border-border",
+                ].join(" ")}
+              >
+                {remember && <Check className="h-3 w-3 text-background" strokeWidth={3} />}
+              </span>
+              Angemeldet bleiben
+            </button>
+            <button
+
               type="submit"
               disabled={loading}
               className="w-full h-11 rounded-xl bg-gradient-to-r from-neon-cyan to-neon-violet text-background font-semibold text-sm hover:opacity-90 transition glow-cyan flex items-center justify-center gap-2 disabled:opacity-60"
