@@ -2,8 +2,10 @@ import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
-import { Activity, Loader2 } from "lucide-react";
+import { setRememberMe, markJustLoggedIn } from "@/lib/auth-session";
+import { Activity, Loader2, Check } from "lucide-react";
 import { toast } from "sonner";
+
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
