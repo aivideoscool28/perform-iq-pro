@@ -264,7 +264,8 @@ function AuthPage() {
               {mode === "login" && (
                 <button
                   onClick={() => switchMode("forgot")}
-                  className="mt-4 text-xs text-muted-foreground hover:text-foreground w-full text-center"
+                  disabled={loading}
+                  className="mt-4 text-xs text-muted-foreground hover:text-foreground w-full text-center disabled:opacity-60 disabled:cursor-not-allowed"
                 >
                   Passwort vergessen?
                 </button>
@@ -272,7 +273,8 @@ function AuthPage() {
 
               <button
                 onClick={() => switchMode(mode === "login" ? "signup" : "login")}
-                className="mt-3 text-xs text-muted-foreground hover:text-foreground w-full text-center"
+                disabled={loading}
+                className="mt-3 text-xs text-muted-foreground hover:text-foreground w-full text-center disabled:opacity-60 disabled:cursor-not-allowed"
               >
                 {mode === "login" ? "Noch kein Konto? Jetzt registrieren" : "Schon registriert? Anmelden"}
               </button>
