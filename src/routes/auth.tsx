@@ -90,6 +90,7 @@ function AuthPage() {
   };
 
   const handleGoogle = async () => {
+    if (loading) return;
     setLoading(true);
     setRememberMe(remember);
     markJustLoggedIn();
