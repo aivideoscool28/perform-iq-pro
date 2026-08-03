@@ -75,7 +75,7 @@ function ResetPasswordPage() {
               : "Öffne den Link aus deiner E-Mail, um dein Passwort zu ändern."}
           </p>
 
-          <form onSubmit={submit} className="space-y-3 mt-5">
+          <form onSubmit={submit} className="space-y-3 mt-5" aria-busy={loading}>
             <div className="relative">
               <input
                 type={show ? "text" : "password"}
@@ -84,13 +84,15 @@ function ResetPasswordPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Neues Passwort (min. 6 Zeichen)"
-                className="w-full h-11 pl-4 pr-11 rounded-xl bg-elevated border border-border focus:outline-none focus:ring-2 focus:ring-neon-cyan/50 text-sm"
+                disabled={loading || !ready}
+                className="w-full h-11 pl-4 pr-11 rounded-xl bg-elevated border border-border focus:outline-none focus:ring-2 focus:ring-neon-cyan/50 text-sm disabled:opacity-60 disabled:cursor-not-allowed"
               />
               <button
                 type="button"
                 onClick={() => setShow(!show)}
                 aria-label={show ? "Passwort verbergen" : "Passwort anzeigen"}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition"
+                disabled={loading || !ready}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition disabled:opacity-60 disabled:cursor-not-allowed"
               >
                 {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
@@ -98,10 +100,10 @@ function ResetPasswordPage() {
             <button
               type="submit"
               disabled={loading || !ready}
-              className="w-full h-11 rounded-xl bg-gradient-to-r from-neon-cyan to-neon-violet text-background font-semibold text-sm hover:opacity-90 transition glow-cyan flex items-center justify-center gap-2 disabled:opacity-60"
+              className="w-full h-11 rounded-xl bg-gradient-to-r from-neon-cyan to-neon-violet text-background font-semibold text-sm hover:opacity-90 transition glow-cyan flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {loading && <Loader2 className="h-4 w-4 animate-spin" />}
-              Passwort speichern
+              {loading ? "Wird gespeichert..." : "Passwort speichern"}
             </button>
           </form>
 
