@@ -166,12 +166,17 @@ function AuthPage() {
                   <button
                     onClick={handleGoogle}
                     disabled={loading}
-                    className="mt-5 w-full h-11 rounded-xl glass border border-border hover:bg-white/5 transition flex items-center justify-center gap-2 text-sm font-medium"
+                    aria-busy={loading}
+                    className="mt-5 w-full h-11 rounded-xl glass border border-border hover:bg-white/5 transition flex items-center justify-center gap-2 text-sm font-medium disabled:opacity-60 disabled:cursor-not-allowed"
                   >
-                    <svg viewBox="0 0 24 24" className="h-4 w-4" aria-hidden>
-                      <path fill="#EA4335" d="M12 10.2v3.9h5.5c-.24 1.4-1.7 4.1-5.5 4.1-3.3 0-6-2.7-6-6.1s2.7-6.1 6-6.1c1.9 0 3.1.8 3.8 1.5l2.6-2.5C16.8 3.5 14.6 2.5 12 2.5 6.7 2.5 2.5 6.7 2.5 12s4.2 9.5 9.5 9.5c5.5 0 9.1-3.9 9.1-9.3 0-.6-.07-1.1-.2-2H12z" />
-                    </svg>
-                    Mit Google fortfahren
+                    {loading ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <svg viewBox="0 0 24 24" className="h-4 w-4" aria-hidden>
+                        <path fill="#EA4335" d="M12 10.2v3.9h5.5c-.24 1.4-1.7 4.1-5.5 4.1-3.3 0-6-2.7-6-6.1s2.7-6.1 6-6.1c1.9 0 3.1.8 3.8 1.5l2.6-2.5C16.8 3.5 14.6 2.5 12 2.5 6.7 2.5 2.5 6.7 2.5 12s4.2 9.5 9.5 9.5c5.5 0 9.1-3.9 9.1-9.3 0-.6-.07-1.1-.2-2H12z" />
+                      </svg>
+                    )}
+                    {loading ? "Mit Google fortfahren..." : "Mit Google fortfahren"}
                   </button>
 
                   <div className="flex items-center gap-3 my-5 text-xs text-muted-foreground">
