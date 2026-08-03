@@ -90,6 +90,7 @@ function AuthPage() {
   };
 
   const handleGoogle = async () => {
+    if (loading) return;
     setLoading(true);
     setRememberMe(remember);
     markJustLoggedIn();
@@ -165,12 +166,17 @@ function AuthPage() {
                   <button
                     onClick={handleGoogle}
                     disabled={loading}
-                    className="mt-5 w-full h-11 rounded-xl glass border border-border hover:bg-white/5 transition flex items-center justify-center gap-2 text-sm font-medium"
+                    aria-busy={loading}
+                    className="mt-5 w-full h-11 rounded-xl glass border border-border hover:bg-white/5 transition flex items-center justify-center gap-2 text-sm font-medium disabled:opacity-60 disabled:cursor-not-allowed"
                   >
-                    <svg viewBox="0 0 24 24" className="h-4 w-4" aria-hidden>
-                      <path fill="#EA4335" d="M12 10.2v3.9h5.5c-.24 1.4-1.7 4.1-5.5 4.1-3.3 0-6-2.7-6-6.1s2.7-6.1 6-6.1c1.9 0 3.1.8 3.8 1.5l2.6-2.5C16.8 3.5 14.6 2.5 12 2.5 6.7 2.5 2.5 6.7 2.5 12s4.2 9.5 9.5 9.5c5.5 0 9.1-3.9 9.1-9.3 0-.6-.07-1.1-.2-2H12z" />
-                    </svg>
-                    Mit Google fortfahren
+                    {loading ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <svg viewBox="0 0 24 24" className="h-4 w-4" aria-hidden>
+                        <path fill="#EA4335" d="M12 10.2v3.9h5.5c-.24 1.4-1.7 4.1-5.5 4.1-3.3 0-6-2.7-6-6.1s2.7-6.1 6-6.1c1.9 0 3.1.8 3.8 1.5l2.6-2.5C16.8 3.5 14.6 2.5 12 2.5 6.7 2.5 2.5 6.7 2.5 12s4.2 9.5 9.5 9.5c5.5 0 9.1-3.9 9.1-9.3 0-.6-.07-1.1-.2-2H12z" />
+                      </svg>
+                    )}
+                    {loading ? "Mit Google fortfahren..." : "Mit Google fortfahren"}
                   </button>
 
                   <div className="flex items-center gap-3 my-5 text-xs text-muted-foreground">
@@ -181,13 +187,14 @@ function AuthPage() {
                 </>
               )}
 
-              <form onSubmit={handleEmail} className={mode === "forgot" ? "space-y-3 mt-5" : "space-y-3"}>
+              <form onSubmit={handleEmail} className={mode === "forgot" ? "space-y-3 mt-5" : "space-y-3"} aria-busy={loading}>
                 {mode === "signup" && (
                   <input
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Dein Name"
-                    className="w-full h-11 px-4 rounded-xl bg-elevated border border-border focus:outline-none focus:ring-2 focus:ring-neon-cyan/50 text-sm"
+                    disabled={loading}
+                    className="w-full h-11 px-4 rounded-xl bg-elevated border border-border focus:outline-none focus:ring-2 focus:ring-neon-cyan/50 text-sm disabled:opacity-60 disabled:cursor-not-allowed"
                   />
                 )}
                 <input
@@ -196,7 +203,8 @@ function AuthPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="E-Mail"
-                  className="w-full h-11 px-4 rounded-xl bg-elevated border border-border focus:outline-none focus:ring-2 focus:ring-neon-cyan/50 text-sm"
+                  disabled={loading}
+                  className="w-full h-11 px-4 rounded-xl bg-elevated border border-border focus:outline-none focus:ring-2 focus:ring-neon-cyan/50 text-sm disabled:opacity-60 disabled:cursor-not-allowed"
                 />
                 {mode !== "forgot" && (
                   <div className="relative">
@@ -207,13 +215,15 @@ function AuthPage() {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="Passwort (min. 6 Zeichen)"
-                      className="w-full h-11 pl-4 pr-11 rounded-xl bg-elevated border border-border focus:outline-none focus:ring-2 focus:ring-neon-cyan/50 text-sm"
+                      disabled={loading}
+                      className="w-full h-11 pl-4 pr-11 rounded-xl bg-elevated border border-border focus:outline-none focus:ring-2 focus:ring-neon-cyan/50 text-sm disabled:opacity-60 disabled:cursor-not-allowed"
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
                       aria-label={showPassword ? "Passwort verbergen" : "Passwort anzeigen"}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition"
+                      disabled={loading}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition disabled:opacity-60 disabled:cursor-not-allowed"
                     >
                       {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
@@ -223,7 +233,8 @@ function AuthPage() {
                   <button
                     type="button"
                     onClick={() => setRemember(!remember)}
-                    className="flex items-center gap-2.5 text-xs text-muted-foreground hover:text-foreground transition w-full py-1"
+                    disabled={loading}
+                    className="flex items-center gap-2.5 text-xs text-muted-foreground hover:text-foreground transition w-full py-1 disabled:opacity-60 disabled:cursor-not-allowed"
                   >
                     <span
                       className={[
@@ -241,17 +252,20 @@ function AuthPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full h-11 rounded-xl bg-gradient-to-r from-neon-cyan to-neon-violet text-background font-semibold text-sm hover:opacity-90 transition glow-cyan flex items-center justify-center gap-2 disabled:opacity-60"
+                  className="w-full h-11 rounded-xl bg-gradient-to-r from-neon-cyan to-neon-violet text-background font-semibold text-sm hover:opacity-90 transition glow-cyan flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
                 >
                   {loading && <Loader2 className="h-4 w-4 animate-spin" />}
-                  {mode === "login" ? "Anmelden" : mode === "signup" ? "Konto erstellen" : "Reset-Link senden"}
+                  {mode === "login" && (loading ? "Wird angemeldet..." : "Anmelden")}
+                  {mode === "signup" && (loading ? "Konto wird erstellt..." : "Konto erstellen")}
+                  {mode === "forgot" && (loading ? "Link wird gesendet..." : "Reset-Link senden")}
                 </button>
               </form>
 
               {mode === "login" && (
                 <button
                   onClick={() => switchMode("forgot")}
-                  className="mt-4 text-xs text-muted-foreground hover:text-foreground w-full text-center"
+                  disabled={loading}
+                  className="mt-4 text-xs text-muted-foreground hover:text-foreground w-full text-center disabled:opacity-60 disabled:cursor-not-allowed"
                 >
                   Passwort vergessen?
                 </button>
@@ -259,7 +273,8 @@ function AuthPage() {
 
               <button
                 onClick={() => switchMode(mode === "login" ? "signup" : "login")}
-                className="mt-3 text-xs text-muted-foreground hover:text-foreground w-full text-center"
+                disabled={loading}
+                className="mt-3 text-xs text-muted-foreground hover:text-foreground w-full text-center disabled:opacity-60 disabled:cursor-not-allowed"
               >
                 {mode === "login" ? "Noch kein Konto? Jetzt registrieren" : "Schon registriert? Anmelden"}
               </button>
