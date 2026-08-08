@@ -36,7 +36,7 @@ export async function callAi(body: any) {
   const modelName =
     typeof body.model === "string"
       ? body.model.replace(/^google\//, "")
-      : "gemini-2.5-flash";
+      : "gemini-3.5-flash";
 
   const tools = Array.isArray(body.tools)
     ? Object.fromEntries(

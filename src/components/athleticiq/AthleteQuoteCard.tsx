@@ -1,6 +1,12 @@
 import { useMemo } from "react";
 import { motion } from "framer-motion";
-import { Quote, Star } from "lucide-react";
+import { Quote, Sparkles, Star } from "lucide-react";
+
+type ProfileLike = {
+  favourite_athlete?: string | null;
+  receive_news_and_motivation?: boolean | null;
+  disciplines?: string[] | null;
+};
 
 const QUOTES = [
   { text: "Du verlierst nicht, bis du aufgibst.", author: "Usain Bolt", role: "100m Weltrekordhalter" },
@@ -11,12 +17,28 @@ const QUOTES = [
   { text: "Der Wille zu gewinnen ist nichts ohne den Willen, sich vorzubereiten.", author: "Carl Lewis", role: "9× Olympiagold" },
 ];
 
-export function AthleteQuoteCard() {
-  // Rotate daily so it feels fresh without extra state.
-  const quote = useMemo(() => {
+export function AthleteQuoteCard({ profile }: { profile?: ProfileLike }) {
+  const content = useMemo(() => {
     const day = Math.floor(Date.now() / 86_400_000);
-    return QUOTES[day % QUOTES.length];
-  }, []);
+    const quote = QUOTES[day % QUOTES.length];
+    const favouriteAthlete = (profile?.favourite_athlete ?? "").trim();
+    const discipline = profile?.disciplines?.find(Boolean) ?? "Leichtathletik";
+    const showNews = profile?.receive_news_and_motivation !== false;
+    const athleteLabel = favouriteAthlete || "dein Lieblings-Athlet";
+    const items = showNews
+      ? [
+          `${athleteLabel} bleibt ein starker Fokuspunkt für mentale Stärke und Konsequenz.`,
+          `Deine Disziplin ${discipline} profitiert von klaren Standards und einem ruhigen Rhythmus.`,
+          `Motivation: ${quote.text}`,
+        ]
+      : [`${athleteLabel} erinnert dich heute an Fokus, Geduld und Selbstvertrauen.`, `Motivation: ${quote.text}`];
+
+    return {
+      quote,
+      first: items[day % items.length],
+      second: items[(day + 1) % items.length],
+    };
+  }, [profile?.favourite_athlete, profile?.receive_news_and_motivation, profile?.disciplines]);
 
   return (
     <motion.section
@@ -32,11 +54,21 @@ export function AthleteQuoteCard() {
         </div>
         <div className="min-w-0">
           <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.22em] text-neon-cyan">
-            <Star className="h-3 w-3" /> Athleten-Spruch des Tages
+            <Star className="h-3 w-3" /> Personalisierte Motivation
           </div>
-          <p className="mt-2 text-lg font-semibold leading-snug">„{quote.text}"</p>
+          <p className="mt-2 text-lg font-semibold leading-snug">„{content.quote.text}“</p>
           <div className="mt-2 text-sm text-muted-foreground">
-            <span className="text-foreground font-medium">{quote.author}</span> · {quote.role}
+            <span className="text-foreground font-medium">{content.quote.author}</span> · {content.quote.role}
+          </div>
+          <div className="mt-3 space-y-2 text-sm text-muted-foreground">
+            <div className="flex items-start gap-2 rounded-2xl bg-background/70 p-3">
+              <Sparkles className="mt-0.5 h-4 w-4 text-neon-cyan shrink-0" />
+              <span>{content.first}</span>
+            </div>
+            <div className="flex items-start gap-2 rounded-2xl bg-background/70 p-3">
+              <Star className="mt-0.5 h-4 w-4 text-neon-violet shrink-0" />
+              <span>{content.second}</span>
+            </div>
           </div>
         </div>
       </div>

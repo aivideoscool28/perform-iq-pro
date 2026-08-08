@@ -1,3 +1,4 @@
+import {useAuth} from "@/hooks/use-auth";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -83,6 +84,7 @@ function EditableText({
 }
 
 function Page() {
+  const { session, loading } = useAuth();
   const [editing, setEditing] = useState(false);
   const [state, setState] = useState<State>(defaults);
   const [devResetOpen, setDevResetOpen] = useState(false);
@@ -93,9 +95,10 @@ function Page() {
   const resetNewUserFn = useServerFn(resetToNewUser);
   const showDevTools = isDevPreview();
 
-  const { data: profileData } = useQuery({
+  const { data: profileData, isLoading: profileLoading } = useQuery({
     queryKey: ["my-profile"],
     queryFn: () => fetchProfileFn(),
+    enabled: !!session,
   });
   const profile = profileData?.profile;
   const avatarUrl = profileData?.avatar_signed_url ?? null;

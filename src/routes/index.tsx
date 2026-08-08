@@ -185,7 +185,7 @@ function Dashboard() {
           </section>
 
           {/* Favorite athlete quote / news */}
-          <AthleteQuoteCard />
+          <AthleteQuoteCard profile={profile as { favourite_athlete?: string | null; receive_news_and_motivation?: boolean | null; disciplines?: string[] | null } | undefined} />
 
           {/* Trainings diese Woche */}
           <section data-tour="performance" className="mb-6">

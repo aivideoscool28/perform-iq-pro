@@ -44,7 +44,7 @@ export const generateTrainingPlan = createServerFn({ method: "POST" })
   .inputValidator((input) => InputSchema.parse(input))
   .handler(async ({ data }) => {
     const json = await callAi({
-      model: "google/gemini-2.5-flash",
+      model: "google/gemini-3.5-flash",
       messages: [
         {
           role: "system",

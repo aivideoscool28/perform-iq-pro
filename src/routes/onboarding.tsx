@@ -25,6 +25,8 @@ type Step =
   | { key: "experience"; kind: "single"; q: string; options: string[] }
   | { key: "days"; kind: "single"; q: string; options: string[] }
   | { key: "setup"; kind: "single"; q: string; options: string[] }
+  | { key: "favouriteAthlete"; kind: "athlete"; q: string; placeholder: string }
+  | { key: "receiveNewsAndMotivation"; kind: "boolean"; q: string; options: string[] }
   | { key: "injuries"; kind: "text-skip"; q: string; placeholder: string };
 
 const STEPS: Step[] = [
@@ -52,7 +54,22 @@ const STEPS: Step[] = [
   { key: "experience", kind: "single", q: "Wie lange machst du schon Leichtathletik?", options: ["< 1 Jahr", "1–3 Jahre", "3–5 Jahre", "5–10 Jahre", "10+ Jahre"] },
   { key: "days", kind: "single", q: "Wie viele Tage pro Woche trainierst du normalerweise?", options: ["1", "2", "3", "4", "5", "6", "7"] },
   { key: "setup", kind: "single", q: "Trainierst du mit einem Coach oder alleine?", options: ["Coach", "Verein", "Beides", "Alleine"] },
+  { key: "favouriteAthlete", kind: "athlete", q: "Wer ist dein Lieblings-Athlet oder deine Lieblings-Athletin?", placeholder: "z.B. Mondo Duplantis" },
+  { key: "receiveNewsAndMotivation", kind: "boolean", q: "Möchtest du News und Motivation rund um die Leichtathletik erhalten?", options: ["Ja", "Nein"] },
   { key: "injuries", kind: "text-skip", q: "Letzte Frage: Gibt es Verletzungen oder körperliche Einschränkungen, die ich kennen sollte?", placeholder: "Beschreibe kurz oder überspringe…" },
+];
+
+const ATHLETE_SUGGESTIONS = [
+  "Mondo Duplantis",
+  "Sydney McLaughlin-Levrone",
+  "Faith Kipyegon",
+  "Yaroslava Mahuchikh",
+  "Karsten Warholm",
+  "Noah Lyles",
+  "Shelly-Ann Fraser-Pryce",
+  "Armand Duplantis",
+  "Elaine Thompson-Herah",
+  "Halimah Nakaayi",
 ];
 
 const AFFIRMATIONS = [
@@ -107,7 +124,7 @@ function OnboardingPage() {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [bubbles, goalThinking]);
 
-  const step = STEPS[stepIdx];
+  const step = STEPS[stepIdx] ?? STEPS[STEPS.length - 1];
   const isDone = stepIdx >= STEPS.length;
 
   const saveMut = useMutation({
@@ -116,25 +133,34 @@ function OnboardingPage() {
       qc.setQueryData(["dashboard"], (old: unknown) => {
         if (!old || typeof old !== "object") return old;
         const o = old as { profile?: Record<string, unknown> };
-        return { ...o, profile: { ...(o.profile ?? {}), onboarded_at: new Date().toISOString() } };
+        return {
+          ...o,
+          profile: { ...(o.profile ?? {}), onboarded_at: new Date().toISOString() },
+        };
       });
       await qc.refetchQueries({ queryKey: ["dashboard"] });
       markTourPending();
       toast.success("Profil gespeichert!");
-      navigate({ to: "/" });
+      await navigate({ to: "/", replace: true });
     },
-    onError: (e) => toast.error(e instanceof Error ? e.message : "Speichern fehlgeschlagen"),
+    onError: (e) => {
+      console.error("SAVE ERROR:", e);
+      alert(e instanceof Error ? e.message : JSON.stringify(e));
+    },
   });
 
-  const pushUser = (t: string, avatar?: string) => setBubbles((b) => [...b, { role: "user", text: t, avatar }]);
+  const pushUser = (t: string, avatar?: string) =>
+    setBubbles((b) => [...b, { role: "user", text: t, avatar }]);
   const pushAi = (t: string) => setBubbles((b) => [...b, { role: "ai", text: t }]);
 
   const goNext = (key: string, value: unknown, customAffirm?: string) => {
     const newAnswers = { ...answers, [key]: value };
     setAnswers(newAnswers);
     const next = stepIdx + 1;
+
     setTimeout(() => {
       pushAi(customAffirm ?? AFFIRMATIONS[stepIdx % AFFIRMATIONS.length]);
+
       setTimeout(() => {
         if (next < STEPS.length) {
           pushAi(STEPS[next].q);
@@ -143,13 +169,43 @@ function OnboardingPage() {
           setMulti([]);
         } else {
           setStepIdx(next);
-          const name = (newAnswers.name as string) || "Athlet";
-          const discs = (newAnswers.disciplines as string[])?.join(", ") || "—";
-          const goal = (newAnswers.goal_text as string) || "—";
-          pushAi(`Hier ist dein Athleten-Profil — **${name}**, ${discs}, Ziel: ${goal}. Lass uns starten! 🚀`);
+
+          const finalAnswers = {
+            ...newAnswers,
+          };
+
+          pushAi("Perfekt! Ich richte jetzt dein persönliches Dashboard ein... 🚀");
+
+          setTimeout(async () => {
+            try {
+              const days = parseInt((finalAnswers.days as string) || "0", 10);
+
+              await saveMut.mutateAsync({
+                data: {
+                  display_name: (finalAnswers.name as string) ?? "Athlet",
+                  age: (finalAnswers.age as number) ?? null,
+                  disciplines: (finalAnswers.disciplines as string[]) ?? [],
+                  goal_text: (finalAnswers.goal_text as string) ?? "",
+                  experience: (finalAnswers.experience as string) ?? "",
+                  training_days_per_week: days || 3,
+                  training_setup: (finalAnswers.setup as string) ?? "",
+                  injuries: (finalAnswers.injuries as string | null) ?? null,
+                  height_cm: (finalAnswers.height_cm as number) ?? null,
+                  weight_kg: (finalAnswers.weight_kg as number) ?? null,
+                  avatar_url: (finalAnswers.avatar_path as string | null) ?? null,
+                  favouriteAthlete: (finalAnswers.favouriteAthlete as string | null) ?? null,
+                  receiveNewsAndMotivation:
+                    (finalAnswers.receiveNewsAndMotivation as boolean | null) ?? true,
+                },
+              });
+            } catch (error) {
+              console.error("ONBOARDING ERROR:", error);
+              alert(error instanceof Error ? error.message : JSON.stringify(error));
+            }
+          }, 800);
         }
-      }, 400);
-    }, 250);
+      }, 800);
+    }, 0);
   };
 
   // ---------- handlers ----------
@@ -219,6 +275,18 @@ function OnboardingPage() {
     goNext(step.key, opt);
   };
 
+  const submitAthlete = () => {
+    const value = text.trim();
+    if (!value) return toast.error("Gib einen Athleten an oder wähle einen Vorschlag.");
+    pushUser(value);
+    goNext(step.key, value);
+  };
+
+  const submitBoolean = (value: boolean) => {
+    pushUser(value ? "Ja" : "Nein");
+    goNext(step.key, value);
+  };
+
   const submitInjuries = (skip: boolean) => {
     if (skip) {
       pushUser("Keine — alles gut!");
@@ -278,25 +346,6 @@ function OnboardingPage() {
       pushUser("📸 Profilfoto hochgeladen", avatarPreview ?? undefined);
       goNext("avatar_path", avatarPath);
     }
-  };
-
-  const finish = () => {
-    const days = parseInt((answers.days as string) || "0", 10);
-    saveMut.mutate({
-      data: {
-        display_name: (answers.name as string) ?? "Athlet",
-        age: (answers.age as number) ?? null,
-        disciplines: (answers.disciplines as string[]) ?? [],
-        goal_text: (answers.goal_text as string) ?? "",
-        experience: (answers.experience as string) ?? "",
-        training_days_per_week: days || 3,
-        training_setup: (answers.setup as string) ?? "",
-        injuries: (answers.injuries as string | null) ?? null,
-        height_cm: (answers.height_cm as number) ?? null,
-        weight_kg: (answers.weight_kg as number) ?? null,
-        avatar_url: (answers.avatar_path as string | null) ?? null,
-      },
-    });
   };
 
   if (loading || !session) {
@@ -534,8 +583,62 @@ function OnboardingPage() {
           {!isDone && step.kind === "single" && (
             <div className="flex flex-wrap gap-2">
               {step.options.map((o) => (
-                <button key={o} onClick={() => submitSingle(o)}
-                  className="px-4 h-10 rounded-full text-sm border border-border hover:bg-white/5 transition">
+                <button
+                  key={o}
+                  onClick={() => submitSingle(o)}
+                  className="px-4 h-10 rounded-full text-sm border border-border hover:bg-white/5 transition"
+                >
+                  {o}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {!isDone && step.kind === "athlete" && (
+            <div className="space-y-3">
+              <form onSubmit={(e) => { e.preventDefault(); submitAthlete(); }} className="flex gap-2">
+                <input
+                  autoFocus
+                  value={text}
+                  onChange={(e) => setText(e.target.value)}
+                  placeholder={step.placeholder}
+                  className="flex-1 h-11 px-4 rounded-xl bg-elevated border border-border focus:outline-none focus:ring-2 focus:ring-neon-cyan/50 text-sm"
+                />
+                <button className="h-11 w-11 grid place-items-center rounded-xl bg-gradient-to-r from-neon-cyan to-neon-violet text-background">
+                  <Send className="h-4 w-4" />
+                </button>
+              </form>
+              <div className="flex flex-wrap gap-2">
+                {ATHLETE_SUGGESTIONS.filter(
+                  (a) => a.toLowerCase().includes(text.trim().toLowerCase()) || !text.trim(),
+                )
+                  .slice(0, 5)
+                  .map((option) => (
+                    <button
+                      key={option}
+                      type="button"
+                      onClick={() => {
+                        setText(option);
+                        pushUser(option);
+                        goNext(step.key, option);
+                      }}
+                      className="px-3 h-9 rounded-full text-xs border border-border hover:bg-white/5 transition"
+                    >
+                      {option}
+                    </button>
+                  ))}
+              </div>
+            </div>
+          )}
+
+          {!isDone && step.kind === "boolean" && (
+            <div className="flex flex-wrap gap-2">
+              {step.options.map((o) => (
+                <button
+                  key={o}
+                  onClick={() => submitBoolean(o === "Ja")}
+                  className="px-4 h-10 rounded-full text-sm border border-border hover:bg-white/5 transition"
+                >
                   {o}
                 </button>
               ))}
@@ -546,27 +649,45 @@ function OnboardingPage() {
             <div className="space-y-2">
               <form onSubmit={(e) => { e.preventDefault(); submitInjuries(false); }} className="flex gap-2">
                 <input
-                  autoFocus value={text} onChange={(e) => setText(e.target.value)} placeholder={step.placeholder}
+                  autoFocus
+                  value={text}
+                  onChange={(e) => setText(e.target.value)}
+                  placeholder={step.placeholder}
                   className="flex-1 h-11 px-4 rounded-xl bg-elevated border border-border focus:outline-none focus:ring-2 focus:ring-neon-cyan/50 text-sm"
                 />
                 <button className="h-11 w-11 grid place-items-center rounded-xl bg-gradient-to-r from-neon-cyan to-neon-violet text-background">
                   <Send className="h-4 w-4" />
                 </button>
               </form>
-              <button type="button" onClick={() => submitInjuries(true)}
-                className="text-xs text-muted-foreground hover:text-foreground">
+              <button
+                type="button"
+                onClick={() => submitInjuries(true)}
+                className="text-xs text-muted-foreground hover:text-foreground"
+              >
                 Überspringen
               </button>
             </div>
           )}
 
           {isDone && (
-            <button onClick={finish} disabled={saveMut.isPending}
-              className="w-full h-12 rounded-xl bg-gradient-to-r from-neon-cyan to-neon-violet text-background font-semibold text-sm glow-cyan flex items-center justify-center gap-2 disabled:opacity-60">
-              {saveMut.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
-              Zum Dashboard
-            </button>
+            <div className="space-y-3 py-4 text-center">
+              <div className="flex items-center justify-center gap-3 text-sm text-muted-foreground">
+                <Loader2 className="h-5 w-5 animate-spin text-neon-cyan" />
+                <span>Dein persönliches Dashboard wird eingerichtet...</span>
+              </div>
+              {saveMut.isError && (
+                <div className="text-sm text-destructive">
+                  Fehler beim Speichern. Bitte lade die Seite neu oder versuche es noch einmal.
+                </div>
+              )}
+              {saveMut.isSuccess && (
+                <div className="text-sm text-foreground">
+                  Weiterleitung zum Dashboard…
+                </div>
+              )}
+            </div>
           )}
+
         </div>
       </div>
     </div>

@@ -1,7 +1,6 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable/index";
 import { setRememberMe, markJustLoggedIn } from "@/lib/auth-session";
 import { Activity, Loader2, Check, Eye, EyeOff, MailCheck } from "lucide-react";
 import { toast } from "sonner";
@@ -26,7 +25,7 @@ function AuthPage() {
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
   const [remember, setRemember] = useState(true);
-  const [sentTo, setSentTo] = useState<null | { kind: "confirm" | "reset"; email: string }>(null);
+  const [sentTo, setSentTo] = useState<null | { kind: "reset"; email: string }>(null);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -63,6 +62,7 @@ function AuthPage() {
         if (data.session) {
           setRememberMe(remember);
           markJustLoggedIn();
+          toast.success("Konto erstellt und erfolgreich eingeloggt. Willkommen! 🎉");
           navigate({ to: "/" });
           return;
         }
@@ -72,15 +72,34 @@ function AuthPage() {
           setMode("login");
           return;
         }
-        setSentTo({ kind: "confirm", email: email.trim() });
-        toast.success("Konto erstellt! Check deine E-Mails zum Verifizieren.");
+
+        const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+          email: email.trim(),
+          password,
+        });
+        if (signInError) throw signInError;
+
+        if (signInData.session) {
+          setRememberMe(remember);
+          markJustLoggedIn();
+          toast.success("Konto erstellt und erfolgreich eingeloggt. Willkommen! 🎉");
+          navigate({ to: "/" });
+          return;
+        }
+
+        toast.error("Konto konnte nicht angemeldet werden. Bitte versuche es erneut.");
         return;
       }
 
-      const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
+      const { data, error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
       if (error) throw error;
+      if (!data.session) {
+        toast.error("Login fehlgeschlagen. Bitte prüfe deine Zugangsdaten.");
+        return;
+      }
       setRememberMe(remember);
       markJustLoggedIn();
+      toast.success("Erfolgreich angemeldet. Schön dich zu sehen! 👋");
       navigate({ to: "/" });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Fehler beim Login");
@@ -91,16 +110,27 @@ function AuthPage() {
 
   const handleGoogle = async () => {
     setLoading(true);
-    setRememberMe(remember);
-    markJustLoggedIn();
-    const res = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin });
-    if (res.error) {
-      toast.error(res.error instanceof Error ? res.error.message : "Google-Login fehlgeschlagen");
+
+    try {
+      setRememberMe(remember);
+      markJustLoggedIn();
+
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: `${window.location.origin}/`,
+        },
+      });
+
+      if (error) throw error;
+
+      // Supabase redirects automatically.
+    } catch (err) {
+      toast.error(
+        err instanceof Error ? err.message : "Google-Login fehlgeschlagen"
+      );
       setLoading(false);
-      return;
     }
-    if (res.redirected) return;
-    navigate({ to: "/" });
   };
 
   const switchMode = (m: "login" | "signup" | "forgot") => {
@@ -145,10 +175,8 @@ function AuthPage() {
               <div className="rounded-2xl border border-border bg-elevated p-4 flex gap-3">
                 <MailCheck className="h-5 w-5 text-neon-cyan shrink-0 mt-0.5" />
                 <p className="text-sm text-muted-foreground">
-                  {sentTo.kind === "confirm"
-                    ? "Wir haben dir eine Bestätigungs-Mail geschickt an "
-                    : "Wir haben dir einen Reset-Link geschickt an "}
-                  <span className="text-foreground font-medium">{sentTo.email}</span>.
+                  Wir haben dir einen Reset-Link geschickt an
+                  <span className="text-foreground font-medium"> {sentTo.email}</span>.
                 </p>
               </div>
               <button

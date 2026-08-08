@@ -1,8 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { AppShell } from "@/components/athleticiq/AppShell";
-import { Bell, Globe, Lock, Moon, Palette, Shield } from "lucide-react";
+import { Bell, Globe, Lock, Moon, Palette, Shield, Sparkles } from "lucide-react";
 import { SignOutButton } from "@/components/athleticiq/SignOutButton";
+import { fetchMyProfile, updateProfilePersonalization } from "@/lib/athletic.functions";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/settings")({
   head: () => ({
@@ -43,7 +47,30 @@ const DEFAULTS: Settings = {
 };
 
 function SettingsPage() {
+  const qc = useQueryClient();
+  const fetchProfileFn = useServerFn(fetchMyProfile);
+  const updatePersonalizationFn = useServerFn(updateProfilePersonalization);
   const [settings, setSettings] = useState<Settings>(DEFAULTS);
+  const [favoriteAthlete, setFavoriteAthlete] = useState("");
+  const [receiveNewsAndMotivation, setReceiveNewsAndMotivation] = useState(true);
+
+  const { data: profileData } = useQuery({
+    queryKey: ["my-profile"],
+    queryFn: () => fetchProfileFn(),
+  });
+
+  const profile = (profileData?.profile as { favourite_athlete?: string | null; receive_news_and_motivation?: boolean | null } | undefined) ?? undefined;
+
+  const savePersonalization = useMutation({
+    mutationFn: (vars: { favouriteAthlete: string; receiveNewsAndMotivation: boolean }) =>
+      updatePersonalizationFn({ data: vars }),
+    onSuccess: async () => {
+      await qc.invalidateQueries({ queryKey: ["my-profile"] });
+      await qc.invalidateQueries({ queryKey: ["dashboard"] });
+      toast.success("Persönliche Einstellungen gespeichert.");
+    },
+    onError: (e) => toast.error(e instanceof Error ? e.message : "Speichern fehlgeschlagen"),
+  });
 
   useEffect(() => {
     try {
@@ -62,8 +89,24 @@ function SettingsPage() {
     }
   }, [settings]);
 
+  useEffect(() => {
+    if (profile) {
+      setFavoriteAthlete(profile.favourite_athlete ?? "");
+      setReceiveNewsAndMotivation(profile.receive_news_and_motivation !== false);
+    }
+  }, [profile]);
+
   const update = <K extends keyof Settings>(key: K, value: Settings[K]) =>
     setSettings((s) => ({ ...s, [key]: value }));
+
+  const saveFavoriteAthlete = () => {
+    savePersonalization.mutate({ favouriteAthlete: favoriteAthlete.trim(), receiveNewsAndMotivation });
+  };
+
+  const toggleNews = (value: boolean) => {
+    setReceiveNewsAndMotivation(value);
+    savePersonalization.mutate({ favouriteAthlete: favoriteAthlete.trim(), receiveNewsAndMotivation: value });
+  };
 
   return (
     <AppShell
@@ -76,6 +119,43 @@ function SettingsPage() {
       ]}
     >
       <div className="grid gap-6 max-w-3xl">
+        <SettingsCard
+          icon={<Sparkles className="h-5 w-5 text-neon-cyan" />}
+          title="Personalisierung"
+          description="Lieblings-Athlet und Motivation auf dem Dashboard"
+        >
+          <div className="space-y-3">
+            <div>
+              <div className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground mb-2">
+                Lieblings-Athlet
+              </div>
+              <input
+                value={favoriteAthlete}
+                onChange={(e) => setFavoriteAthlete(e.target.value)}
+                placeholder="z.B. Mondo Duplantis"
+                className="h-11 w-full rounded-2xl border border-border bg-background/70 px-3 text-sm outline-none focus:ring-2 focus:ring-neon-cyan/40"
+              />
+              <div className="mt-2 flex items-center justify-between gap-3">
+                <p className="text-xs text-muted-foreground">Diese Auswahl beeinflusst die Motivation und Inhalte auf dem Dashboard.</p>
+                <button
+                  type="button"
+                  onClick={saveFavoriteAthlete}
+                  disabled={savePersonalization.isPending}
+                  className="rounded-xl border border-border px-3 py-2 text-xs font-medium transition hover:border-neon-cyan/40 disabled:opacity-60"
+                >
+                  Speichern
+                </button>
+              </div>
+            </div>
+            <Toggle
+              label="News & Motivation"
+              hint="Zeige passende Inhalte rund um deinen Favoriten und deine Disziplin"
+              value={receiveNewsAndMotivation}
+              onChange={toggleNews}
+            />
+          </div>
+        </SettingsCard>
+
         <SettingsCard
           icon={<Bell className="h-5 w-5 text-neon-cyan" />}
           title="Benachrichtigungen"

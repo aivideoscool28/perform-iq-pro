@@ -26,7 +26,7 @@ export const logWorkoutFromText = createServerFn({ method: "POST" })
     const { supabase, userId } = context;
 
     const ai = await callAi({
-      model: "google/gemini-2.5-flash",
+      model: "google/gemini-3.5-flash",
       messages: [
         {
           role: "system",
@@ -114,7 +114,7 @@ export const logWorkoutFromText = createServerFn({ method: "POST" })
 
 async function generateAnalysisInternal(workout: Partial<ParsedWorkout>, raw?: string | null): Promise<AnalysisOutput> {
   const ai = await callAi({
-    model: "google/gemini-2.5-flash",
+    model: "google/gemini-3.5-flash",
     messages: [
       {
         role: "system",
@@ -323,7 +323,7 @@ export const generateGoalReply = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     try {
       const ai = await callAi({
-        model: "google/gemini-2.5-flash",
+        model: "google/gemini-3.5-flash",
         messages: [
           {
             role: "system",
@@ -444,7 +444,7 @@ export const analyzeFoodImage = createServerFn({ method: "POST" })
   )
   .handler(async ({ data }) => {
     const ai = await callAi({
-      model: "google/gemini-2.5-flash",
+      model: "google/gemini-3.5-flash",
       messages: [
         {
           role: "system",
@@ -562,7 +562,7 @@ export const saveDailyCheckin = createServerFn({ method: "POST" })
     let ai_summary = "Tagescheck gespeichert. Stark, dass du dranbleibst!";
     try {
       const ai = await callAi({
-        model: "google/gemini-2.5-flash",
+        model: "google/gemini-3.5-flash",
         messages: [
           {
             role: "system",
@@ -650,7 +650,7 @@ async function generateCheckinAnalysis(
   try {
     console.log("CHECK-IN DATA SENT TO AI:", c);
     const ai = await callAi({
-      model: "google/gemini-2.5-flash",
+      model: "google/gemini-3.5-flash",
       messages: [
         {
           role: "system",
