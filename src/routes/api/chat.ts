@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { convertToModelMessages, streamText, type UIMessage } from "ai";
-import { createLovableAiGatewayProvider } from "@/lib/ai-gateway.server";
+import { createAiProvider } from "@/lib/ai-gateway.server";
 
 const SYSTEM_PROMPT = `Du bist der Athleticiq KI-Coach — ein persönlicher Performance-Assistent für Leichtathletinnen und Leichtathleten.
 
@@ -10,21 +10,37 @@ export const Route = createFileRoute("/api/chat")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        const { messages } = (await request.json()) as { messages?: UIMessage[] };
+        const { messages } = (await request.json()) as {
+          messages?: UIMessage[];
+        };
+
         if (!Array.isArray(messages)) {
           return new Response("messages required", { status: 400 });
         }
-        const key = process.env.LOVABLE_API_KEY;
-        if (!key) return new Response("Missing LOVABLE_API_KEY", { status: 500 });
 
-        const gateway = createLovableAiGatewayProvider(key);
+        const key = process.env.GEMINI_API_KEY;
+
+        if (!key) {
+          return new Response("Missing GEMINI_API_KEY", { status: 500 });
+        }
+
+        const google = createAiProvider(key);
+
         const result = streamText({
-          model: gateway("google/gemini-3-flash-preview"),
+          model: google("gemini-2.5-flash"),
           system: SYSTEM_PROMPT,
           messages: await convertToModelMessages(messages),
         });
-        return result.toUIMessageStreamResponse({ originalMessages: messages });
+
+        return result.toUIMessageStreamResponse({
+          originalMessages: messages,
+        });
       },
     },
   },
 });
+
+// AI Coach API Route
+// Receives athlete chat messages, adds the Athletic IQ system prompt,
+// connects directly to Gemini through our server-side AI provider,
+// and streams the Gemini response back to the frontend.
