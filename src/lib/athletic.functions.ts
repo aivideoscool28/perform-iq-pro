@@ -1,8 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-
-const LOVABLE_AI = "https://ai.gateway.lovable.dev/v1/chat/completions";
+import { callAi } from "@/lib/ai-gateway.server";
 
 interface ParsedWorkout {
   summary: string;
@@ -17,20 +16,7 @@ interface AnalysisOutput {
   improvements: string[];
 }
 
-async function callAi(body: unknown) {
-  const apiKey = process.env.LOVABLE_API_KEY;
-  if (!apiKey) throw new Error("LOVABLE_API_KEY missing");
-  const res = await fetch(LOVABLE_AI, {
-    method: "POST",
-    headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  });
-  if (!res.ok) {
-    const t = await res.text();
-    throw new Error(`AI error ${res.status}: ${t.slice(0, 200)}`);
-  }
-  return res.json();
-}
+
 
 /* ------------------------ LOG WORKOUT FROM CHAT ------------------------ */
 export const logWorkoutFromText = createServerFn({ method: "POST" })
@@ -277,6 +263,8 @@ export const saveOnboarding = createServerFn({ method: "POST" })
       height_cm: z.number().min(50).max(260).nullable(),
       weight_kg: z.number().min(20).max(300).nullable(),
       avatar_url: z.string().max(500).optional().nullable(),
+      favouriteAthlete: z.string().max(100).optional().nullable(),
+      receiveNewsAndMotivation: z.boolean().optional().nullable(),
     }).parse(input),
   )
   .handler(async ({ data, context }) => {
@@ -296,7 +284,31 @@ export const saveOnboarding = createServerFn({ method: "POST" })
         height_cm: data.height_cm,
         weight_kg: data.weight_kg,
         avatar_url: data.avatar_url ?? null,
+        favourite_athlete: data.favouriteAthlete?.trim() ? data.favouriteAthlete.trim() : null,
+        receive_news_and_motivation: data.receiveNewsAndMotivation ?? true,
         onboarded_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", userId);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const updateProfilePersonalization = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input) =>
+    z.object({
+      favouriteAthlete: z.string().max(100).optional().nullable(),
+      receiveNewsAndMotivation: z.boolean().optional(),
+    }).parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context;
+    const { error } = await supabase
+      .from("profiles")
+      .update({
+        favourite_athlete: data.favouriteAthlete?.trim() ? data.favouriteAthlete.trim() : null,
+        receive_news_and_motivation: data.receiveNewsAndMotivation ?? true,
         updated_at: new Date().toISOString(),
       })
       .eq("id", userId);
@@ -623,7 +635,8 @@ export const saveDailyCheckin = createServerFn({ method: "POST" })
             .single();
           boardId = b?.id ?? null;
         }
-      } catch {
+      } catch (error) {
+        console.error("generateCheckinAnalysis FAILED:", error);
         // non-fatal: check-in already saved
       }
     }
@@ -635,6 +648,7 @@ async function generateCheckinAnalysis(
   c: z.infer<typeof checkinSchema>,
 ): Promise<AnalysisOutput> {
   try {
+    console.log("CHECK-IN DATA SENT TO AI:", c);
     const ai = await callAi({
       model: "google/gemini-2.5-flash",
       messages: [
@@ -667,11 +681,12 @@ async function generateCheckinAnalysis(
     });
     const call = ai?.choices?.[0]?.message?.tool_calls?.[0];
     if (call) return JSON.parse(call.function.arguments);
-  } catch {
+  } catch (error) {
+    console.error("Check-in AI analysis failed:", error);
     // fallthrough to fallback
   }
   return {
-    positives: ["Session sauber dokumentiert — gute Selbstreflexion.", "Du bleibst dran, das zahlt sich aus."],
+    positives: ["Session sehr komisch dokumentiert — gute Selbstreflexion.", "Du bleibst dran, das zahlt sich aus."],
     negatives: ["Mehr Details würden die Analyse präziser machen."],
     improvements: ["Nächstes Mal RPE direkt nach der Session notieren.", "Hydration über den Tag verteilt tracken."],
   };
