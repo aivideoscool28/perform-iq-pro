@@ -24,7 +24,6 @@ const nav: NavItem[] = [
   { to: "/profile", label: "Profil", icon: User },
   { to: "/training", label: "Training", icon: Dumbbell },
   { to: "/workout-analysis", label: "Workout Analysis", icon: BarChart3, tour: "nav-analysis" },
-  { to: "/diagnostics", label: "Diagnostik", icon: LineChart },
   { to: "/video", label: "Videoanalyse", icon: Video },
   { to: "/nutrition", label: "Food Scanner", icon: Scan },
   { to: "/recovery", label: "Regeneration", icon: HeartPulse },

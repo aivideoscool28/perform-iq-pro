@@ -16,16 +16,13 @@ import {
 } from "@/components/ui/dialog";
 import {
   Upload,
-  Play,
   Activity,
   Gauge,
   Sparkles,
-  Crosshair,
   AlertTriangle,
   CheckCircle2,
   TrendingUp,
   ChevronRight,
-  Loader2,
 } from "lucide-react";
 
 export const Route = createFileRoute("/video")({ component: Page });
@@ -176,7 +173,6 @@ async function extractFrames(file: File, count = 6): Promise<{ frames: { t: numb
     video.preload = "auto";
     video.muted = true;
     video.playsInline = true;
-    // Do NOT set crossOrigin for a same-origin blob URL — it can taint the canvas on some browsers.
     video.src = url;
 
     let settled = false;
@@ -188,17 +184,16 @@ async function extractFrames(file: File, count = 6): Promise<{ frames: { t: numb
       reject(new Error(msg));
     };
 
-    // Overall safety timeout so the UI never hangs forever.
     const hardTimeout = setTimeout(
       () => fail("Zeitüberschreitung beim Lesen des Videos. Bitte ein anderes Format (MP4/H.264) versuchen."),
       45000,
     );
 
-    // Many phone/streamed videos report duration = Infinity until you seek past the end.
     const resolveDuration = (): Promise<number> =>
       new Promise((res) => {
         const d = video.duration;
         if (isFinite(d) && d > 0) return res(d);
+
         const onDur = () => {
           if (isFinite(video.duration) && video.duration > 0) {
             video.removeEventListener("durationchange", onDur);
@@ -206,14 +201,15 @@ async function extractFrames(file: File, count = 6): Promise<{ frames: { t: numb
             res(video.duration);
           }
         };
+
         video.addEventListener("durationchange", onDur);
-        // Nudge the browser to compute the real duration.
+
         try {
           video.currentTime = 1e6;
         } catch {
           /* ignore */
         }
-        // Fallback after 4s: give up on exact duration.
+
         setTimeout(() => {
           video.removeEventListener("durationchange", onDur);
           res(isFinite(video.duration) && video.duration > 0 ? video.duration : 0);
@@ -226,12 +222,15 @@ async function extractFrames(file: File, count = 6): Promise<{ frames: { t: numb
           video.removeEventListener("seeked", onSeeked);
           rej(new Error("seek-timeout"));
         }, 8000);
+
         const onSeeked = () => {
           clearTimeout(to);
           video.removeEventListener("seeked", onSeeked);
           res();
         };
+
         video.addEventListener("seeked", onSeeked, { once: true });
+
         try {
           video.currentTime = t;
         } catch (e) {
@@ -243,6 +242,7 @@ async function extractFrames(file: File, count = 6): Promise<{ frames: { t: numb
     video.onloadedmetadata = async () => {
       try {
         const duration = await resolveDuration();
+
         if (!duration || duration < 0.1) {
           return fail("Videodauer konnte nicht ermittelt werden. Bitte ein anderes Video versuchen.");
         }
@@ -252,8 +252,10 @@ async function extractFrames(file: File, count = 6): Promise<{ frames: { t: numb
         const vw = video.videoWidth || maxW;
         const vh = video.videoHeight || 360;
         const scale = Math.min(1, maxW / vw);
+
         canvas.width = Math.max(2, Math.round(vw * scale));
         canvas.height = Math.max(2, Math.round(vh * scale));
+
         const ctx = canvas.getContext("2d");
         if (!ctx) return fail("Canvas nicht verfügbar.");
 
@@ -265,12 +267,11 @@ async function extractFrames(file: File, count = 6): Promise<{ frames: { t: numb
         for (const t of times) {
           try {
             await seekTo(t);
-            // Give the frame a tick to paint before drawing.
             await new Promise((r) => requestAnimationFrame(() => r(null)));
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
             frames.push({ t, image: canvas.toDataURL("image/jpeg", 0.72) });
           } catch {
-            // Skip a bad frame instead of failing the whole run.
+            /* skip bad frame */
           }
         }
 
@@ -292,12 +293,9 @@ async function extractFrames(file: File, count = 6): Promise<{ frames: { t: numb
   });
 }
 
-
 function Page() {
   const [open, setOpen] = useState<Finding | null>(null);
-
   const [scoreOpen, setScoreOpen] = useState(false);
-
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [videoName, setVideoName] = useState<string | null>(null);
   const [analysisState, setAnalysisState] = useState<"idle" | "extracting" | "analyzing" | "done" | "error">("idle");
@@ -305,20 +303,18 @@ function Page() {
   const [analysisStage, setAnalysisStage] = useState<string>("");
   const [analysisError, setAnalysisError] = useState<string | null>(null);
   const [result, setResult] = useState<AnalysisResult | null>(null);
-  const [showInsights, setShowInsights] = useState(true);
   const [discipline, setDiscipline] = useState("Sprint");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const runAnalysis = useServerFn(analyzeVideoFrames);
 
-
   const currentFindings = result?.findings ?? defaultFindings;
   const currentOverall = result?.overall ?? defaultOverall;
   const currentKpis = result?.kpis ?? defaultKpis;
-  const topInsights = currentFindings.filter((f) => f.status === "warn").slice(0, 2);
 
   const handleVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     e.target.value = "";
+
     if (!file) return;
     if (!file.type.startsWith("video/")) return;
     if (videoUrl) URL.revokeObjectURL(videoUrl);
@@ -327,13 +323,13 @@ function Page() {
     setVideoName(file.name);
     setResult(null);
     setAnalysisError(null);
-    setShowInsights(true);
     setAnalysisProgress(8);
     setAnalysisStage("Frames extrahieren…");
     setAnalysisState("extracting");
 
     try {
       const { frames, duration } = await extractFrames(file, 6);
+
       setAnalysisProgress(45);
       setAnalysisStage("KI analysiert Bewegung…");
       setAnalysisState("analyzing");
@@ -342,13 +338,13 @@ function Page() {
         data: { discipline, durationSec: duration, frames },
       });
 
-
       const overall: OverallScore = {
         score: Math.round(data.overall_score * 10) / 10,
         reasoning: data.overall_reasoning,
         data: data.score_breakdown,
         recommendation: data.overall_recommendation,
       };
+
       const findings: Finding[] = data.findings.map((f) => ({
         joint: f.joint,
         val: f.val,
@@ -359,12 +355,14 @@ function Page() {
         recommendation: f.recommendation,
         data: f.data,
       }));
+
       setResult({
         detectedMovement: data.detected_movement,
         findings,
         overall,
         kpis: data.kpis,
       });
+
       setAnalysisProgress(100);
       setAnalysisState("done");
       toast.success(`Analyse fertig · ${data.detected_movement}`);
@@ -378,12 +376,13 @@ function Page() {
 
   useEffect(() => {
     if (analysisState !== "analyzing") return;
+
     const id = setInterval(() => {
       setAnalysisProgress((p) => (p < 92 ? p + 1.2 : p));
     }, 180);
+
     return () => clearInterval(id);
   }, [analysisState]);
-
 
   return (
     <AppShell
@@ -391,389 +390,362 @@ function Page() {
       subtitle="Pose Estimation · KI-Bewegungsdiagnostik"
       breadcrumbs={[{ label: "Dashboard", to: "/" }, { label: "Videoanalyse" }]}
     >
-
       <EditableShell storageKey="athleticiq.edit.video.v1">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <div className="lg:col-span-2 glass-strong rounded-3xl p-4 relative overflow-hidden">
-          <div className="relative aspect-video rounded-2xl bg-gradient-to-br from-black via-[oklch(0.18_0.04_265)] to-black overflow-hidden">
-            {videoUrl ? (
-              <video
-                key={videoUrl}
-                src={videoUrl}
-                controls
-                className="absolute inset-0 w-full h-full object-contain bg-black"
-              />
-            ) : (
-              <>
-                <div className="absolute inset-0 grid-bg pointer-events-none" />
-                <svg className="absolute inset-0 w-full h-full" viewBox="0 0 400 225">
-                  <g stroke="oklch(0.85 0.18 200)" strokeWidth="1.5" fill="none" opacity="0.85">
-                    <line x1="200" y1="60" x2="200" y2="120" />
-                    <line x1="200" y1="120" x2="170" y2="170" />
-                    <line x1="200" y1="120" x2="235" y2="170" />
-                    <line x1="200" y1="80" x2="165" y2="115" />
-                    <line x1="200" y1="80" x2="240" y2="105" />
-                    <line x1="170" y1="170" x2="155" y2="210" />
-                    <line x1="235" y1="170" x2="248" y2="210" />
-                  </g>
-                  {[
-                    [200, 55], [200, 80], [200, 120], [165, 115], [240, 105],
-                    [170, 170], [235, 170], [155, 210], [248, 210],
-                  ].map(([x, y], i) => (
-                    <circle key={i} cx={x} cy={y} r="3.5" fill="oklch(0.68 0.24 295)" stroke="oklch(0.85 0.18 200)" strokeWidth="1" />
-                  ))}
-                </svg>
-                <button
-                  type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  className="absolute inset-0 m-auto h-fit w-fit flex flex-col items-center gap-2 px-6 py-4 rounded-2xl bg-black/40 border border-dashed border-neon-cyan/40 text-neon-cyan hover:bg-black/60 transition"
-                >
-                  <Upload className="h-6 w-6" />
-                  <span className="text-sm font-semibold">Video hochladen für Analyse</span>
-                  <span className="text-[11px] text-muted-foreground">MP4, MOV, WebM · max. 100 MB</span>
-                </button>
-              </>
-            )}
-            <div className="absolute top-3 left-3 flex items-center gap-2 px-2.5 py-1 rounded-full bg-black/50 border border-neon-cyan/40 text-[11px] text-neon-cyan">
-              <span className="h-1.5 w-1.5 rounded-full bg-neon-cyan pulse-dot" />
-              {analysisState === "extracting" || analysisState === "analyzing"
-                ? analysisStage || "KI analysiert…"
-                : analysisState === "done"
-                ? `Analyse abgeschlossen${result?.detectedMovement ? ` · ${result.detectedMovement}` : ""}`
-                : analysisState === "error"
-                ? "Analyse fehlgeschlagen"
-                : "60 fps · 33 Keypoints"}
-            </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          <div className="lg:col-span-2 glass-strong rounded-3xl p-4 relative overflow-hidden">
+            <div className="relative aspect-video rounded-2xl bg-gradient-to-br from-black via-[oklch(0.18_0.04_265)] to-black overflow-hidden">
+              {videoUrl ? (
+                <video
+                  key={videoUrl}
+                  src={videoUrl}
+                  controls
+                  className="absolute inset-0 w-full h-full object-contain bg-black"
+                />
+              ) : (
+                <>
+                  <div className="absolute inset-0 grid-bg pointer-events-none" />
+                  <svg className="absolute inset-0 w-full h-full" viewBox="0 0 400 225">
+                    <g stroke="oklch(0.85 0.18 200)" strokeWidth="1.5" fill="none" opacity="0.85">
+                      <line x1="200" y1="60" x2="200" y2="120" />
+                      <line x1="200" y1="120" x2="170" y2="170" />
+                      <line x1="200" y1="120" x2="235" y2="170" />
+                      <line x1="200" y1="80" x2="165" y2="115" />
+                      <line x1="200" y1="80" x2="240" y2="105" />
+                      <line x1="170" y1="170" x2="155" y2="210" />
+                      <line x1="235" y1="170" x2="248" y2="210" />
+                    </g>
+                    {[
+                      [200, 55],
+                      [200, 80],
+                      [200, 120],
+                      [165, 115],
+                      [240, 105],
+                      [170, 170],
+                      [235, 170],
+                      [155, 210],
+                      [248, 210],
+                    ].map(([x, y], i) => (
+                      <circle
+                        key={i}
+                        cx={x}
+                        cy={y}
+                        r="3.5"
+                        fill="oklch(0.68 0.24 295)"
+                        stroke="oklch(0.85 0.18 200)"
+                        strokeWidth="1"
+                      />
+                    ))}
+                  </svg>
 
-            {(analysisState === "extracting" || analysisState === "analyzing") && (
-              <div className="absolute inset-0 bg-black/55 backdrop-blur-sm grid place-items-center text-center px-6">
-                <div className="flex flex-col items-center gap-3 max-w-xs">
-                  <div className="relative h-14 w-14 grid place-items-center">
-                    <div className="absolute inset-0 rounded-full border-2 border-neon-cyan/20" />
-                    <div className="absolute inset-0 rounded-full border-2 border-transparent border-t-neon-cyan animate-spin" />
-                    <Sparkles className="h-5 w-5 text-neon-violet" />
-                  </div>
-                  <div className="text-sm font-semibold text-neon-cyan">
-                    KI-Bewegungsanalyse läuft
-                  </div>
-                  <div className="text-[11px] text-muted-foreground">
-                    {analysisStage || "Frames extrahieren · Vision-Modell · Biomechanik-Marker"}
-                  </div>
-                  <div className="w-full h-1.5 rounded-full bg-white/10 overflow-hidden">
-                    <div
-                      className="h-full bg-gradient-to-r from-neon-cyan to-neon-violet transition-all"
-                      style={{ width: `${analysisProgress}%` }}
-                    />
-                  </div>
-                  <div className="text-[10px] text-muted-foreground tabular-nums">
-                    {Math.round(analysisProgress)}%
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {analysisState === "error" && (
-              <div className="absolute inset-x-3 bottom-14 rounded-xl bg-black/70 border border-neon-amber/50 px-3 py-2 text-[11px] text-neon-amber">
-                <div className="flex items-center gap-1.5 font-semibold">
-                  <AlertTriangle className="h-3.5 w-3.5" /> Analyse fehlgeschlagen
-                </div>
-                <div className="text-muted-foreground mt-0.5">{analysisError}</div>
-              </div>
-            )}
-
-            {analysisState === "done" && videoUrl && showInsights && (
-              <div className="absolute left-3 right-3 bottom-14 flex flex-col gap-1.5 pointer-events-none">
-                <div className="flex items-center justify-between pointer-events-auto">
-                  <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/60 border border-neon-violet/40 text-[10px] uppercase tracking-[0.2em] text-neon-violet">
-                    <Sparkles className="h-3 w-3" /> Top Erkenntnisse
-                  </div>
                   <button
                     type="button"
-                    onClick={() => setShowInsights(false)}
-                    className="text-[10px] text-muted-foreground hover:text-foreground px-2 py-0.5 rounded-full bg-black/50 border border-border/50"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="absolute inset-0 m-auto h-fit w-fit flex flex-col items-center gap-2 px-6 py-4 rounded-2xl bg-black/40 border border-dashed border-neon-cyan/40 text-neon-cyan hover:bg-black/60 transition"
                   >
-                    ausblenden
+                    <Upload className="h-6 w-6" />
+                    <span className="text-sm font-semibold">Video hochladen für Analyse</span>
+                    <span className="text-[11px] text-muted-foreground">MP4, MOV, WebM · max. 100 MB</span>
                   </button>
-                </div>
-                {topInsights.map((f, i) => (
-                  <button
-                    key={`${f.joint}-${i}`}
+                </>
+              )}
 
-                    type="button"
-                    onClick={() => setOpen(f)}
-                    className="pointer-events-auto flex items-center justify-between gap-3 rounded-xl bg-black/65 backdrop-blur border border-neon-amber/40 px-3 py-2 text-left hover:border-neon-amber transition"
-                  >
-                    <div className="flex items-center gap-2 min-w-0">
-                      <AlertTriangle className="h-4 w-4 text-neon-amber shrink-0" />
-                      <div className="min-w-0">
-                        <div className="text-xs font-semibold truncate">{f.joint}</div>
-                        <div className="text-[10px] text-muted-foreground truncate">
-                          Soll {f.ideal} · gemessen {f.val}{f.unit}
-                        </div>
-                      </div>
+              <div className="absolute top-3 left-3 flex items-center gap-2 px-2.5 py-1 rounded-full bg-black/50 border border-neon-cyan/40 text-[11px] text-neon-cyan">
+                <span className="h-1.5 w-1.5 rounded-full bg-neon-cyan pulse-dot" />
+                {analysisState === "extracting" || analysisState === "analyzing"
+                  ? analysisStage || "KI analysiert…"
+                  : analysisState === "done"
+                    ? `Analyse abgeschlossen${result?.detectedMovement ? ` · ${result.detectedMovement}` : ""}`
+                    : analysisState === "error"
+                      ? "Analyse fehlgeschlagen"
+                      : "60 fps · 33 Keypoints"}
+              </div>
+
+              {(analysisState === "extracting" || analysisState === "analyzing") && (
+                <div className="absolute inset-0 bg-black/55 backdrop-blur-sm grid place-items-center text-center px-6">
+                  <div className="flex flex-col items-center gap-3 max-w-xs">
+                    <div className="relative h-14 w-14 grid place-items-center">
+                      <div className="absolute inset-0 rounded-full border-2 border-neon-cyan/20" />
+                      <div className="absolute inset-0 rounded-full border-2 border-transparent border-t-neon-cyan animate-spin" />
+                      <Sparkles className="h-5 w-5 text-neon-violet" />
                     </div>
-                    <ChevronRight className="h-3.5 w-3.5 text-neon-amber shrink-0" />
-                  </button>
-                ))}
-                <button
-                  type="button"
-                  onClick={() => setScoreOpen(true)}
-                  className="pointer-events-auto flex items-center justify-between gap-3 rounded-xl bg-black/65 backdrop-blur border border-neon-violet/40 px-3 py-2 text-left hover:border-neon-violet transition"
-                >
-                  <div className="flex items-center gap-2">
-                    <Sparkles className="h-4 w-4 text-neon-violet" />
-                    <div className="text-xs font-semibold">
-                      KI-Score{" "}
-                      <span className="gradient-text">{currentOverall.score}</span>
-                      <span className="text-muted-foreground"> / 10</span>
+
+                    <div className="text-sm font-semibold text-neon-cyan">
+                      KI-Bewegungsanalyse läuft
+                    </div>
+
+                    <div className="text-[11px] text-muted-foreground">
+                      {analysisStage || "Frames extrahieren · Vision-Modell · Biomechanik-Marker"}
+                    </div>
+
+                    <div className="w-full h-1.5 rounded-full bg-white/10 overflow-hidden">
+                      <div
+                        className="h-full bg-gradient-to-r from-neon-cyan to-neon-violet transition-all"
+                        style={{ width: `${analysisProgress}%` }}
+                      />
+                    </div>
+
+                    <div className="text-[10px] text-muted-foreground tabular-nums">
+                      {Math.round(analysisProgress)}%
                     </div>
                   </div>
-                  <ChevronRight className="h-3.5 w-3.5 text-neon-violet" />
-                </button>
-              </div>
-            )}
+                </div>
+              )}
 
-            {analysisState === "done" && videoUrl && !showInsights && (
-              <button
-                type="button"
-                onClick={() => setShowInsights(true)}
-                className="absolute right-3 bottom-14 pointer-events-auto flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/60 border border-neon-violet/40 text-[10px] uppercase tracking-[0.2em] text-neon-violet hover:bg-black/80"
-              >
-                <Sparkles className="h-3 w-3" /> Erkenntnisse zeigen
-              </button>
-            )}
-          </div>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="video/*"
-            className="hidden"
-            onChange={handleVideoUpload}
-          />
-
-
-          <div className="flex flex-wrap items-end justify-between gap-3 mt-4">
-            <div>
-              <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Aktuelle Analyse</div>
-              <h3 className="text-lg font-bold mt-1">{videoName ?? "Sprintstart · Block 3"}</h3>
-            </div>
-            <div className="flex items-end gap-2">
-              <label className="flex flex-col gap-1">
-                <span className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Disziplin</span>
-                <select
-                  value={discipline}
-                  onChange={(e) => setDiscipline(e.target.value)}
-                  disabled={analysisState === "extracting" || analysisState === "analyzing"}
-                  className="h-9 rounded-lg bg-black/40 border border-neon-cyan/30 text-sm px-2.5 text-foreground focus:outline-none focus:border-neon-cyan disabled:opacity-50"
-                >
-                  {[
-                    "Sprint",
-                    "Sprintstart aus dem Block",
-                    "Hürdenlauf",
-                    "Mittel-/Langstrecke",
-                    "Weitsprung",
-                    "Hochsprung",
-                    "Dreisprung",
-                    "Stabhochsprung",
-                    "Kugelstoßen",
-                    "Speerwurf",
-                    "Diskuswurf",
-                    "Kraftraum / Kniebeuge",
-                    "Kraftraum / Kreuzheben",
-                    "Sonstige Bewegung",
-                  ].map((d) => (
-                    <option key={d} value={d}>
-                      {d}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <Button
-                variant="outline"
-                className="border-neon-cyan/40 text-neon-cyan"
-                onClick={() => fileInputRef.current?.click()}
-              >
-                <Upload className="h-4 w-4 mr-1.5" /> {videoUrl ? "Anderes Video" : "Video hochladen"}
-              </Button>
-            </div>
-          </div>
-
-        </div>
-
-        <div className="glass-strong rounded-3xl p-6">
-          <button
-            type="button"
-            onClick={() => setScoreOpen(true)}
-            className="w-full text-left group rounded-2xl -m-2 p-2 hover:bg-white/[0.03] transition"
-          >
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-neon-violet">
-                <Sparkles className="h-3.5 w-3.5" /> KI Bewertung
-              </div>
-              <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-neon-violet transition" />
-            </div>
-            <div className="mt-2 flex items-end gap-2">
-              <span className="text-5xl font-bold gradient-text tabular-nums">{currentOverall.score}</span>
-              <span className="text-sm text-muted-foreground mb-1">/ 10</span>
-            </div>
-            <p className="text-xs text-muted-foreground mt-2 line-clamp-3">
-              {currentOverall.reasoning}
-            </p>
-            <div className="text-[10px] text-neon-violet/80 mt-2 group-hover:text-neon-violet">
-              Details & Begründung →
-            </div>
-          </button>
-
-          <div className="mt-5 space-y-2.5">
-            {currentFindings.map((f, i) => (
-              <button
-                type="button"
-                key={`${f.joint}-${i}`}
-
-                onClick={() => setOpen(f)}
-                className="w-full flex items-center justify-between rounded-xl border border-border/50 bg-white/[0.02] px-3 py-2.5 hover:bg-white/[0.05] hover:border-neon-cyan/40 transition text-left group"
-              >
-                <div className="flex items-center gap-2.5">
-                  {f.status === "warn" ? (
-                    <AlertTriangle className="h-4 w-4 text-neon-amber shrink-0" />
-                  ) : (
-                    <CheckCircle2 className="h-4 w-4 text-neon-lime shrink-0" />
-                  )}
-                  <div>
-                    <div className="text-sm font-semibold">{f.joint}</div>
-                    <div className="text-[10px] text-muted-foreground">Soll: {f.ideal}</div>
+              {analysisState === "error" && (
+                <div className="absolute inset-x-3 bottom-14 rounded-xl bg-black/70 border border-neon-amber/50 px-3 py-2 text-[11px] text-neon-amber">
+                  <div className="flex items-center gap-1.5 font-semibold">
+                    <AlertTriangle className="h-3.5 w-3.5" /> Analyse fehlgeschlagen
                   </div>
+                  <div className="text-muted-foreground mt-0.5">{analysisError}</div>
                 </div>
-                <div className="flex items-center gap-1.5">
-                  <Badge
-                    className={
-                      f.status === "ok"
-                        ? "bg-neon-lime/15 text-neon-lime border-neon-lime/30"
-                        : "bg-neon-amber/15 text-neon-amber border-neon-amber/30"
-                    }
-                  >
-                    {f.val}{f.unit}
-                  </Badge>
-                  <ChevronRight className="h-3.5 w-3.5 text-muted-foreground group-hover:text-neon-cyan transition" />
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
+              )}
+            </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-4">
-        {currentKpis.map((s, i) => {
-          const Icon = [Gauge, Activity, Sparkles][i % 3];
-          return (
-            <div key={`${s.title}-${i}`} className="glass rounded-3xl p-5 flex items-center gap-4">
-              <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-neon-cyan/20 to-neon-violet/20 grid place-items-center">
-                <Icon className="h-5 w-5 text-neon-cyan" />
-              </div>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="video/*"
+              className="hidden"
+              onChange={handleVideoUpload}
+            />
+
+            <div className="flex flex-wrap items-end justify-between gap-3 mt-4">
               <div>
-                <div className="text-xs uppercase tracking-[0.18em] text-muted-foreground">{s.title}</div>
-                <div className="text-xl font-bold tabular-nums">{s.val}</div>
-                <div className="text-[11px] text-muted-foreground">{s.note}</div>
+                <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
+                  Aktuelle Analyse
+                </div>
+                <h3 className="text-lg font-bold mt-1">{videoName ?? "Sprintstart · Block 3"}</h3>
               </div>
-            </div>
-          );
-        })}
-      </div>
 
-      {/* Finding Detail Dialog */}
-      <Dialog open={!!open} onOpenChange={(o) => !o && setOpen(null)}>
-        <DialogContent className="glass-strong border-border/60 max-w-lg">
-          {open && (
-            <>
-              <DialogHeader>
-                <div className="flex items-center gap-2">
-                  {open.status === "warn" ? (
-                    <AlertTriangle className="h-5 w-5 text-neon-amber" />
-                  ) : (
-                    <CheckCircle2 className="h-5 w-5 text-neon-lime" />
-                  )}
-                  <DialogTitle className="text-xl">{open.joint}</DialogTitle>
-                  <Badge
-                    className={
-                      open.status === "ok"
-                        ? "bg-neon-lime/15 text-neon-lime border-neon-lime/30 ml-auto"
-                        : "bg-neon-amber/15 text-neon-amber border-neon-amber/30 ml-auto"
-                    }
+              <div className="flex items-end gap-2">
+                <label className="flex flex-col gap-1">
+                  <span className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+                    Disziplin
+                  </span>
+                  <select
+                    value={discipline}
+                    onChange={(e) => setDiscipline(e.target.value)}
+                    disabled={analysisState === "extracting" || analysisState === "analyzing"}
+                    className="h-9 rounded-lg bg-black/40 border border-neon-cyan/30 text-sm px-2.5 text-foreground focus:outline-none focus:border-neon-cyan disabled:opacity-50"
                   >
-                    {open.val}{open.unit}
-                  </Badge>
-                </div>
-                <DialogDescription className="text-left pt-2">
-                  {open.reasoning}
-                </DialogDescription>
-              </DialogHeader>
+                    {[
+                      "Sprint",
+                      "Sprintstart aus dem Block",
+                      "Hürdenlauf",
+                      "Mittel-/Langstrecke",
+                      "Weitsprung",
+                      "Hochsprung",
+                      "Dreisprung",
+                      "Stabhochsprung",
+                      "Kugelstoßen",
+                      "Speerwurf",
+                      "Diskuswurf",
+                      "Kraftraum / Kniebeuge",
+                      "Kraftraum / Kreuzheben",
+                      "Sonstige Bewegung",
+                    ].map((d) => (
+                      <option key={d} value={d}>
+                        {d}
+                      </option>
+                    ))}
+                  </select>
+                </label>
 
-              <div className="mt-2">
-                <div className="text-[11px] uppercase tracking-[0.2em] text-neon-cyan mb-2">
-                  Zugrunde liegende Daten
-                </div>
-                <div className="rounded-xl border border-border/50 divide-y divide-border/40">
-                  {open.data.map((d, i) => (
-                    <div key={`${d.label}-${i}`} className="flex justify-between px-3 py-2 text-sm">
+                <Button
+                  variant="outline"
+                  className="border-neon-cyan/40 text-neon-cyan"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  <Upload className="h-4 w-4 mr-1.5" /> {videoUrl ? "Anderes Video" : "Video hochladen"}
+                </Button>
+              </div>
+            </div>
+          </div>
 
-                      <span className="text-muted-foreground">{d.label}</span>
-                      <span className="font-semibold tabular-nums">{d.value}</span>
+          <div className="glass-strong rounded-3xl p-6">
+            <button
+              type="button"
+              onClick={() => setScoreOpen(true)}
+              className="w-full text-left group rounded-2xl -m-2 p-2 hover:bg-white/[0.03] transition"
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-neon-violet">
+                  <Sparkles className="h-3.5 w-3.5" /> KI Bewertung
+                </div>
+                <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-neon-violet transition" />
+              </div>
+
+              <div className="mt-2 flex items-end gap-2">
+                <span className="text-5xl font-bold gradient-text tabular-nums">{currentOverall.score}</span>
+                <span className="text-sm text-muted-foreground mb-1">/ 10</span>
+              </div>
+
+              <p className="text-xs text-muted-foreground mt-2 line-clamp-3">
+                {currentOverall.reasoning}
+              </p>
+
+              <div className="text-[10px] text-neon-violet/80 mt-2 group-hover:text-neon-violet">
+                Details & Begründung →
+              </div>
+            </button>
+
+            <div className="mt-5 space-y-2.5">
+              {currentFindings.map((f, i) => (
+                <button
+                  type="button"
+                  key={`${f.joint}-${i}`}
+                  onClick={() => setOpen(f)}
+                  className="w-full flex items-center justify-between rounded-xl border border-border/50 bg-white/[0.02] px-3 py-2.5 hover:bg-white/[0.05] hover:border-neon-cyan/40 transition text-left group"
+                >
+                  <div className="flex items-center gap-2.5">
+                    {f.status === "warn" ? (
+                      <AlertTriangle className="h-4 w-4 text-neon-amber shrink-0" />
+                    ) : (
+                      <CheckCircle2 className="h-4 w-4 text-neon-lime shrink-0" />
+                    )}
+
+                    <div>
+                      <div className="text-sm font-semibold">{f.joint}</div>
+                      <div className="text-[10px] text-muted-foreground">Soll: {f.ideal}</div>
                     </div>
-                  ))}
-                </div>
-              </div>
+                  </div>
 
-              <div className="mt-2 rounded-xl border border-neon-violet/30 bg-neon-violet/5 p-3">
-                <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-[0.2em] text-neon-violet mb-1">
-                  <TrendingUp className="h-3.5 w-3.5" /> KI-Empfehlung
-                </div>
-                <p className="text-sm">{open.recommendation}</p>
-              </div>
-            </>
-          )}
-        </DialogContent>
-      </Dialog>
-
-      {/* Score Detail Dialog */}
-      <Dialog open={scoreOpen} onOpenChange={setScoreOpen}>
-        <DialogContent className="glass-strong border-border/60 max-w-lg">
-          <DialogHeader>
-            <div className="flex items-center gap-2">
-              <Sparkles className="h-5 w-5 text-neon-violet" />
-              <DialogTitle className="text-xl">KI Gesamtbewertung</DialogTitle>
-              <span className="ml-auto text-3xl font-bold gradient-text tabular-nums">
-                {currentOverall.score}
-              </span>
-            </div>
-            <DialogDescription className="text-left pt-2">
-              {currentOverall.reasoning}
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="mt-2">
-            <div className="text-[11px] uppercase tracking-[0.2em] text-neon-cyan mb-2">
-              Score-Zusammensetzung
-            </div>
-            <div className="rounded-xl border border-border/50 divide-y divide-border/40">
-              {currentOverall.data.map((d, i) => (
-                <div key={`${d.label}-${i}`} className="flex justify-between px-3 py-2 text-sm">
-
-                  <span className="text-muted-foreground">{d.label}</span>
-                  <span className="font-semibold tabular-nums">{d.value}</span>
-                </div>
+                  <div className="flex items-center gap-1.5">
+                    <Badge
+                      className={
+                        f.status === "ok"
+                          ? "bg-neon-lime/15 text-neon-lime border-neon-lime/30"
+                          : "bg-neon-amber/15 text-neon-amber border-neon-amber/30"
+                      }
+                    >
+                      {f.val}{f.unit}
+                    </Badge>
+                    <ChevronRight className="h-3.5 w-3.5 text-muted-foreground group-hover:text-neon-cyan transition" />
+                  </div>
+                </button>
               ))}
             </div>
           </div>
+        </div>
 
-          <div className="mt-2 rounded-xl border border-neon-violet/30 bg-neon-violet/5 p-3">
-            <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-[0.2em] text-neon-violet mb-1">
-              <TrendingUp className="h-3.5 w-3.5" /> Nächste Schritte
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-4">
+          {currentKpis.map((s, i) => {
+            const Icon = [Gauge, Activity, Sparkles][i % 3];
+
+            return (
+              <div key={`${s.title}-${i}`} className="glass rounded-3xl p-5 flex items-center gap-4">
+                <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-neon-cyan/20 to-neon-violet/20 grid place-items-center">
+                  <Icon className="h-5 w-5 text-neon-cyan" />
+                </div>
+
+                <div>
+                  <div className="text-xs uppercase tracking-[0.18em] text-muted-foreground">{s.title}</div>
+                  <div className="text-xl font-bold tabular-nums">{s.val}</div>
+                  <div className="text-[11px] text-muted-foreground">{s.note}</div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        <Dialog open={!!open} onOpenChange={(o) => !o && setOpen(null)}>
+          <DialogContent className="glass-strong border-border/60 max-w-lg">
+            {open && (
+              <>
+                <DialogHeader>
+                  <div className="flex items-center gap-2">
+                    {open.status === "warn" ? (
+                      <AlertTriangle className="h-5 w-5 text-neon-amber" />
+                    ) : (
+                      <CheckCircle2 className="h-5 w-5 text-neon-lime" />
+                    )}
+
+                    <DialogTitle className="text-xl">{open.joint}</DialogTitle>
+
+                    <Badge
+                      className={
+                        open.status === "ok"
+                          ? "bg-neon-lime/15 text-neon-lime border-neon-lime/30 ml-auto"
+                          : "bg-neon-amber/15 text-neon-amber border-neon-amber/30 ml-auto"
+                      }
+                    >
+                      {open.val}{open.unit}
+                    </Badge>
+                  </div>
+
+                  <DialogDescription className="text-left pt-2">
+                    {open.reasoning}
+                  </DialogDescription>
+                </DialogHeader>
+
+                <div className="mt-2">
+                  <div className="text-[11px] uppercase tracking-[0.2em] text-neon-cyan mb-2">
+                    Zugrunde liegende Daten
+                  </div>
+
+                  <div className="rounded-xl border border-border/50 divide-y divide-border/40">
+                    {open.data.map((d, i) => (
+                      <div key={`${d.label}-${i}`} className="flex justify-between px-3 py-2 text-sm">
+                        <span className="text-muted-foreground">{d.label}</span>
+                        <span className="font-semibold tabular-nums">{d.value}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="mt-2 rounded-xl border border-neon-violet/30 bg-neon-violet/5 p-3">
+                  <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-[0.2em] text-neon-violet mb-1">
+                    <TrendingUp className="h-3.5 w-3.5" /> KI-Empfehlung
+                  </div>
+
+                  <p className="text-sm">{open.recommendation}</p>
+                </div>
+              </>
+            )}
+          </DialogContent>
+        </Dialog>
+
+        <Dialog open={scoreOpen} onOpenChange={setScoreOpen}>
+          <DialogContent className="glass-strong border-border/60 max-w-lg">
+            <DialogHeader>
+              <div className="flex items-center gap-2">
+                <Sparkles className="h-5 w-5 text-neon-violet" />
+                <DialogTitle className="text-xl">KI Gesamtbewertung</DialogTitle>
+                <span className="ml-auto text-3xl font-bold gradient-text tabular-nums">
+                  {currentOverall.score}
+                </span>
+              </div>
+
+              <DialogDescription className="text-left pt-2">
+                {currentOverall.reasoning}
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="mt-2">
+              <div className="text-[11px] uppercase tracking-[0.2em] text-neon-cyan mb-2">
+                Score-Zusammensetzung
+              </div>
+
+              <div className="rounded-xl border border-border/50 divide-y divide-border/40">
+                {currentOverall.data.map((d, i) => (
+                  <div key={`${d.label}-${i}`} className="flex justify-between px-3 py-2 text-sm">
+                    <span className="text-muted-foreground">{d.label}</span>
+                    <span className="font-semibold tabular-nums">{d.value}</span>
+                  </div>
+                ))}
+              </div>
             </div>
-            <p className="text-sm">{currentOverall.recommendation}</p>
-          </div>
-        </DialogContent>
-      </Dialog>
-    </EditableShell>
+
+            <div className="mt-2 rounded-xl border border-neon-violet/30 bg-neon-violet/5 p-3">
+              <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-[0.2em] text-neon-violet mb-1">
+                <TrendingUp className="h-3.5 w-3.5" /> Nächste Schritte
+              </div>
+
+              <p className="text-sm">{currentOverall.recommendation}</p>
+            </div>
+          </DialogContent>
+        </Dialog>
+      </EditableShell>
     </AppShell>
   );
 }
