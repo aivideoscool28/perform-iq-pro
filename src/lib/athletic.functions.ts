@@ -518,13 +518,28 @@ export const analyzeFoodImage = createServerFn({ method: "POST" })
   });
 
 /* ------------------------ DAILY CHECK-IN ------------------------ */
+
+const DAILY_CHECKIN_CONTEXT_LIMIT = 30;
 const checkinSchema = z.object({
   discipline: z.string().max(40).nullable(),
   is_rest_day: z.boolean(),
-  duration_min: z.number().int().nullable(),
+
+  // New Athletic IQ Daily Check-In fields
+  workout_type: z.string().max(60).nullable(),
+  session_details: z.string().max(1500).nullable(),
+  performance_results: z.record(z.string(), z.unknown()).nullable(),
   rpe: z.number().int().min(1).max(10).nullable(),
+  physical_feeling: z.number().int().min(1).max(5).nullable(),
+  mental_state: z.string().max(80).nullable(),
   has_pain: z.boolean().nullable(),
   pain_note: z.string().max(500).nullable(),
+  pain_area: z.string().max(80).nullable(),
+  pain_severity: z.string().max(40).nullable(),
+  performance_factors: z.array(z.string().max(80)).max(10),
+  extra_note: z.string().max(1000).nullable(),
+
+  // Temporary legacy fields during migration
+  duration_min: z.number().int().nullable(),
   satisfaction: z.number().int().min(1).max(5).nullable(),
   last_meal_before: z.string().max(40).nullable(),
   ate_around_training: z.string().max(40).nullable(),
@@ -534,7 +549,6 @@ const checkinSchema = z.object({
   sleep_quality: z.number().int().min(1).max(10).nullable(),
   woke_recovered: z.string().max(20).nullable(),
   overall_feeling: z.number().int().min(1).max(5).nullable(),
-  extra_note: z.string().max(1000).nullable(),
 });
 
 export const fetchTodayCheckin = createServerFn({ method: "GET" })
@@ -558,30 +572,88 @@ export const saveDailyCheckin = createServerFn({ method: "POST" })
     const { supabase, userId } = context;
     const today = new Date().toISOString().slice(0, 10);
 
-    // Build AI summary
-    let ai_summary = "Tagescheck gespeichert. Stark, dass du dranbleibst!";
+    // Build compact factual context summary for future Athletic IQ analyses.
+    let context_summary: string | null = null;
+
     try {
       const ai = await callAi({
         model: "google/gemini-3.5-flash",
         messages: [
           {
             role: "system",
-            content:
-              "You are a warm athletics coach. Summarise the athlete's daily check-in in EXACTLY 2 short German sentences. First sentence: how the day went (training, recovery, nutrition). Second sentence: one concrete encouragement or tip. Max 35 words total. No emojis at start, max one at end.",
+            content: `
+You create a compact factual historical summary from ONE Athletic IQ Daily Check-In.
+
+LANGUAGE:
+German.
+
+PURPOSE:
+This summary will be stored as one historical Daily Check-In log.
+Future Workout Analyses may receive up to the latest ${DAILY_CHECKIN_CONTEXT_LIMIT} previous summaries.
+
+LENGTH:
+Target: 100–160 characters.
+Hard maximum: 200 characters.
+Use fewer characters when there is little important information.
+
+WHAT TO INCLUDE:
+Do NOT repeat every Daily Check-In answer.
+
+Select only information that may be useful for understanding the athlete later.
+
+Prioritize when relevant:
+- workout type and important session details
+- measurable performance/results
+- RPE
+- physical feeling
+- meaningful mental-state signals
+- pain/discomfort and severity
+- important reported performance factors
+
+RULES:
+- Use only information explicitly supplied in today's Daily Check-In.
+- Be factual and compact.
+- Never invent missing information.
+- Do not explain WHY something happened.
+- Do not claim causation.
+- Do not call one session a trend.
+- Do not classify something as unusually high, low, improving or worsening based on this check-in alone.
+- Omit low-value information when space is limited.
+- No coaching advice.
+- No motivational filler.
+- No emojis.
+- Maximum 200 characters.
+
+EXAMPLE:
+"4×30m Beschleunigung, RPE 8. Körperlich 3/5 und Stress gemeldet; keine Schmerzen, Zeiten 4,18–4,25 s."
+`,
           },
-          { role: "user", content: JSON.stringify(data) },
+          {
+            role: "user",
+            content: JSON.stringify(data),
+          },
         ],
       });
+
       const reply = ai?.choices?.[0]?.message?.content;
-      if (typeof reply === "string" && reply.trim()) ai_summary = reply.trim();
-    } catch {
-      // keep fallback
+
+      if (typeof reply === "string" && reply.trim()) {
+        context_summary = reply.trim().slice(0, 200);
+      }
+    } catch (error) {
+      console.error("Daily Check-In context summary failed:", error);
     }
 
     const { data: row, error } = await supabase
       .from("daily_checkins")
       .upsert(
-        { ...data, user_id: userId, checkin_date: today, ai_summary, updated_at: new Date().toISOString() },
+        {
+          ...data,
+          user_id: userId,
+          checkin_date: today,
+          context_summary,
+          updated_at: new Date().toISOString(),
+        },
         { onConflict: "user_id,checkin_date" },
       )
       .select()
@@ -620,7 +692,54 @@ export const saveDailyCheckin = createServerFn({ method: "POST" })
           .single();
 
         if (workout) {
-          const analysis = await generateCheckinAnalysis(name, data);
+          /*
+          ===============================================================
+                     LOAD DAILY CHECK-IN HISTORY
+          ===============================================================
+
+          Prompt 2 should understand today's training in the context of
+          the athlete's recent Daily Check-Ins.
+
+          Rules:
+          - Only load check-ins belonging to this athlete.
+          - Only load days BEFORE today.
+          - Ignore rows without a context_summary.
+          - Load newest summaries first.
+          - Never load more than DAILY_CHECKIN_CONTEXT_LIMIT.
+          - If the athlete has fewer summaries, simply use those available.
+
+          Examples:
+          Check-in #1  -> 0 previous summaries
+          Check-in #5  -> 4 previous summaries
+          Check-in #31 -> 30 previous summaries
+          ===============================================================
+          */
+          const { data: previousCheckins, error: historyError } =
+            await supabase
+              .from("daily_checkins")
+              .select("checkin_date, context_summary")
+              .eq("user_id", userId)
+              .lt("checkin_date", today)
+              .not("context_summary", "is", null)
+              .order("checkin_date", { ascending: false })
+              .limit(DAILY_CHECKIN_CONTEXT_LIMIT);
+
+          if (historyError) {
+            console.error(
+              "Could not load previous Daily Check-In summaries:",
+              historyError,
+            );
+          }
+
+          // Always pass an array to Prompt 2.
+          // If history loading fails or no previous logs exist, use [].
+          const history = previousCheckins ?? [];
+
+          const analysis = await generateCheckinAnalysis(
+            name,
+            data,
+            history,
+          );
           const { data: b } = await supabase
             .from("analysis_boards")
             .insert({
@@ -646,6 +765,13 @@ export const saveDailyCheckin = createServerFn({ method: "POST" })
 async function generateCheckinAnalysis(
   name: string,
   c: z.infer<typeof checkinSchema>,
+
+  // Previous Daily Check-In summaries used as historical evidence.
+  // There can be 0 to DAILY_CHECKIN_CONTEXT_LIMIT entries.
+  previousCheckins: Array<{
+    checkin_date: string;
+    context_summary: string | null;
+  }>,
 ): Promise<AnalysisOutput> {
   try {
     console.log("CHECK-IN DATA SENT TO AI:", c);
@@ -654,10 +780,165 @@ async function generateCheckinAnalysis(
       messages: [
         {
           role: "system",
-          content:
-            `You are a warm, encouraging German athletics coach for ${name}. Given a daily check-in, write a SHORT, PERSONAL post-session analysis. Use the athlete's name occasionally. Each bullet: complete, specific German sentence (max 16 words). Be concrete — reference RPE, sleep, hydration, pain, satisfaction when relevant. Avoid generic platitudes.`,
+          content: `You are Athletic IQ's German post-training analysis assistant for ${name}.
+
+Analyze TODAY'S full Daily Check-In together with the supplied historical Daily Check-In summaries.
+
+You may receive between 0 and ${DAILY_CHECKIN_CONTEXT_LIMIT} previous summaries.
+
+If only a few previous summaries exist, work only with those.
+Never assume missing historical data exists.
+
+OUTPUT:
+Return:
+- positives
+- negatives
+- improvements
+
+Each bullet must:
+- be written in German
+- be a complete sentence
+- contain maximum 20 words
+- be specific to supplied athlete data
+- add interpretation or useful direction
+- NOT merely repeat what the athlete entered
+
+CARD PURPOSES:
+
+POSITIVES:
+Answer:
+"What from today's session appears worth keeping or reproducing?"
+
+Do not use a positive merely because the athlete completed the session.
+Explain why the positive matters for this specific workout.
+
+NEGATIVES:
+Answer:
+"What is the most important thing that deserves attention, and why does it matter?"
+
+Do not simply repeat values such as RPE, mental state or pain.
+Interpret why the signal may matter for this discipline/workout, while staying cautious.
+
+IMPROVEMENTS:
+Answer:
+"What exactly should the athlete do, observe or measure next time?"
+
+Give concrete and testable next actions.
+Prefer one specific cue, observation, rating, measurement or routine over generic advice.
+
+Examples of good specificity:
+- rate hurdle rhythm after each repetition
+- record sprint times for each rep
+- use the same pre-start cue before every attempt
+- note when focus drops during the session
+
+ANALYSIS RULES:
+
+1. TODAY
+Use today's full Daily Check-In as the primary source for today's session.
+
+2. PERFORMANCE FIRST
+When measurable performance/results are available, prioritize them over generic wellbeing observations.
+
+3. WORKOUT-SPECIFIC REASONING
+Connect the analysis to the athlete's discipline and workout type.
+
+For hurdles, relevant concepts may include:
+- rhythm
+- consistency between repetitions
+- start approach
+- concentration during technical repetitions
+
+For sprint, relevant concepts may include:
+- acceleration
+- consistency of times
+- performance across repetitions
+- perceived effort relative to results
+
+IMPORTANT:
+Do NOT claim you observed technical details that were not supplied.
+Daily Check-In analysis is not Video Analysis.
+
+4. HISTORY
+Use previous summaries to identify repeated patterns, changes and noteworthy developments.
+
+Look especially for:
+- changes in measurable performance
+- repeated high or low RPE
+- changes in physical feeling
+- repeated mental-state signals
+- recurring pain/discomfort
+- repeated performance factors
+
+5. COMPARABLE PERFORMANCE
+When comparing specific performance results, compare them primarily with genuinely comparable previous sessions.
+
+Do not directly compare performance measurements from fundamentally different workout types.
+
+6. TRENDS
+One check-in is NOT a trend.
+
+Only describe something as improving, worsening, recurring or unusual when supplied historical evidence supports it.
+
+If there is insufficient history, do not invent a trend.
+
+7. CORRELATION IS NOT CAUSATION
+Never claim that stress, sleep, pain, motivation, weather or another factor definitely caused a performance change simply because they occurred together.
+
+8. UNCERTAINTY
+Clearly distinguish between:
+- facts
+- observed patterns
+- possible interpretations
+
+For uncertain interpretations use cautious language such as:
+- "fällt auf"
+- "könnte darauf hindeuten"
+- "möglicherweise"
+- "es lohnt sich zu beobachten"
+- "wenn sich dieses Muster wiederholt"
+
+9. PAIN
+Never diagnose injuries from Daily Check-In data.
+
+Pain is an athlete-reported signal.
+If pain is recurring, increasing or severe, mention that it deserves attention rather than diagnosing its cause.
+
+10. NO INVENTION
+Never invent athlete data, technical observations, previous results, trends or explanations unsupported by supplied information.
+
+11. TONE
+Be concise, analytical and useful.
+Avoid generic praise.
+Avoid simply mirroring the athlete's answers.
+
+FINAL QUALITY CHECK BEFORE ANSWERING:
+For every bullet ask:
+"Does this tell the athlete something useful that they did not already know from entering the check-in?"
+
+If not, improve the bullet.
+`,
         },
-        { role: "user", content: JSON.stringify(c) },
+        {
+          role: "user",
+
+          /*
+          Prompt 2 receives TWO separate sources:
+
+          1. today's full raw Daily Check-In
+             -> best source for understanding today's session
+
+          2. previous compact Daily Check-In summaries
+             -> historical evidence for possible patterns/trends
+
+          We keep them separate so Gemini knows which information
+          describes TODAY and which information describes HISTORY.
+          */
+          content: JSON.stringify({
+            today: c,
+            previous_daily_checkins: previousCheckins,
+          }),
+        },
       ],
       tools: [
         {
@@ -691,3 +972,4 @@ async function generateCheckinAnalysis(
     improvements: ["Nächstes Mal RPE direkt nach der Session notieren.", "Hydration über den Tag verteilt tracken."],
   };
 }
+  

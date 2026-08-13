@@ -169,6 +169,7 @@ export async function loadAthleteContext({
         `
         id,
         workout_date,
+        workout_type,
         raw_input,
         exercises,
         duration_minutes,
@@ -337,5 +338,305 @@ export async function loadAthleteContext({
     recentCheckins: checkins ?? [],
 
     recentWorkoutAnalyses: analyses ?? [],
+  };
+}
+/*
+===============================================================================
+                    SMART WORKOUT MATCHING
+===============================================================================
+
+Purpose:
+Find the most relevant previous workout for historical comparison.
+
+Important:
+- New workouts should preferably have workout_type stored directly.
+- Older workouts may have workout_type = null.
+- For older workouts, Athletic IQ falls back to athletics-specific keywords.
+- If no comparable workout exists, return null.
+- The AI can still answer; it just must not invent a comparison.
+===============================================================================
+*/
+
+type WorkoutContextRecord = {
+  id: string;
+  workout_date: string;
+  workout_type?: string | null;
+  raw_input?: string | null;
+  summary?: string | null;
+  exercises?: unknown;
+  duration_minutes?: number | null;
+  intensity?: string | null;
+  created_at?: string | null;
+};
+
+
+/*
+Athletics-specific vocabulary.
+
+Instead of writing many separate if-statements, each workout category has
+a list of words or phrases that may indicate that workout type.
+
+If athletes/coaches later use new terminology, we can simply add another
+keyword to the appropriate list.
+*/
+const WORKOUT_TYPE_KEYWORDS: Record<string, string[]> = {
+  block_start: [
+    "block start",
+    "blockstart",
+    "startblock",
+    "startblöcke",
+    "starting blocks",
+    "reaktion",
+    "reaction",
+  ],
+
+  acceleration: [
+    "acceleration",
+    "beschleunigung",
+    "beschleunigungslauf",
+    "beschleunigungsläufe",
+    "drive phase",
+  ],
+
+  max_velocity: [
+    "max velocity",
+    "top speed",
+    "maximalgeschwindigkeit",
+    "flying 20",
+    "fly 20",
+    "fliegend",
+  ],
+
+  speed_endurance: [
+    "speed endurance",
+    "schnelligkeitsausdauer",
+    "tempo endurance",
+  ],
+
+  hurdle_technique: [
+    "hurdle technique",
+    "hürdentechnik",
+    "lead leg",
+    "trail leg",
+    "schwungbein",
+    "nachziehbein",
+  ],
+
+  hurdle_rhythm: [
+    "hurdle rhythm",
+    "hürdenrhythmus",
+    "3 step",
+    "3-step",
+    "dreier rhythmus",
+    "zwischenhürden",
+  ],
+
+  strength: [
+    "strength",
+    "kraft",
+    "krafttraining",
+    "squat",
+    "kniebeuge",
+    "deadlift",
+    "kreuzheben",
+    "gym",
+  ],
+
+  recovery: [
+    "recovery",
+    "regeneration",
+    "mobility",
+    "regenerationstraining",
+  ],
+};
+
+
+/*
+Try to determine the workout type.
+
+Priority:
+1. Use the explicit workout_type stored in Supabase.
+2. If it is missing, inspect summary + raw_input + exercises.
+3. Count keyword matches.
+4. Return the category with the highest score.
+*/
+function inferWorkoutType(
+  workout: WorkoutContextRecord,
+): string | null {
+
+  // Best and most reliable case.
+  if (workout.workout_type) {
+    return workout.workout_type.toLowerCase();
+  }
+
+  // Fallback for older workout records.
+  const text = `
+    ${workout.summary ?? ""}
+    ${workout.raw_input ?? ""}
+    ${JSON.stringify(workout.exercises ?? [])}
+  `.toLowerCase();
+
+  let bestType: string | null = null;
+  let bestScore = 0;
+
+  for (const [workoutType, keywords] of Object.entries(
+    WORKOUT_TYPE_KEYWORDS,
+  )) {
+    let score = 0;
+
+    for (const keyword of keywords) {
+      if (text.includes(keyword.toLowerCase())) {
+        score += 1;
+      }
+    }
+
+    if (score > bestScore) {
+      bestScore = score;
+      bestType = workoutType;
+    }
+  }
+
+  return bestType;
+}
+
+
+/*
+Find the most relevant previous workout.
+
+Rules:
+1. Do not compare a workout with itself.
+2. Only use workouts that happened before the current workout.
+3. Prefer the same workout type.
+4. Among matching workouts, use the most recent one.
+5. If none match, return null.
+*/
+export function getRelevantPreviousWorkout(
+  currentWorkout: WorkoutContextRecord,
+  workouts: WorkoutContextRecord[],
+): WorkoutContextRecord | null {
+
+  const currentType = inferWorkoutType(currentWorkout);
+
+  // If we cannot identify the current workout type,
+  // we cannot make a reliable historical comparison.
+  if (!currentType) {
+    return null;
+  }
+
+  const previousMatches = workouts
+    .filter(
+      (workout) =>
+        workout.id !== currentWorkout.id,
+    )
+    .filter(
+      (workout) =>
+        workout.workout_date < currentWorkout.workout_date,
+    )
+    .filter(
+      (workout) =>
+        inferWorkoutType(workout) === currentType,
+    )
+    .sort(
+      (a, b) =>
+        new Date(b.workout_date).getTime() -
+        new Date(a.workout_date).getTime(),
+    );
+
+  return previousMatches[0] ?? null;
+}
+
+/*
+===============================================================================
+                    WORKOUT ANALYSIS MATCHING
+===============================================================================
+
+A workout and its Workout Analysis are connected through:
+
+workouts.id
+        ↓
+analysis_boards.workout_id
+
+These helpers allow the Context System to retrieve:
+
+CURRENT WORKOUT
+→ current analysis
+
+PREVIOUS SIMILAR WORKOUT
+→ previous analysis
+
+This prepares Athletic IQ for evidence-based historical comparison.
+===============================================================================
+*/
+
+type WorkoutAnalysisContextRecord = {
+  id: string;
+  workout_id: string;
+  positives?: string[] | null;
+  negatives?: string[] | null;
+  improvements?: string[] | null;
+  created_at?: string | null;
+};
+
+
+/*
+Find the Workout Analysis that belongs to a specific workout.
+
+If no analysis exists, return null.
+*/
+export function getWorkoutAnalysisForWorkout(
+  workoutId: string,
+  analyses: WorkoutAnalysisContextRecord[],
+): WorkoutAnalysisContextRecord | null {
+  return (
+    analyses.find(
+      (analysis) =>
+        analysis.workout_id === workoutId,
+    ) ?? null
+  );
+}
+
+
+/*
+Build the first structured workout-comparison context.
+
+This does NOT ask Gemini to compare anything yet.
+
+It only prepares the correct evidence:
+
+- current workout
+- current analysis
+- previous similar workout
+- previous analysis
+*/
+export function buildWorkoutComparisonContext(
+  currentWorkout: WorkoutContextRecord,
+  workouts: WorkoutContextRecord[],
+  analyses: WorkoutAnalysisContextRecord[],
+) {
+  const previousWorkout =
+    getRelevantPreviousWorkout(
+      currentWorkout,
+      workouts,
+    );
+
+  const currentAnalysis =
+    getWorkoutAnalysisForWorkout(
+      currentWorkout.id,
+      analyses,
+    );
+
+  const previousAnalysis =
+    previousWorkout
+      ? getWorkoutAnalysisForWorkout(
+          previousWorkout.id,
+          analyses,
+        )
+      : null;
+
+  return {
+    currentWorkout,
+    currentAnalysis,
+    previousWorkout,
+    previousAnalysis,
   };
 }
