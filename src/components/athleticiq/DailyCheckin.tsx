@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useNavigate } from "@tanstack/react-router";
@@ -6,6 +6,7 @@ import { saveDailyCheckin } from "@/lib/athletic.functions";
 import { Button } from "@/components/ui/button";
 import { X, ArrowLeft, Loader2, Check } from "lucide-react";
 import { toast } from "sonner";
+import { createPortal } from "react-dom";
 
 interface Props {
   name: string;
@@ -192,11 +193,39 @@ export function DailyCheckin({ name, onClose }: Props) {
   const navigate = useNavigate();
   const saveFn = useServerFn(saveDailyCheckin);
 
-  // 0 = greeting
-  // 1 = training
-  // 2 = body & mind
-  // 3 = important context
-  // 4 = result / summary
+  /*
+  ==========================================================================
+                         DAILY CHECK-IN PORTAL
+  ==========================================================================
+
+  The Daily Check-In is a full-screen modal.
+
+  createPortal() renders it directly inside document.body instead of inside
+  the Dashboard component tree. This prevents Dashboard stacking contexts
+  from appearing above or through the Daily Check-In.
+
+  Background scrolling is also disabled while the Check-In is open.
+  ==========================================================================
+  */
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, []);
+
+  // Daily Check-In navigation:
+  // 1 = Training
+  // 2 = Leistung
+  // 3 = K?rper & Kopf
+  // 4 = Kontext
+  // 5 = saved confirmation screen
   const [page, setPage] = useState(1);
 
   const [a, setA] = useState<Answers>(empty);
@@ -316,7 +345,7 @@ export function DailyCheckin({ name, onClose }: Props) {
 
     await mutate.mutateAsync(payload);
 
-    setPage(4);
+    setPage(5);
   }
 
   async function saveRestDay() {
@@ -330,24 +359,32 @@ export function DailyCheckin({ name, onClose }: Props) {
 
     await mutate.mutateAsync(payload);
 
-    setPage(4);
+    setPage(5);
   }
 
   const pageTitle =
     page === 1
       ? "Training"
       : page === 2
-        ? "Körper & Kopf"
+        ? "Leistung"
         : page === 3
-          ? "Wichtiger Kontext"
-          : "";
+          ? "K?rper & Kopf"
+          : page === 4
+            ? "Wichtiger Kontext"
+            : "";
 
   const progress =
-    page >= 1 && page <= 3
-      ? (page / 3) * 100
+    page >= 1 && page <= 4
+      ? (page / 4) * 100
       : 0;
 
-  return (
+  // document.body only exists after mounting in the browser.
+  if (!mounted) {
+    return null;
+  }
+
+  return createPortal(
+    (
     <div
       className="fixed inset-0 z-[9999] bg-white text-slate-950 flex flex-col overflow-hidden overscroll-none"
       style={{ isolation: "isolate" }}
@@ -357,7 +394,7 @@ export function DailyCheckin({ name, onClose }: Props) {
       <div className="border-b border-border bg-card/70 backdrop-blur-xl">
         <div className="max-w-3xl mx-auto w-full px-5 py-4 flex items-center gap-4">
 
-          {page >= 1 && page <= 3 ? (
+          {page >= 1 && page <= 4 ? (
             <button
               onClick={() =>
                 setPage((current) =>
@@ -374,7 +411,7 @@ export function DailyCheckin({ name, onClose }: Props) {
           )}
 
           <div className="flex-1">
-            {page >= 1 && page <= 3 && (
+            {page >= 1 && page <= 4 && (
               <>
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-sm font-semibold">
@@ -382,7 +419,7 @@ export function DailyCheckin({ name, onClose }: Props) {
                   </span>
 
                   <span className="text-xs text-muted-foreground">
-                    {page} / 3
+                    {page} / 4
                   </span>
                 </div>
 
@@ -428,7 +465,7 @@ export function DailyCheckin({ name, onClose }: Props) {
               </h1>
 
               <p className="text-muted-foreground mt-3 mb-7">
-                Drei kurze Bereiche. Ziel: unter einer Minute.
+                Vier kurze Bereiche. Ziel: unter einer Minute.
               </p>
 
               <Button
@@ -578,6 +615,30 @@ export function DailyCheckin({ name, onClose }: Props) {
               />
             </section>
 
+            
+
+            <Button
+              size="lg"
+              className="w-full bg-[#ff6b35] hover:bg-[#ff6b35]/90 text-white rounded-2xl min-h-[56px] font-semibold"
+              disabled={
+                !a.discipline ||
+                !a.workout_type ||
+                a.rpe === null ||
+                !a.expected_difficulty
+              }
+              onClick={() => setPage(2)}
+            >
+              Weiter
+            </Button>
+          </div>
+        )}
+
+        {/* =========================================================
+            PAGE 2 ? LEISTUNG
+        ========================================================== */}
+        {page === 2 && (
+          <div className="space-y-5">
+
             <section className="rounded-2xl border border-border bg-card p-5">
               <div className="text-xs font-semibold text-accent mb-1">
                 FRAGE 4
@@ -600,17 +661,53 @@ export function DailyCheckin({ name, onClose }: Props) {
               />
             </section>
 
+<section className="rounded-2xl border border-border bg-card p-5">
+              <div className="text-xs font-semibold text-accent mb-1">
+                FRAGE 5
+              </div>
+
+              <h2 className="text-xl font-semibold mb-1">
+                Hast du das Hauptziel der heutigen Einheit erreicht?
+              </h2>
+
+              <p className="text-sm text-muted-foreground mb-4">
+                Entscheidend ist nicht nur, wie hart die Session war, sondern ob ihr Trainingsziel erreicht wurde.
+              </p>
+
+              <Grid
+                options={sessionGoalOptions}
+                value={a.session_goal_achieved}
+                onSelect={(value) => {
+                  update("session_goal_achieved", value);
+
+                  if (value === "Ja" || value === "Weiß ich nicht") {
+                    setSessionGoalText("");
+                  }
+                }}
+              />
+
+              {(a.session_goal_achieved === "Teilweise" ||
+                a.session_goal_achieved === "Nein") && (
+                <textarea
+                  value={sessionGoalText}
+                  onChange={(e) =>
+                    setSessionGoalText(e.target.value)
+                  }
+                  placeholder="Optional: Was hat gefehlt?"
+                  rows={2}
+                  className="w-full mt-3 rounded-xl border border-border bg-background p-3 text-sm outline-none focus:ring-2 focus:ring-accent"
+                />
+              )}
+            </section>
+
             <Button
               size="lg"
               className="w-full bg-[#ff6b35] hover:bg-[#ff6b35]/90 text-white rounded-2xl min-h-[56px] font-semibold"
               disabled={
-                !a.discipline ||
-                !a.workout_type ||
-                a.rpe === null ||
-                !a.expected_difficulty ||
-                !a.performance_quality
+                !a.performance_quality ||
+                !a.session_goal_achieved
               }
-              onClick={() => setPage(2)}
+              onClick={() => setPage(3)}
             >
               Weiter
             </Button>
@@ -618,14 +715,14 @@ export function DailyCheckin({ name, onClose }: Props) {
         )}
 
         {/* =========================================================
-            PAGE 2 — BODY & MIND
+            PAGE 3 — BODY & MIND
         ========================================================== */}
-        {page === 2 && (
+        {page === 3 && (
           <div className="space-y-5">
 
             <section className="rounded-2xl border border-border bg-card p-5">
               <div className="text-xs font-semibold text-accent mb-1">
-                FRAGE 5
+                FRAGE 6
               </div>
 
               <h2 className="text-xl font-semibold mb-1">
@@ -650,7 +747,7 @@ export function DailyCheckin({ name, onClose }: Props) {
 
             <section className="rounded-2xl border border-border bg-card p-5">
               <div className="text-xs font-semibold text-accent mb-1">
-                FRAGE 6
+                FRAGE 7
               </div>
 
               <h2 className="text-xl font-semibold mb-4">
@@ -684,29 +781,9 @@ export function DailyCheckin({ name, onClose }: Props) {
               )}
             </section>
 
-            <Button
-              size="lg"
-              className="w-full bg-[#ff6b35] hover:bg-[#ff6b35]/90 text-white rounded-2xl min-h-[56px] font-semibold"
-              disabled={
-                a.physical_feeling === null ||
-                !a.mental_state
-              }
-              onClick={() => setPage(3)}
-            >
-              Weiter
-            </Button>
-          </div>
-        )}
-
-        {/* =========================================================
-            PAGE 3 — CONTEXT
-        ========================================================== */}
-        {page === 3 && (
-          <div className="space-y-4">
-
-            <section className="rounded-2xl border border-border bg-card p-5">
+<section className="rounded-2xl border border-border bg-card p-5">
               <div className="text-xs font-semibold text-accent mb-1">
-                FRAGE 7
+                FRAGE 8
               </div>
 
               <h2 className="text-xl font-semibold mb-4">
@@ -799,9 +876,39 @@ export function DailyCheckin({ name, onClose }: Props) {
               )}
             </section>
 
+            <Button
+              size="lg"
+              className="w-full bg-[#ff6b35] hover:bg-[#ff6b35]/90 text-white rounded-2xl min-h-[56px] font-semibold"
+              disabled={
+                a.physical_feeling === null ||
+                !a.mental_state ||
+                a.has_pain === null ||
+                (
+                  a.has_pain &&
+                  (
+                    !a.pain_area ||
+                    !a.pain_severity
+                  )
+                )
+              }
+              onClick={() => setPage(4)}
+            >
+              Weiter
+            </Button>
+          </div>
+        )}
+
+        {/* =========================================================
+            PAGE 4 — CONTEXT
+        ========================================================== */}
+        {page === 4 && (
+          <div className="space-y-4">
+
+            
+
             <section className="rounded-2xl border border-border bg-card p-5">
               <div className="text-xs font-semibold text-accent mb-1">
-                FRAGE 8
+                FRAGE 9
               </div>
 
               <h2 className="text-xl font-semibold mb-1">
@@ -872,60 +979,14 @@ export function DailyCheckin({ name, onClose }: Props) {
               />
             </section>
 
-            <section className="rounded-2xl border border-border bg-card p-5">
-              <div className="text-xs font-semibold text-accent mb-1">
-                FRAGE 9
-              </div>
-
-              <h2 className="text-xl font-semibold mb-1">
-                Hast du das Hauptziel der heutigen Einheit erreicht?
-              </h2>
-
-              <p className="text-sm text-muted-foreground mb-4">
-                Entscheidend ist nicht nur, wie hart die Session war, sondern ob ihr Trainingsziel erreicht wurde.
-              </p>
-
-              <Grid
-                options={sessionGoalOptions}
-                value={a.session_goal_achieved}
-                onSelect={(value) => {
-                  update("session_goal_achieved", value);
-
-                  if (value === "Ja" || value === "Weiß ich nicht") {
-                    setSessionGoalText("");
-                  }
-                }}
-              />
-
-              {(a.session_goal_achieved === "Teilweise" ||
-                a.session_goal_achieved === "Nein") && (
-                <textarea
-                  value={sessionGoalText}
-                  onChange={(e) =>
-                    setSessionGoalText(e.target.value)
-                  }
-                  placeholder="Optional: Was hat gefehlt?"
-                  rows={2}
-                  className="w-full mt-3 rounded-xl border border-border bg-background p-3 text-sm outline-none focus:ring-2 focus:ring-accent"
-                />
-              )}
-            </section>
+            
 
             <Button
               size="lg"
               className="w-full bg-[#ff6b35] hover:bg-[#ff6b35]/90 text-white rounded-2xl min-h-[56px] font-semibold"
               disabled={
                 mutate.isPending ||
-                a.has_pain === null ||
-                a.performance_factors.length === 0 ||
-                !a.session_goal_achieved ||
-                (
-                  a.has_pain &&
-                  (
-                    !a.pain_area ||
-                    !a.pain_severity
-                  )
-                )
+                a.performance_factors.length === 0
               }
               onClick={finishCheckin}
             >
@@ -942,7 +1003,7 @@ export function DailyCheckin({ name, onClose }: Props) {
         )}
 
         {/* SUMMARY */}
-        {page === 4 && (
+        {page === 5 && (
           <div className="flex-1 flex flex-col justify-center">
             <div className="rounded-3xl border border-border bg-card p-7 text-center">
 
@@ -978,6 +1039,8 @@ export function DailyCheckin({ name, onClose }: Props) {
 
       </div>
     </div>
+    ),
+    document.body,
   );
 }
 
