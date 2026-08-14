@@ -91,7 +91,9 @@ function AuthPage() {
         return;
       }
 
+      console.log("Trying Supabase login...");
       const { data, error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
+      console.log("Supabase login result:", { hasSession: !!data.session, error });
       if (error) throw error;
       if (!data.session) {
         toast.error("Login fehlgeschlagen. Bitte prüfe deine Zugangsdaten.");
@@ -299,3 +301,4 @@ function AuthPage() {
     </div>
   );
 }
+
