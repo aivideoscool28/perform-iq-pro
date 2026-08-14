@@ -21,6 +21,14 @@ type Answers = {
   session_details: string | null;
   performance_results: Record<string, unknown> | null;
   rpe: number | null;
+
+  // Adds context to RPE:
+  // Was today's difficulty actually expected?
+  expected_difficulty: string | null;
+
+  // Describes whether performance quality held up across the session.
+  performance_quality: string | null;
+
   physical_feeling: number | null;
   mental_state: string | null;
   has_pain: boolean | null;
@@ -28,6 +36,13 @@ type Answers = {
   pain_area: string | null;
   pain_severity: string | null;
   performance_factors: string[];
+
+  // Did the athlete achieve the main purpose of today's workout?
+  session_goal_achieved: string | null;
+
+  // Optional explanation when the goal was only partly or not achieved.
+  session_goal_note: string | null;
+
   extra_note: string | null;
 
   // Temporary legacy fields.
@@ -52,6 +67,8 @@ const empty: Answers = {
   session_details: null,
   performance_results: null,
   rpe: null,
+  expected_difficulty: null,
+  performance_quality: null,
   physical_feeling: null,
   mental_state: null,
   has_pain: null,
@@ -59,6 +76,8 @@ const empty: Answers = {
   pain_area: null,
   pain_severity: null,
   performance_factors: [],
+  session_goal_achieved: null,
+  session_goal_note: null,
   extra_note: null,
 
   // Legacy values kept temporarily during migration.
@@ -140,6 +159,34 @@ const performanceFactors = [
   "Sonstiges",
 ];
 
+// Adds context to RPE.
+// RPE 10 + "Wie erwartet" means something very different from
+// RPE 10 + "Deutlich schwerer als erwartet".
+const expectedDifficultyOptions = [
+  "Leichter als erwartet",
+  "Wie erwartet",
+  "Schwerer als erwartet",
+  "Deutlich schwerer als erwartet",
+];
+
+// Describes the direction of performance quality DURING the session.
+// This helps distinguish hard-but-stable training from quality breakdown.
+const performanceQualityOptions = [
+  "Besser geworden",
+  "Stabil geblieben",
+  "Etwas abgefallen",
+  "Stark abgefallen",
+  "Kann ich nicht beurteilen",
+];
+
+// Determines whether the main purpose of the workout was achieved.
+const sessionGoalOptions = [
+  "Ja",
+  "Teilweise",
+  "Nein",
+  "Weiß ich nicht",
+];
+
 export function DailyCheckin({ name, onClose }: Props) {
   const qc = useQueryClient();
   const navigate = useNavigate();
@@ -162,6 +209,10 @@ export function DailyCheckin({ name, onClose }: Props) {
   const [mentalOtherText, setMentalOtherText] = useState("");
   const [factorOtherText, setFactorOtherText] = useState("");
   const [extraText, setExtraText] = useState("");
+
+  // Only used when the athlete says the session goal was
+  // partly achieved or not achieved.
+  const [sessionGoalText, setSessionGoalText] = useState("");
 
   const mutate = useMutation({
     mutationFn: async (payload: Answers) =>
@@ -242,6 +293,9 @@ export function DailyCheckin({ name, onClose }: Props) {
 
       pain_note:
         painText.trim() || null,
+
+      session_goal_note:
+        sessionGoalText.trim() || null,
 
       extra_note: [
         mentalOtherText.trim()
@@ -502,13 +556,59 @@ export function DailyCheckin({ name, onClose }: Props) {
               />
             </section>
 
+            <section className="rounded-2xl border border-border bg-card p-5">
+              <div className="text-xs font-semibold text-accent mb-1">
+                FRAGE 3
+              </div>
+
+              <h2 className="text-xl font-semibold mb-1">
+                Wie schwer war die Einheit im Vergleich zu deiner Erwartung?
+              </h2>
+
+              <p className="text-sm text-muted-foreground mb-4">
+                Damit Athletic IQ unterscheiden kann, ob eine hohe Belastung geplant oder überraschend war.
+              </p>
+
+              <Grid
+                options={expectedDifficultyOptions}
+                value={a.expected_difficulty}
+                onSelect={(value) =>
+                  update("expected_difficulty", value)
+                }
+              />
+            </section>
+
+            <section className="rounded-2xl border border-border bg-card p-5">
+              <div className="text-xs font-semibold text-accent mb-1">
+                FRAGE 4
+              </div>
+
+              <h2 className="text-xl font-semibold mb-1">
+                Wie hat sich deine Leistungsqualität während der Einheit entwickelt?
+              </h2>
+
+              <p className="text-sm text-muted-foreground mb-4">
+                Nicht wie anstrengend es war, sondern ob deine Leistung über die Session stabil blieb.
+              </p>
+
+              <Grid
+                options={performanceQualityOptions}
+                value={a.performance_quality}
+                onSelect={(value) =>
+                  update("performance_quality", value)
+                }
+              />
+            </section>
+
             <Button
               size="lg"
               className="w-full bg-[#ff6b35] hover:bg-[#ff6b35]/90 text-white rounded-2xl min-h-[56px] font-semibold"
               disabled={
                 !a.discipline ||
                 !a.workout_type ||
-                a.rpe === null
+                a.rpe === null ||
+                !a.expected_difficulty ||
+                !a.performance_quality
               }
               onClick={() => setPage(2)}
             >
@@ -525,7 +625,7 @@ export function DailyCheckin({ name, onClose }: Props) {
 
             <section className="rounded-2xl border border-border bg-card p-5">
               <div className="text-xs font-semibold text-accent mb-1">
-                FRAGE 3
+                FRAGE 5
               </div>
 
               <h2 className="text-xl font-semibold mb-1">
@@ -550,7 +650,7 @@ export function DailyCheckin({ name, onClose }: Props) {
 
             <section className="rounded-2xl border border-border bg-card p-5">
               <div className="text-xs font-semibold text-accent mb-1">
-                FRAGE 4
+                FRAGE 6
               </div>
 
               <h2 className="text-xl font-semibold mb-4">
@@ -606,7 +706,7 @@ export function DailyCheckin({ name, onClose }: Props) {
 
             <section className="rounded-2xl border border-border bg-card p-5">
               <div className="text-xs font-semibold text-accent mb-1">
-                FRAGE 5
+                FRAGE 7
               </div>
 
               <h2 className="text-xl font-semibold mb-4">
@@ -701,7 +801,7 @@ export function DailyCheckin({ name, onClose }: Props) {
 
             <section className="rounded-2xl border border-border bg-card p-5">
               <div className="text-xs font-semibold text-accent mb-1">
-                FRAGE 6
+                FRAGE 8
               </div>
 
               <h2 className="text-xl font-semibold mb-1">
@@ -772,6 +872,45 @@ export function DailyCheckin({ name, onClose }: Props) {
               />
             </section>
 
+            <section className="rounded-2xl border border-border bg-card p-5">
+              <div className="text-xs font-semibold text-accent mb-1">
+                FRAGE 9
+              </div>
+
+              <h2 className="text-xl font-semibold mb-1">
+                Hast du das Hauptziel der heutigen Einheit erreicht?
+              </h2>
+
+              <p className="text-sm text-muted-foreground mb-4">
+                Entscheidend ist nicht nur, wie hart die Session war, sondern ob ihr Trainingsziel erreicht wurde.
+              </p>
+
+              <Grid
+                options={sessionGoalOptions}
+                value={a.session_goal_achieved}
+                onSelect={(value) => {
+                  update("session_goal_achieved", value);
+
+                  if (value === "Ja" || value === "Weiß ich nicht") {
+                    setSessionGoalText("");
+                  }
+                }}
+              />
+
+              {(a.session_goal_achieved === "Teilweise" ||
+                a.session_goal_achieved === "Nein") && (
+                <textarea
+                  value={sessionGoalText}
+                  onChange={(e) =>
+                    setSessionGoalText(e.target.value)
+                  }
+                  placeholder="Optional: Was hat gefehlt?"
+                  rows={2}
+                  className="w-full mt-3 rounded-xl border border-border bg-background p-3 text-sm outline-none focus:ring-2 focus:ring-accent"
+                />
+              )}
+            </section>
+
             <Button
               size="lg"
               className="w-full bg-[#ff6b35] hover:bg-[#ff6b35]/90 text-white rounded-2xl min-h-[56px] font-semibold"
@@ -779,6 +918,7 @@ export function DailyCheckin({ name, onClose }: Props) {
                 mutate.isPending ||
                 a.has_pain === null ||
                 a.performance_factors.length === 0 ||
+                !a.session_goal_achieved ||
                 (
                   a.has_pain &&
                   (

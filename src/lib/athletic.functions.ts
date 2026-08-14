@@ -529,6 +529,13 @@ const checkinSchema = z.object({
   session_details: z.string().max(1500).nullable(),
   performance_results: z.record(z.string(), z.unknown()).nullable(),
   rpe: z.number().int().min(1).max(10).nullable(),
+
+  // Adds expectation context to RPE.
+  expected_difficulty: z.string().max(60).nullable(),
+
+  // Tracks whether performance quality improved, stayed stable or declined.
+  performance_quality: z.string().max(60).nullable(),
+
   physical_feeling: z.number().int().min(1).max(5).nullable(),
   mental_state: z.string().max(80).nullable(),
   has_pain: z.boolean().nullable(),
@@ -536,6 +543,13 @@ const checkinSchema = z.object({
   pain_area: z.string().max(80).nullable(),
   pain_severity: z.string().max(40).nullable(),
   performance_factors: z.array(z.string().max(80)).max(10),
+
+  // Whether the main purpose of today's session was achieved.
+  session_goal_achieved: z.string().max(40).nullable(),
+
+  // Optional explanation for partially/not achieved session goals.
+  session_goal_note: z.string().max(500).nullable(),
+
   extra_note: z.string().max(1000).nullable(),
 
   // Temporary legacy fields during migration
@@ -735,6 +749,17 @@ EXAMPLE:
           // If history loading fails or no previous logs exist, use [].
           const history = previousCheckins ?? [];
 
+          /*
+          TEMPORARY HISTORY DEBUG
+
+          Prints exactly what Prompt 2 receives from previous Daily Check-Ins.
+          Remove after historical-context testing is finished.
+          */
+          console.log("DAILY CHECK-IN HISTORY SENT TO PROMPT 2:", {
+            count: history.length,
+            history,
+          });
+
           const analysis = await generateCheckinAnalysis(
             name,
             data,
@@ -805,118 +830,227 @@ Each bullet must:
 
 CARD PURPOSES:
 
-POSITIVES:
+POSITIVES = KEEP
+
 Answer:
-"What from today's session appears worth keeping or reproducing?"
+"What from today's session appears genuinely worth keeping or reproducing in future comparable training?"
 
-Do not use a positive merely because the athlete completed the session.
-Explain why the positive matters for this specific workout.
+Each positive should contain:
 
-NEGATIVES:
+OBSERVATION
+→ WHY IT MATTERS
+→ WHAT TO KEEP
+
+The athlete should understand what behavior, result, consistency or approach is worth maintaining.
+
+Do not merely praise:
+- completing the workout
+- training hard
+- being motivated
+
+unless there is a meaningful reason that matters for this specific session.
+
+Do not convert limited evidence into stronger claims.
+
+Example:
+Completing all hurdle repetitions without knocking down a hurdle is an observed result.
+It does NOT prove that hurdle technique was technically clean.
+
+
+NEGATIVES = IMPROVE / OBSERVE
+
 Answer:
-"What is the most important thing that deserves attention, and why does it matter?"
+"What deserves the athlete's attention, and what should they improve or observe more closely?"
 
-Do not simply repeat values such as RPE, mental state or pain.
-Interpret why the signal may matter for this discipline/workout, while staying cautious.
+Each negative should contain:
 
-IMPROVEMENTS:
+SIGNAL
+→ WHY IT MAY MATTER
+→ WHAT TO IMPROVE OR OBSERVE
+
+Do NOT simply repeat:
+- RPE
+- mental state
+- pain
+- performance factors
+
+The athlete already entered those values.
+
+Instead, explain what combination or relationship may be worth monitoring.
+
+If there is not enough evidence to identify a real problem,
+turn the uncertainty into a measurable observation for a future session.
+
+
+IMPROVEMENTS = NEXT ACTION
+
 Answer:
-"What exactly should the athlete do, observe or measure next time?"
+"What exactly should the athlete do during the next comparable session?"
 
-Give concrete and testable next actions.
-Prefer one specific cue, observation, rating, measurement or routine over generic advice.
+Give a concrete and testable action whenever possible.
 
-Examples of good specificity:
-- rate hurdle rhythm after each repetition
-- record sprint times for each rep
-- use the same pre-start cue before every attempt
-- note when focus drops during the session
+Prefer:
+- one specific cue
+- one measurement
+- one rating
+- one observation
+- one short routine
+- one thing to record after each repetition
 
-ANALYSIS RULES:
+Avoid generic advice such as:
+- focus more
+- improve technique
+- recover better
+- stay motivated
 
-1. TODAY
-Use today's full Daily Check-In as the primary source for today's session.
 
-2. PERFORMANCE FIRST
-When measurable performance/results are available, prioritize them over generic wellbeing observations.
+DETAIL LEVEL:
 
-3. WORKOUT-SPECIFIC REASONING
-Connect the analysis to the athlete's discipline and workout type.
+Do NOT use a strict word limit.
 
-For hurdles, relevant concepts may include:
-- rhythm
-- consistency between repetitions
-- start approach
-- concentration during technical repetitions
+Be concise enough to scan easily, but use enough detail to explain:
+- what was noticed
+- why it matters
+- what the athlete should do with that information
 
-For sprint, relevant concepts may include:
-- acceleration
-- consistency of times
-- performance across repetitions
-- perceived effort relative to results
+Prefer one strong, clearly explained insight over several weak observations.
 
-IMPORTANT:
-Do NOT claim you observed technical details that were not supplied.
-Daily Check-In analysis is not Video Analysis.
 
-4. HISTORY
-Use previous summaries to identify repeated patterns, changes and noteworthy developments.
+INSIGHT PRIORITY:
 
-Look especially for:
-- changes in measurable performance
-- repeated high or low RPE
-- changes in physical feeling
-- repeated mental-state signals
-- recurring pain/discomfort
-- repeated performance factors
+Prefer insights in this order:
 
-5. COMPARABLE PERFORMANCE
-When comparing specific performance results, compare them primarily with genuinely comparable previous sessions.
+1. Non-obvious relationships in supplied athlete data
+2. Supported historical changes or repeated patterns
+3. Measurable performance/results
+4. Workout-specific observations
+5. Training-load, physical or mental signals worth monitoring
+6. Simple restatement of athlete input only when needed for context
 
-Do not directly compare performance measurements from fundamentally different workout types.
 
-6. TRENDS
-One check-in is NOT a trend.
+CROSS-CARD CONSISTENCY:
 
-Only describe something as improving, worsening, recurring or unusual when supplied historical evidence supports it.
+POSITIVES, NEGATIVES and IMPROVEMENTS must form ONE coherent analysis.
 
-If there is insufficient history, do not invent a trend.
+Do not make conflicting interpretations from the same evidence.
 
-7. CORRELATION IS NOT CAUSATION
-Never claim that stress, sleep, pain, motivation, weather or another factor definitely caused a performance change simply because they occurred together.
+Example of BAD reasoning:
 
-8. UNCERTAINTY
-Clearly distinguish between:
-- facts
-- observed patterns
-- possible interpretations
+Positive:
+"Nervousness proves strong mental resilience."
 
-For uncertain interpretations use cautious language such as:
-- "fällt auf"
-- "könnte darauf hindeuten"
-- "möglicherweise"
-- "es lohnt sich zu beobachten"
-- "wenn sich dieses Muster wiederholt"
+Negative:
+"Nervousness caused major exhaustion."
 
-9. PAIN
-Never diagnose injuries from Daily Check-In data.
+These conclusions conflict and may not be supported.
 
-Pain is an athlete-reported signal.
-If pain is recurring, increasing or severe, mention that it deserves attention rather than diagnosing its cause.
+Instead:
+Use nervousness only as a reported factual signal and interpret it cautiously.
 
-10. NO INVENTION
-Never invent athlete data, technical observations, previous results, trends or explanations unsupported by supplied information.
+Before answering, compare all three cards and make sure they do not contradict each other.
 
-11. TONE
-Be concise, analytical and useful.
-Avoid generic praise.
-Avoid simply mirroring the athlete's answers.
 
-FINAL QUALITY CHECK BEFORE ANSWERING:
-For every bullet ask:
-"Does this tell the athlete something useful that they did not already know from entering the check-in?"
+INSIGHT DIVERSITY:
 
-If not, improve the bullet.
+When enough athlete data exists,
+do not use exactly the same signal as the main point in every card.
+
+Example:
+If today's check-in contains:
+- completed hurdle repetitions
+- RPE 10
+- physical feeling 4/5
+- nervousness
+- no pain
+
+do not make every card only about nervousness.
+
+Use the strongest distinct pieces of evidence where useful.
+
+
+HIDDEN RELATIONSHIPS, NOT HIDDEN FACTS:
+
+The goal is to identify useful relationships or patterns that an athlete or busy coach might otherwise overlook.
+
+However, never invent:
+- technique that was not observed
+- biomechanical problems
+- causes
+- fatigue mechanisms
+- psychological conditions
+- performance changes
+- historical patterns
+
+just to make the analysis sound intelligent.
+
+
+CAUSATION RULE:
+
+Two things occurring together does NOT prove that one caused the other.
+
+For example:
+
+RPE 10 + nervousness
+
+does NOT automatically mean:
+
+"nervousness caused RPE 10"
+or
+"stress caused exhaustion."
+
+A better interpretation is:
+
+"RPE 10 and nervousness occurred together; observe whether this combination repeats in comparable sessions."
+
+
+HISTORICAL CONTEXT:
+
+Use the supplied previous Daily Check-In summaries when they exist.
+
+Historical comparisons should add information that the athlete may not notice from today's check-in alone.
+
+Examples of useful history-based reasoning:
+- RPE has risen across several comparable sessions
+- physical feeling has been stable while performance changed
+- nervousness has appeared repeatedly in recent hurdle sessions
+- pain has appeared repeatedly or increased
+- a performance result has improved or worsened across comparable sessions
+
+Only state these patterns when the supplied history actually supports them.
+
+Do NOT force a historical comparison when the history is weak, unrelated or missing.
+
+
+TECHNICAL BOUNDARY:
+
+Daily Check-In analysis may explain why certain factors could matter for Sprint or Hurdles.
+
+It must NOT claim technical observations that require video or sensor evidence.
+
+Allowed:
+"Reduced concentration could make rhythm consistency worth monitoring."
+
+Not allowed:
+"Your trail leg was too slow today."
+
+
+FINAL QUALITY CHECK:
+
+Before returning the answer, check EVERY card:
+
+1. Does this mostly repeat something the athlete already entered?
+2. Does it explain WHY the insight matters?
+3. Does it clearly tell the athlete what to KEEP, IMPROVE, OBSERVE or DO?
+4. Does it claim anything that the supplied evidence cannot support?
+5. Does it conflict with another card?
+6. Is the same signal being unnecessarily repeated across all cards?
+7. If historical summaries exist, did I consider whether they contain a useful supported pattern?
+
+If #1, #4, #5 or #6 is yes:
+rewrite the relevant insight.
+
+The final goal is:
+The athlete should learn something useful from the analysis that was not obvious from simply filling in the Daily Check-In.
 `,
         },
         {
