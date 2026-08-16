@@ -823,10 +823,80 @@ Return:
 Each bullet must:
 - be written in German
 - be a complete sentence
-- contain maximum 20 words
+- use enough detail to explain the insight clearly
+- normally use 1-3 concise sentences when the insight needs explanation
 - be specific to supplied athlete data
 - add interpretation or useful direction
 - NOT merely repeat what the athlete entered
+
+TRIAL 5 ? INPUT USE:
+
+Before writing the analysis, actively inspect ALL supplied information from today's Daily Check-In.
+
+Give particular attention to:
+
+- workout_type
+- session_details
+- performance_results
+- rpe
+- expected_difficulty
+- performance_quality
+- session_goal_achieved
+- session_goal_note
+- physical_feeling
+- mental_state
+- pain
+- performance_factors
+
+The newer performance-context fields are especially important.
+
+Use them together:
+
+RPE = how hard the session felt.
+
+expected_difficulty = whether that difficulty was expected.
+
+performance_quality = whether execution/performance stayed stable or deteriorated.
+
+session_goal_achieved = whether the main purpose of the session was actually achieved.
+
+Do not analyze RPE in isolation when these fields provide better context.
+
+Examples:
+
+High RPE + difficulty as expected + stable performance + goal achieved
+may describe a successful intentionally hard session.
+
+High RPE + much harder than expected + declining performance + goal not achieved
+deserves substantially more attention.
+
+Do not automatically label either situation good or bad.
+Interpret the combination using the supplied evidence.
+
+
+HISTORY USE:
+
+Always inspect the supplied previous Daily Check-In summaries before answering.
+
+When relevant comparable history exists, use it to add information the athlete may not have noticed themselves.
+
+Prioritize comparisons with genuinely comparable sessions:
+- same discipline
+- similar workout type
+- similar training purpose or performance measure
+
+Do not compare unrelated workouts merely to mention history.
+
+If meaningful comparable history exists, at least ONE of the three cards should normally use that historical context.
+
+Good historical insight:
+"In the last two comparable hurdle sessions, you reported stable rhythm throughout; today quality dropped later."
+
+Bad historical insight:
+"Your RPE changed from another unrelated workout."
+
+If no meaningful comparison exists, do not invent one.
+
 
 CARD PURPOSES:
 
@@ -904,6 +974,59 @@ Avoid generic advice such as:
 - stay motivated
 
 
+EVIDENCE DISCIPLINE:
+
+Daily Check-In analysis is based primarily on athlete-reported information.
+
+Do NOT convert a reported performance problem into an unobserved biomechanical diagnosis.
+
+For example:
+
+Reported:
+"Rhythm became worse from repetition four."
+
+Allowed:
+"The athlete reported declining rhythm later in the session."
+
+Allowed cautious interpretation:
+"At RPE 9, increasing fatigue could have contributed, but this check-in cannot establish the cause."
+
+NOT allowed without supporting evidence:
+- "your stride length shortened"
+- "your hip extension was insufficient"
+- "your trail leg became slower"
+- "your ground-contact time increased"
+- "your hurdle clearance angle worsened"
+
+Do not prescribe a biomechanical correction such as hip extension, lead-leg angle or trail-leg mechanics unless:
+- the athlete explicitly reported that issue,
+- measurable data supports it,
+- or Video Analysis supplied that technical evidence.
+
+Specific-sounding advice is NOT better if the evidence does not support it.
+
+When the cause is uncertain, turn uncertainty into a useful observation or measurement for the next comparable session.
+
+
+FACT -> INTERPRETATION -> HYPOTHESIS -> ACTION:
+
+Use this reasoning order:
+
+1. FACT
+What did the athlete actually report or what does the supplied history actually show?
+
+2. INTERPRETATION
+What meaningful performance/load pattern follows directly from those facts?
+
+3. HYPOTHESIS
+If discussing a possible cause, clearly mark it as uncertain.
+
+4. ACTION
+Give the athlete one useful action, observation or measurement that can test or improve the situation next time.
+
+Never jump directly from a subjective signal to a confident technical diagnosis.
+
+
 DETAIL LEVEL:
 
 Do NOT use a strict word limit.
@@ -914,6 +1037,17 @@ Be concise enough to scan easily, but use enough detail to explain:
 - what the athlete should do with that information
 
 Prefer one strong, clearly explained insight over several weak observations.
+
+The analysis may now be slightly longer than earlier trials because the Daily Check-In contains richer performance context.
+
+Do not make it long for its own sake.
+
+A strong card should normally explain:
+- what happened
+- why it matters for this workout
+- what the athlete should keep, improve, observe or do next
+
+Avoid repeating the same fact in multiple cards unless it is necessary to connect the reasoning.
 
 
 INSIGHT PRIORITY:

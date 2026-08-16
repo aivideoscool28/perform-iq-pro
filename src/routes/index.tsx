@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+﻿import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -15,7 +15,7 @@ import { consumeJustLoggedIn } from "@/lib/auth-session";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
-  Loader2, CheckCircle2, Sparkles, RotateCcw, Dumbbell, TrendingUp, Activity,
+  Loader2, CheckCircle2, Sparkles, RotateCcw, Dumbbell, TrendingUp, Activity, Flame,
 } from "lucide-react";
 
 export const Route = createFileRoute("/")({
@@ -130,6 +130,57 @@ function Dashboard() {
   const weeklyGoal = (profile as { training_days_per_week?: number | null } | undefined)?.training_days_per_week ?? 4;
   const trainings = trainingsThisWeek(checkins as Array<{ checkin_date: string; is_rest_day?: boolean | null }>);
 
+  // Latest useful Athletic IQ insight.
+  // Prefer a real takeaway from the latest saved Workout Analysis.
+  const latestBoard = data?.boards?.[0] as
+    | {
+        positives?: string[] | null;
+        negatives?: string[] | null;
+        improvements?: string[] | null;
+        created_at?: string | null;
+      }
+    | undefined;
+
+  const latestCheckin = checkins[0] as
+    | {
+        checkin_date: string;
+        is_rest_day?: boolean | null;
+        discipline?: string | null;
+        ai_summary?: string | null;
+      }
+    | undefined;
+
+  const latestImprovement =
+    latestBoard?.improvements?.find((item) => item?.trim())?.trim() ?? null;
+
+  const latestObservation =
+    latestBoard?.negatives?.find((item) => item?.trim())?.trim() ?? null;
+
+  const latestPositive =
+    latestBoard?.positives?.find((item) => item?.trim())?.trim() ?? null;
+
+  const latestInsight =
+    latestImprovement ||
+    latestObservation ||
+    latestPositive ||
+    latestCheckin?.ai_summary?.trim() ||
+    null;
+
+  const latestInsightType =
+    latestImprovement
+      ? "NÄCHSTER FOKUS"
+      : latestObservation
+        ? "BEOBACHTUNG"
+        : latestPositive
+          ? "STÄRKE"
+          : latestInsight
+            ? "CHECK-IN"
+            : "ATHLETIC IQ";
+
+  const latestInsightDiscipline =
+    latestCheckin?.discipline?.trim() ||
+    (profile?.disciplines?.[0] ?? null);
+
   return (
     <AppShell title={`Hallo ${name}`} subtitle={today}>
       {isLoading ? (
@@ -138,119 +189,425 @@ function Dashboard() {
         </div>
       ) : (
         <>
-          {/* Daily check-in button */}
+          {/* TODAY'S TRAINING — temporary until Training calendar is connected */}
           <section className="mb-6">
-            <Button
-              data-tour="checkin"
-              size="lg"
-              disabled={doneToday}
-              onClick={() => setCheckinOpen(true)}
-              className="w-full h-14 text-base font-semibold rounded-2xl shadow-sm"
-            >
-              {doneToday ? (
-                <><CheckCircle2 className="mr-2 h-5 w-5" /> Check-in erledigt ✓</>
-              ) : (
-                <><Sparkles className="mr-2 h-5 w-5" /> Daily Check-in starten</>
-              )}
-            </Button>
-            {doneToday && checkinData?.checkin?.ai_summary && (
-              <p className="text-sm text-muted-foreground mt-3 text-center">
-                {checkinData.checkin.ai_summary}
-              </p>
-            )}
-            {doneToday && (
-              <div className="mt-3 flex justify-center">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => resetCheckin.mutate()}
-                  disabled={resetCheckin.isPending}
-                  className="text-xs text-muted-foreground"
-                >
-                  <RotateCcw className="mr-1.5 h-3 w-3" />
-                  Dev: Check-in zurücksetzen
-                </Button>
-              </div>
-            )}
-          </section>
+            <div className="rounded-2xl border border-border bg-card px-6 py-5 shadow-sm">
+              <div className="flex flex-col gap-5 lg:flex-row lg:items-center">
 
-          {/* Streak */}
-          <section data-tour="streak" className="mb-6">
-            <StreakCard
-              current={currentStreak}
-              longest={Math.max(profile?.longest_streak ?? 0, currentStreak)}
-              workedOutToday={doneToday && !checkinData?.checkin?.is_rest_day}
-              freezes={profile?.streak_freezes_remaining ?? 0}
-            />
-          </section>
-
-          {/* Favorite athlete quote / news */}
-          <AthleteQuoteCard profile={profile as { favourite_athlete?: string | null; receive_news_and_motivation?: boolean | null; disciplines?: string[] | null } | undefined} />
-
-          {/* Trainings diese Woche */}
-          <section data-tour="performance" className="mb-6">
-            <div className="relative overflow-hidden rounded-2xl border border-border bg-card p-5 shadow-sm">
-              <div className="flex items-start justify-between">
-                <div className="min-w-0">
-                  <div className="text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
-                    Trainings diese Woche
+                {/* Left: workout */}
+                <div className="flex items-center gap-4 lg:w-[32%]">
+                  <div className="grid h-16 w-16 shrink-0 place-items-center rounded-2xl bg-accent/10">
+                    <Dumbbell className="h-7 w-7 text-accent" />
                   </div>
-                  <div className="mt-2 flex items-baseline gap-1.5">
-                    <span className="text-3xl font-semibold tabular-nums">{trainings}</span>
-                    <span className="text-sm text-muted-foreground">/ {weeklyGoal}</span>
-                  </div>
-                  <div className="mt-1 text-xs text-muted-foreground/80">
-                    {trainings === 0 ? "Start logging!" : "Dein Wochenziel"}
-                  </div>
-                </div>
-                <div className="h-10 w-10 shrink-0 rounded-xl border border-border bg-secondary grid place-items-center">
-                  <Dumbbell className="h-4 w-4 text-muted-foreground" />
-                </div>
-              </div>
-              <div className="mt-4 opacity-60">
-                <Sparkline data={[0, 1, 1, 2, 2, 3, trainings]} color="var(--accent)" />
-              </div>
-            </div>
-          </section>
 
-          {/* Single latest KI-Insight */}
-          <section className="mb-6">
-            <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
-              <div className="flex items-center gap-2.5 mb-4">
-                <div className="h-8 w-8 rounded-lg bg-foreground grid place-items-center">
-                  <Sparkles className="h-4 w-4 text-background" />
-                </div>
-                <div>
-                  <div className="font-semibold text-sm">KI-Insight</div>
-                  <div className="text-[11px] text-muted-foreground">Neuester Tipp</div>
-                </div>
-              </div>
-              <div className="rounded-xl border border-border bg-background p-4">
-                <div className="flex gap-3">
-                  {trainings === 0 ? (
-                    <Activity className="h-5 w-5 text-accent shrink-0 mt-0.5" />
-                  ) : (
-                    <TrendingUp className="h-5 w-5 text-accent shrink-0 mt-0.5" />
-                  )}
                   <div className="min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <h4 className="font-medium text-sm">
-                        {trainings === 0 ? "Leg los" : "Sprintform im Aufwärtstrend"}
-                      </h4>
-                      <span className="text-[10px] uppercase tracking-wider text-muted-foreground border border-border rounded px-1.5 py-0.5">
-                        {trainings === 0 ? "Onboarding" : "Performance"}
-                      </span>
+                    <div className="text-[10px] font-bold uppercase tracking-[0.24em] text-accent">
+                      Heute
                     </div>
-                    <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-                      {trainings === 0
-                        ? "Logge dein erstes Workout, damit die KI dein persönliches Profil aufbauen kann."
-                        : "Deine Belastung sitzt im optimalen Bereich. Halte Hard-Tage scharf und Easy-Tage wirklich easy."}
+
+                    <h2 className="mt-1 text-xl font-bold tracking-tight">
+                      Beschleunigung
+                    </h2>
+
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      Sprint · ca. 60 Minuten
                     </p>
                   </div>
                 </div>
+
+                {/* Middle: workout preview */}
+                <div className="flex-1 lg:border-l lg:border-border lg:pl-7">
+                  <div className="grid gap-2.5 text-sm font-semibold">
+
+                    <div className="flex items-center gap-3">
+                      <span className="h-2 w-2 shrink-0 rounded-full bg-accent/30" />
+                      <span>4 × 20 m Blockstarts</span>
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                      <span className="h-2 w-2 shrink-0 rounded-full bg-accent/30" />
+                      <span>4 × 30 m Beschleunigung</span>
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                      <span className="h-2 w-2 shrink-0 rounded-full bg-accent/30" />
+                      <span>3 × Flying 30 m</span>
+                    </div>
+
+                  </div>
+                </div>
+
+                {/* Right: action */}
+                <div className="shrink-0">
+                  <Button
+                    variant="outline"
+                    onClick={() =>
+                      toast("Training wird später mit dem Trainingskalender verbunden.")
+                    }
+                    className="h-11 rounded-xl border-accent px-5 font-semibold hover:bg-accent/5"
+                  >
+                    Training ansehen
+                    <span className="ml-2 text-lg">→</span>
+                  </Button>
+                </div>
+
               </div>
             </div>
           </section>
+
+
+          {/* CHECK-IN + MOTIVATION */}
+          <section className="mb-6 grid gap-6 lg:grid-cols-2">
+
+            {/* DAILY CHECK-IN */}
+            {!doneToday ? (
+
+              <button
+                data-tour="checkin"
+                onClick={() => setCheckinOpen(true)}
+                className="
+                  group relative min-h-[155px] overflow-hidden
+                  rounded-2xl border border-accent/20
+                  bg-gradient-to-br from-accent/10 via-card to-accent/5
+                  p-6 text-left shadow-sm
+                  transition-all duration-200
+                  hover:-translate-y-0.5 hover:border-accent/40 hover:shadow-md
+                "
+              >
+
+                <div className="
+                  pointer-events-none absolute
+                  -left-12 -top-16 h-40 w-40
+                  rounded-full bg-accent/15 blur-3xl
+                " />
+
+                <div className="relative flex h-full items-center justify-between gap-5">
+
+                  <div className="flex items-center gap-4">
+
+                    <div className="
+                      grid h-14 w-14 shrink-0 place-items-center
+                      rounded-2xl bg-accent/15
+                    ">
+                      <Sparkles className="h-6 w-6 text-accent" />
+                    </div>
+
+                    <div>
+                      <div className="text-[10px] font-bold uppercase tracking-[0.22em] text-accent">
+                        Heute
+                      </div>
+
+                      <h2 className="mt-1 text-xl font-bold tracking-tight">
+                        Daily Check-In
+                      </h2>
+
+                      <p className="mt-1 text-sm text-muted-foreground">
+                        Training beendet? Kurzes Feedback geben.
+                      </p>
+                    </div>
+
+                  </div>
+
+                  <div className="
+                    shrink-0 rounded-xl
+                    bg-accent px-4 py-2
+                    text-sm font-bold text-accent-foreground
+                  ">
+                    Starten →
+                  </div>
+
+                </div>
+              </button>
+
+            ) : (
+
+              <div className="
+                relative min-h-[155px] overflow-hidden
+                rounded-2xl border border-accent/20
+                bg-gradient-to-br from-accent/10 via-card to-accent/5
+                p-6 shadow-sm
+              ">
+
+                <div className="
+                  pointer-events-none absolute
+                  -left-12 -top-16 h-40 w-40
+                  rounded-full bg-accent/15 blur-3xl
+                " />
+
+                <div className="relative flex items-start justify-between gap-4">
+
+                  <div className="flex items-center gap-4">
+
+                    <div className="
+                      grid h-14 w-14 shrink-0 place-items-center
+                      rounded-2xl bg-accent/15
+                    ">
+                      <CheckCircle2 className="h-6 w-6 text-accent" />
+                    </div>
+
+                    <div>
+                      <div className="text-[10px] font-bold uppercase tracking-[0.22em] text-accent">
+                        Heute
+                      </div>
+
+                      <h2 className="mt-1 text-xl font-bold tracking-tight">
+                        Check-In abgeschlossen
+                      </h2>
+
+                      <p className="mt-1 text-sm text-muted-foreground">
+                        Dein heutiger Check-In wurde gespeichert.
+                      </p>
+                    </div>
+
+                  </div>
+
+                  <div className="
+                    shrink-0 rounded-xl
+                    bg-accent/10 px-3 py-1.5
+                    text-xs font-bold text-accent
+                  ">
+                    ✓ Heute
+                  </div>
+
+                </div>
+
+                <div className="relative mt-5">
+                  <button
+                    onClick={() => resetCheckin.mutate()}
+                    disabled={resetCheckin.isPending}
+                    className="
+                      inline-flex items-center gap-2
+                      text-xs font-medium text-muted-foreground
+                      transition hover:text-foreground
+                    "
+                  >
+                    <RotateCcw className="h-3.5 w-3.5" />
+                    Dev: Check-in zurücksetzen
+                  </button>
+                </div>
+
+              </div>
+
+            )}
+
+
+            {/* MOTIVATION QUOTE */}
+            <div className="
+              relative min-h-[155px] overflow-hidden
+              rounded-2xl border border-accent/20
+              bg-gradient-to-br from-accent/15 via-accent/5 to-card
+              p-6 shadow-sm
+            ">
+
+              {/* decorative glow */}
+              <div className="
+                pointer-events-none absolute
+                -right-10 -top-16 h-44 w-44
+                rounded-full bg-accent/20 blur-3xl
+              " />
+
+              {/* big quotation mark */}
+              <div className="
+                pointer-events-none absolute
+                left-5 top-2
+                select-none text-[90px] font-black
+                leading-none text-accent/10
+              ">
+                “
+              </div>
+
+              <div className="
+                relative flex h-full
+                flex-col justify-center
+                pl-6 pr-4
+              ">
+
+                <div className="
+                  mb-3 text-[10px] font-bold
+                  uppercase tracking-[0.24em] text-accent
+                ">
+                  Motivation
+                </div>
+
+                <blockquote className="
+                  max-w-xl text-lg font-semibold
+                  italic leading-relaxed tracking-tight
+                  text-foreground
+                ">
+                  „Grenzen existieren nur in deinem Kopf.“
+                </blockquote>
+
+                <div className="
+                  mt-3 text-xs font-bold
+                  uppercase tracking-[0.18em]
+                  text-accent
+                ">
+                  — Armand Duplantis
+                </div>
+
+              </div>
+
+            </div>
+
+          </section>
+
+          {/* STREAK + TRAININGS THIS WEEK */}
+          <section className="mb-6 grid gap-6 lg:grid-cols-2">
+
+            {/* STREAK */}
+            <div
+              data-tour="streak"
+              className="relative overflow-hidden rounded-2xl border border-border bg-card p-5 shadow-sm"
+            >
+              {/* soft Athletic IQ accent */}
+              <div className="pointer-events-none absolute -left-12 -top-16 h-40 w-40 rounded-full bg-accent/10 blur-3xl" />
+
+              <div className="relative flex items-start gap-4">
+
+                <div className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl border border-accent/15 bg-accent/10">
+                  <Flame className="h-7 w-7 text-accent" />
+                </div>
+
+                <div>
+                  <div className="text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
+                    Aktueller Streak
+                  </div>
+
+                  <div className="mt-1 flex items-baseline gap-2">
+                    <span className="text-4xl font-bold tabular-nums text-accent">
+                      {currentStreak}
+                    </span>
+
+                    <span className="text-sm font-semibold text-muted-foreground">
+                      Tage
+                    </span>
+                  </div>
+
+                  <p className="mt-1 text-sm font-medium">
+                    Rekord: {Math.max(profile?.longest_streak ?? 0, currentStreak)}
+                  </p>
+                </div>
+
+              </div>
+
+              <div className="relative mt-5 rounded-xl border border-accent/10 bg-accent/5 px-4 py-3 text-sm font-medium">
+                {doneToday
+                  ? "Heute erledigt — starke Konstanz."
+                  : "Bleib konsequent bei deinem Trainingsplan."}
+              </div>
+            </div>
+
+
+            {/* TRAININGS THIS WEEK */}
+            <div
+              data-tour="performance"
+              className="relative overflow-hidden rounded-2xl border border-border bg-card p-5 shadow-sm"
+            >
+              <div className="pointer-events-none absolute -right-12 -top-16 h-40 w-40 rounded-full bg-accent/10 blur-3xl" />
+
+              <div className="relative flex items-start justify-between">
+
+                <div>
+                  <div className="text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
+                    Trainings diese Woche
+                  </div>
+
+                  <div className="mt-2 flex items-baseline gap-2">
+                    <span className="text-4xl font-bold tabular-nums text-accent">
+                      {trainings}
+                    </span>
+
+                    <span className="text-xl font-semibold text-muted-foreground">
+                      / {weeklyGoal}
+                    </span>
+                  </div>
+
+                  <p className="mt-1 text-sm font-medium">
+                    Dein Wochenziel
+                  </p>
+                </div>
+
+                <div className="grid h-12 w-12 place-items-center rounded-2xl border border-accent/15 bg-accent/10">
+                  <Dumbbell className="h-5 w-5 text-accent" />
+                </div>
+
+              </div>
+
+              <div className="relative mt-5">
+                <Sparkline
+                  data={[0, 0, 1, 1, 2, 2, trainings]}
+                  color="var(--accent)"
+                />
+              </div>
+
+              <div className="relative mt-1 grid grid-cols-7 text-center text-[10px] text-muted-foreground">
+                <span>Mo</span>
+                <span>Di</span>
+                <span>Mi</span>
+                <span>Do</span>
+                <span>Fr</span>
+                <span>Sa</span>
+                <span>So</span>
+              </div>
+
+            </div>
+
+          </section>
+
+
+          {/* LATEST KI INSIGHT */}
+          <section className="mb-6">
+            <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+
+              <div className="mb-4 flex items-center gap-3">
+                <Sparkles className="h-5 w-5 text-accent" />
+
+                <div className="font-bold">
+                  Neuestes KI-Insight
+                </div>
+              </div>
+
+              <div className="flex items-center gap-4 rounded-2xl border border-border bg-background p-4">
+
+                <div className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-accent/15">
+                  <TrendingUp className="h-6 w-6 text-accent" />
+                </div>
+
+                <div className="min-w-0 flex-1">
+
+                  <div className="flex flex-wrap items-center gap-2">
+
+                    <h3 className="font-bold">
+                      {latestInsight
+                        ? "Fokus aus deinem letzten Training"
+                        : "Noch kein KI-Insight"}
+                    </h3>
+
+                    <span className="rounded-lg bg-accent/10 px-2 py-1 text-[10px] font-semibold text-accent">
+                      {latestInsightDiscipline
+                        ? latestInsightDiscipline.toUpperCase()
+                        : "ATHLETIC IQ"}
+                    </span>
+
+                  </div>
+
+                  <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+                    {latestInsight ??
+                      "Absolviere ein Training und deinen Daily Check-In, damit Athletic IQ dir hier ein persönliches Insight zeigen kann."}
+                  </p>
+
+                </div>
+
+                <span className="shrink-0 text-xl text-muted-foreground">
+                  →
+                </span>
+
+              </div>
+
+            </div>
+          </section>
+
+
         </>
       )}
       {checkinOpen && (
@@ -260,3 +617,17 @@ function Dashboard() {
     </AppShell>
   );
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+

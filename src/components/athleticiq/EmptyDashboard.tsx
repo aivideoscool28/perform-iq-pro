@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+﻿import { motion } from "framer-motion";
 import {
   Battery, HeartPulse, Flame, Moon, Dumbbell, Timer, Zap, Gauge,
   Sparkles, Plus, FlaskConical, TrendingUp, Activity,
@@ -122,6 +122,98 @@ export function EmptyDashboard({ profile }: { profile?: Profile | null }) {
 
   return (
     <>
+      {/* TODAY'S TRAINING — temporary sample until Training calendar is connected */}
+      <section className="mb-6">
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="rounded-2xl border border-border bg-card p-6 shadow-sm"
+        >
+          <div className="flex items-start justify-between gap-4">
+            <div className="min-w-0">
+              <div className="text-[10px] uppercase tracking-[0.22em] text-accent font-semibold">
+                Heute
+              </div>
+
+              <h2 className="mt-2 text-xl font-bold tracking-tight">
+                Beschleunigung
+              </h2>
+
+              <p className="mt-1 text-sm text-muted-foreground">
+                Sprint · ca. 60 Minuten
+              </p>
+            </div>
+
+            <div className="h-11 w-11 shrink-0 rounded-xl border border-border bg-secondary grid place-items-center">
+              <Zap className="h-5 w-5 text-accent" />
+            </div>
+          </div>
+
+          <div className="mt-5 rounded-xl border border-border bg-background p-4">
+            <div className="space-y-2 text-sm">
+              <div>4 × 20 m Blockstarts</div>
+              <div>4 × 30 m Beschleunigung</div>
+              <div>3 × Flying 30 m</div>
+            </div>
+          </div>
+
+          <button
+            onClick={() =>
+              toast("Training wird später mit dem Trainingskalender verbunden.")
+            }
+            className="mt-4 inline-flex items-center justify-center rounded-xl border border-border bg-secondary px-4 py-2.5 text-sm font-semibold text-foreground hover:border-accent/50 transition"
+          >
+            Training ansehen
+          </button>
+        </motion.div>
+      </section>
+      {/* TODAY'S TRAINING — temporary sample until Training calendar is connected */}
+      <section className="mb-6">
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="rounded-2xl border border-border bg-card p-6 shadow-sm"
+        >
+          <div className="flex items-start justify-between gap-4">
+            <div className="min-w-0">
+              <div className="text-[10px] uppercase tracking-[0.22em] text-accent font-semibold">
+                Heute
+              </div>
+
+              <h2 className="mt-2 text-xl font-bold tracking-tight">
+                Beschleunigung
+              </h2>
+
+              <p className="mt-1 text-sm text-muted-foreground">
+                Sprint · ca. 60 Minuten
+              </p>
+            </div>
+
+            <div className="h-11 w-11 shrink-0 rounded-xl border border-border bg-secondary grid place-items-center">
+              <Zap className="h-5 w-5 text-accent" />
+            </div>
+          </div>
+
+          <div className="mt-5 rounded-xl border border-border bg-background p-4">
+            <div className="space-y-2 text-sm">
+              <div>4 × 20 m Blockstarts</div>
+              <div>4 × 30 m Beschleunigung</div>
+              <div>3 × Flying 30 m</div>
+            </div>
+          </div>
+
+          <button
+            onClick={() =>
+              toast("Training wird später mit dem Trainingskalender verbunden.")
+            }
+            className="mt-4 inline-flex items-center justify-center rounded-xl border border-border bg-secondary px-4 py-2.5 text-sm font-semibold text-foreground hover:border-accent/50 transition"
+          >
+            Training ansehen
+          </button>
+        </motion.div>
+      </section>
       {/* ROW 1 — Stats */}
       <section data-tour="performance" className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <StatCard label="Trainings diese Woche" value="0" unit={`/ ${goal}`} hint="Dein Wochenziel" icon={Dumbbell} sparkline />
@@ -233,3 +325,5 @@ export function EmptyDashboard({ profile }: { profile?: Profile | null }) {
     </>
   );
 }
+
+

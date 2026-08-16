@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+﻿import { ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import { Sidebar } from "./Sidebar";
 import { Bell, Search, Settings, ChevronRight } from "lucide-react";
@@ -123,3 +123,4 @@ export function AppShell({ title, subtitle, breadcrumbs, children }: Props) {
     </div>
   );
 }
+
