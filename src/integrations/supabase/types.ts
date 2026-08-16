@@ -133,7 +133,60 @@ export type Database = {
         }
         Relationships: []
       }
-      friendships: {
+      planned_workouts: {
+        Row: {
+          athlete_id: string
+          coach_id: string | null
+          completed_at: string | null
+          created_at: string
+          discipline: string | null
+          duration_minutes: number | null
+          exercises: Json
+          id: string
+          coach_note: string | null
+          session_goal: string | null
+          source: string
+          status: string
+          title: string
+          updated_at: string
+          workout_date: string
+        }
+        Insert: {
+          athlete_id: string
+          coach_id?: string | null
+          completed_at?: string | null
+          created_at?: string
+          discipline?: string | null
+          duration_minutes?: number | null
+          exercises?: Json
+          id?: string
+          coach_note?: string | null
+          session_goal?: string | null
+          source?: string
+          status?: string
+          title: string
+          updated_at?: string
+          workout_date: string
+        }
+        Update: {
+          athlete_id?: string
+          coach_id?: string | null
+          completed_at?: string | null
+          created_at?: string
+          discipline?: string | null
+          duration_minutes?: number | null
+          exercises?: Json
+          id?: string
+          coach_note?: string | null
+          session_goal?: string | null
+          source?: string
+          status?: string
+          title?: string
+          updated_at?: string
+          workout_date?: string
+        }
+        Relationships: []
+      }      friendships: {
         Row: {
           created_at: string
           friend_id: string
