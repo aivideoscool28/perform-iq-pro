@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 type WeekNavigationProps = {
   weekStart: Date;
   setWeekStart: React.Dispatch<React.SetStateAction<Date>>;
-  error: unknown;
+  hasError: boolean;
   isLoading: boolean;
   workoutCount: number;
   formatWeek: (date: Date) => string;
@@ -15,7 +15,7 @@ type WeekNavigationProps = {
 export function WeekNavigation({
   weekStart,
   setWeekStart,
-  error,
+  hasError,
   isLoading,
   workoutCount,
   formatWeek,
@@ -48,7 +48,7 @@ export function WeekNavigation({
               </h2>
             </div>
 
-            {error && (
+            {hasError && (
               <p className="mt-1 text-xs text-destructive">
                 Trainingsplan konnte nicht geladen werden.
               </p>
@@ -92,4 +92,5 @@ export function WeekNavigation({
     </section>
   );
 }
+
 

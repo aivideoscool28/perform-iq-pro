@@ -1,4 +1,4 @@
-﻿import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -6,6 +6,7 @@ import { AppShell } from "@/components/athleticiq/AppShell";
 import { Sparkline } from "@/components/athleticiq/Sparkline";
 import { StreakCard } from "@/components/athleticiq/StreakCard";
 import { AthleteQuoteCard } from "@/components/athleticiq/AthleteQuoteCard";
+import { TodaysTrainingCard } from "@/components/dashboard/TodaysTrainingCard";
 import { fetchDashboard, fetchTodayCheckin, deleteTodayCheckin } from "@/lib/athletic.functions";
 import { DailyCheckin } from "@/components/athleticiq/DailyCheckin";
 import { FeatureTour } from "@/components/athleticiq/FeatureTour";
@@ -189,72 +190,7 @@ function Dashboard() {
         </div>
       ) : (
         <>
-          {/* TODAY'S TRAINING — temporary until Training calendar is connected */}
-          <section className="mb-6">
-            <div className="rounded-2xl border border-border bg-card px-6 py-5 shadow-sm">
-              <div className="flex flex-col gap-5 lg:flex-row lg:items-center">
-
-                {/* Left: workout */}
-                <div className="flex items-center gap-4 lg:w-[32%]">
-                  <div className="grid h-16 w-16 shrink-0 place-items-center rounded-2xl bg-accent/10">
-                    <Dumbbell className="h-7 w-7 text-accent" />
-                  </div>
-
-                  <div className="min-w-0">
-                    <div className="text-[10px] font-bold uppercase tracking-[0.24em] text-accent">
-                      Heute
-                    </div>
-
-                    <h2 className="mt-1 text-xl font-bold tracking-tight">
-                      Beschleunigung
-                    </h2>
-
-                    <p className="mt-1 text-sm text-muted-foreground">
-                      Sprint · ca. 60 Minuten
-                    </p>
-                  </div>
-                </div>
-
-                {/* Middle: workout preview */}
-                <div className="flex-1 lg:border-l lg:border-border lg:pl-7">
-                  <div className="grid gap-2.5 text-sm font-semibold">
-
-                    <div className="flex items-center gap-3">
-                      <span className="h-2 w-2 shrink-0 rounded-full bg-accent/30" />
-                      <span>4 × 20 m Blockstarts</span>
-                    </div>
-
-                    <div className="flex items-center gap-3">
-                      <span className="h-2 w-2 shrink-0 rounded-full bg-accent/30" />
-                      <span>4 × 30 m Beschleunigung</span>
-                    </div>
-
-                    <div className="flex items-center gap-3">
-                      <span className="h-2 w-2 shrink-0 rounded-full bg-accent/30" />
-                      <span>3 × Flying 30 m</span>
-                    </div>
-
-                  </div>
-                </div>
-
-                {/* Right: action */}
-                <div className="shrink-0">
-                  <Button
-                    variant="outline"
-                    onClick={() =>
-                      toast("Training wird später mit dem Trainingskalender verbunden.")
-                    }
-                    className="h-11 rounded-xl border-accent px-5 font-semibold hover:bg-accent/5"
-                  >
-                    Training ansehen
-                    <span className="ml-2 text-lg">→</span>
-                  </Button>
-                </div>
-
-              </div>
-            </div>
-          </section>
-
+          <TodaysTrainingCard />
 
           {/* CHECK-IN + MOTIVATION */}
           <section className="mb-6 grid gap-6 lg:grid-cols-2">
@@ -617,6 +553,8 @@ function Dashboard() {
     </AppShell>
   );
 }
+
+
 
 
 
