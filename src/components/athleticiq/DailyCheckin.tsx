@@ -3,10 +3,12 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useNavigate } from "@tanstack/react-router";
 import { saveDailyCheckin } from "@/lib/athletic.functions";
-import { Button } from "@/components/ui/button";
-import { X, ArrowLeft, Loader2, Check } from "lucide-react";
+import { X, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import { createPortal } from "react-dom";
+import { TrainingQuestionPage, PerformanceQuestionPage } from "@/components/daily-checkin/Checkin12Training";
+import { BodyMindQuestionPage, ContextQuestionPage } from "@/components/daily-checkin/Checkin34BodyContext";
+import { CheckinSuccess } from "@/components/daily-checkin/CheckinSuccess";
 
 interface Props {
   name: string;
@@ -93,100 +95,6 @@ const empty: Answers = {
   woke_recovered: null,
   overall_feeling: null,
 };
-
-const disciplines = [
-  "Sprint",
-  "Hürden",
-  "Ruhetag",
-];
-
-const sprintWorkoutTypes = [
-  "Blockstarts",
-  "Beschleunigung",
-  "Maximalgeschwindigkeit",
-  "Schnelligkeitsausdauer",
-  "Kraft",
-  "Regeneration",
-  "Sonstiges",
-];
-
-const hurdleWorkoutTypes = [
-  "Start bis erste Hürde",
-  "Hürdentechnik",
-  "Hürdenrhythmus",
-  "Beschleunigung",
-  "Sprint",
-  "Kraft",
-  "Regeneration",
-  "Sonstiges",
-];
-
-const mentalStates = [
-  "Fokussiert & selbstbewusst",
-  "Normal",
-  "Abgelenkt",
-  "Gestresst / unter Druck",
-  "Wenig Motivation",
-  "Sonstiges",
-];
-
-const painAreas = [
-  "Oberschenkel vorne",
-  "Oberschenkel hinten",
-  "Knie",
-  "Wade",
-  "Achillessehne",
-  "Sprunggelenk",
-  "Fuß",
-  "Hüfte / Leiste",
-  "Rücken",
-  "Sonstiges",
-];
-
-const painSeverities = [
-  "Leicht",
-  "Mittel",
-  "Stark",
-];
-
-const performanceFactors = [
-  "Nichts Besonderes",
-  "Schlechter Schlaf",
-  "Stress / Druck",
-  "Wetter",
-  "Schule / Arbeit",
-  "Wettkampfnervosität",
-  "Trainingsbedingungen",
-  "Sonstiges",
-];
-
-// Adds context to RPE.
-// RPE 10 + "Wie erwartet" means something very different from
-// RPE 10 + "Deutlich schwerer als erwartet".
-const expectedDifficultyOptions = [
-  "Leichter als erwartet",
-  "Wie erwartet",
-  "Schwerer als erwartet",
-  "Deutlich schwerer als erwartet",
-];
-
-// Describes the direction of performance quality DURING the session.
-// This helps distinguish hard-but-stable training from quality breakdown.
-const performanceQualityOptions = [
-  "Besser geworden",
-  "Stabil geblieben",
-  "Etwas abgefallen",
-  "Stark abgefallen",
-  "Kann ich nicht beurteilen",
-];
-
-// Determines whether the main purpose of the workout was achieved.
-const sessionGoalOptions = [
-  "Ja",
-  "Teilweise",
-  "Nein",
-  "Weiß ich nicht",
-];
 
 export function DailyCheckin({ name, onClose }: Props) {
   const qc = useQueryClient();
@@ -478,563 +386,90 @@ export function DailyCheckin({ name, onClose }: Props) {
             </div>
           </div>
         )}
-
-        {/* =========================================================
-            PAGE 1 — TRAINING
-        ========================================================== */}
+        {/* PAGE 1 — TRAINING */}
         {page === 1 && (
-          <div className="space-y-5">
-
-            <section className="rounded-2xl border border-border bg-card p-5">
-              <div className="text-xs font-semibold text-accent mb-1">
-                FRAGE 1
-              </div>
-
-              <h2 className="text-xl font-semibold">
-                Was hast du heute trainiert?
-              </h2>
-
-              <p className="text-sm text-muted-foreground mt-1 mb-4">
-                Damit Athletic IQ ähnliche Sessions später vergleichen kann.
-              </p>
-
-              <div className="mb-4">
-                <div className="text-sm font-medium mb-2">
-                  Disziplin
-                </div>
-
-                <Grid
-                  options={disciplines}
-                  value={a.discipline}
-                  onSelect={async (value) => {
-                    if (value === "Ruhetag") {
-                      await saveRestDay();
-                      return;
-                    }
-
-                    update("discipline", value);
-                    update("is_rest_day", false);
-                  }}
-                />
-              </div>
-
-              {a.discipline &&
-                a.discipline !== "Ruhetag" && (
-                  <>
-                    <div className="mb-4">
-                      <div className="text-sm font-medium mb-2">
-                        Trainingsart
-                      </div>
-
-                      <Grid
-                        options={
-                          a.discipline === "Hürden"
-                            ? hurdleWorkoutTypes
-                            : sprintWorkoutTypes
-                        }
-                        value={a.workout_type}
-                        onSelect={(value) =>
-                          update(
-                            "workout_type",
-                            value,
-                          )
-                        }
-                      />
-                    </div>
-
-                    <div className="grid gap-3 md:grid-cols-2">
-                      <textarea
-                        value={sessionText}
-                        onChange={(e) =>
-                          setSessionText(
-                            e.target.value,
-                          )
-                        }
-                        placeholder="Session, z. B. 4 × 30 m + 3 × 60 m"
-                        rows={3}
-                        className="w-full rounded-xl border border-border bg-background p-3 text-sm outline-none focus:ring-2 focus:ring-accent"
-                      />
-
-                      <textarea
-                        value={performanceText}
-                        onChange={(e) =>
-                          setPerformanceText(
-                            e.target.value,
-                          )
-                        }
-                        placeholder="Ergebnisse, z. B. 4,18 · 4,15 · 4,20"
-                        rows={3}
-                        className="w-full rounded-xl border border-border bg-background p-3 text-sm outline-none focus:ring-2 focus:ring-accent"
-                      />
-                    </div>
-                  </>
-                )}
-            </section>
-
-            <section className="rounded-2xl border border-border bg-card p-5">
-              <div className="text-xs font-semibold text-accent mb-1">
-                FRAGE 2
-              </div>
-
-              <h2 className="text-xl font-semibold mb-1">
-                Wie hart hat sich das Training angefühlt?
-              </h2>
-
-              <p className="text-sm text-muted-foreground mb-4">
-                1 = sehr leicht · 10 = maximal
-              </p>
-
-              <RateBar
-                max={10}
-                value={a.rpe}
-                onSelect={(value) =>
-                  update("rpe", value)
-                }
-              />
-            </section>
-
-            <section className="rounded-2xl border border-border bg-card p-5">
-              <div className="text-xs font-semibold text-accent mb-1">
-                FRAGE 3
-              </div>
-
-              <h2 className="text-xl font-semibold mb-1">
-                Wie schwer war die Einheit im Vergleich zu deiner Erwartung?
-              </h2>
-
-              <p className="text-sm text-muted-foreground mb-4">
-                Damit Athletic IQ unterscheiden kann, ob eine hohe Belastung geplant oder überraschend war.
-              </p>
-
-              <Grid
-                options={expectedDifficultyOptions}
-                value={a.expected_difficulty}
-                onSelect={(value) =>
-                  update("expected_difficulty", value)
-                }
-              />
-            </section>
-
-            
-
-            <Button
-              size="lg"
-              className="w-full bg-[#ff6b35] hover:bg-[#ff6b35]/90 text-white rounded-2xl min-h-[56px] font-semibold"
-              disabled={
-                !a.discipline ||
-                !a.workout_type ||
-                a.rpe === null ||
-                !a.expected_difficulty
+          <TrainingQuestionPage
+            discipline={a.discipline}
+            workoutType={a.workout_type}
+            rpe={a.rpe}
+            expectedDifficulty={a.expected_difficulty}
+            sessionText={sessionText}
+            performanceText={performanceText}
+            onDisciplineChange={async (value) => {
+              if (value === "Ruhetag") {
+                await saveRestDay();
+                return;
               }
-              onClick={() => setPage(2)}
-            >
-              Weiter
-            </Button>
-          </div>
+              update("discipline", value);
+              update("is_rest_day", false);
+            }}
+            onWorkoutTypeChange={(value) => update("workout_type", value)}
+            onRpeChange={(value) => update("rpe", value)}
+            onExpectedDifficultyChange={(value) => update("expected_difficulty", value)}
+            onSessionTextChange={setSessionText}
+            onPerformanceTextChange={setPerformanceText}
+            onContinue={() => setPage(2)}
+          />
         )}
-
-        {/* =========================================================
-            PAGE 2 ? LEISTUNG
-        ========================================================== */}
+        {/* PAGE 2 — LEISTUNG */}
         {page === 2 && (
-          <div className="space-y-5">
-
-            <section className="rounded-2xl border border-border bg-card p-5">
-              <div className="text-xs font-semibold text-accent mb-1">
-                FRAGE 4
-              </div>
-
-              <h2 className="text-xl font-semibold mb-1">
-                Wie hat sich deine Leistungsqualität während der Einheit entwickelt?
-              </h2>
-
-              <p className="text-sm text-muted-foreground mb-4">
-                Nicht wie anstrengend es war, sondern ob deine Leistung über die Session stabil blieb.
-              </p>
-
-              <Grid
-                options={performanceQualityOptions}
-                value={a.performance_quality}
-                onSelect={(value) =>
-                  update("performance_quality", value)
-                }
-              />
-            </section>
-
-<section className="rounded-2xl border border-border bg-card p-5">
-              <div className="text-xs font-semibold text-accent mb-1">
-                FRAGE 5
-              </div>
-
-              <h2 className="text-xl font-semibold mb-1">
-                Hast du das Hauptziel der heutigen Einheit erreicht?
-              </h2>
-
-              <p className="text-sm text-muted-foreground mb-4">
-                Entscheidend ist nicht nur, wie hart die Session war, sondern ob ihr Trainingsziel erreicht wurde.
-              </p>
-
-              <Grid
-                options={sessionGoalOptions}
-                value={a.session_goal_achieved}
-                onSelect={(value) => {
-                  update("session_goal_achieved", value);
-
-                  if (value === "Ja" || value === "Weiß ich nicht") {
-                    setSessionGoalText("");
-                  }
-                }}
-              />
-
-              {(a.session_goal_achieved === "Teilweise" ||
-                a.session_goal_achieved === "Nein") && (
-                <textarea
-                  value={sessionGoalText}
-                  onChange={(e) =>
-                    setSessionGoalText(e.target.value)
-                  }
-                  placeholder="Optional: Was hat gefehlt?"
-                  rows={2}
-                  className="w-full mt-3 rounded-xl border border-border bg-background p-3 text-sm outline-none focus:ring-2 focus:ring-accent"
-                />
-              )}
-            </section>
-
-            <Button
-              size="lg"
-              className="w-full bg-[#ff6b35] hover:bg-[#ff6b35]/90 text-white rounded-2xl min-h-[56px] font-semibold"
-              disabled={
-                !a.performance_quality ||
-                !a.session_goal_achieved
+          <PerformanceQuestionPage
+            performanceQuality={a.performance_quality}
+            sessionGoalAchieved={a.session_goal_achieved}
+            sessionGoalText={sessionGoalText}
+            onPerformanceQualityChange={(value) => update("performance_quality", value)}
+            onSessionGoalChange={(value) => {
+              update("session_goal_achieved", value);
+              if (value === "Ja" || value === "Weiß ich nicht") {
+                setSessionGoalText("");
               }
-              onClick={() => setPage(3)}
-            >
-              Weiter
-            </Button>
-          </div>
+            }}
+            onSessionGoalTextChange={setSessionGoalText}
+            onContinue={() => setPage(3)}
+          />
         )}
-
-        {/* =========================================================
-            PAGE 3 — BODY & MIND
-        ========================================================== */}
+        {/* PAGE 3 — BODY & MIND */}
         {page === 3 && (
-          <div className="space-y-5">
-
-            <section className="rounded-2xl border border-border bg-card p-5">
-              <div className="text-xs font-semibold text-accent mb-1">
-                FRAGE 6
-              </div>
-
-              <h2 className="text-xl font-semibold mb-1">
-                Wie hat sich dein Körper während des Trainings angefühlt?
-              </h2>
-
-              <p className="text-sm text-muted-foreground mb-4">
-                1 = sehr schlecht · 5 = sehr gut
-              </p>
-
-              <RateBar
-                max={5}
-                value={a.physical_feeling}
-                onSelect={(value) =>
-                  update(
-                    "physical_feeling",
-                    value,
-                  )
-                }
-              />
-            </section>
-
-            <section className="rounded-2xl border border-border bg-card p-5">
-              <div className="text-xs font-semibold text-accent mb-1">
-                FRAGE 7
-              </div>
-
-              <h2 className="text-xl font-semibold mb-4">
-                Wie warst du mental im Training?
-              </h2>
-
-              <Grid
-                options={mentalStates}
-                value={a.mental_state}
-                onSelect={(value) =>
-                  update(
-                    "mental_state",
-                    value,
-                  )
-                }
-              />
-
-              {a.mental_state ===
-                "Sonstiges" && (
-                <textarea
-                  value={mentalOtherText}
-                  onChange={(e) =>
-                    setMentalOtherText(
-                      e.target.value,
-                    )
-                  }
-                  placeholder="Kurz beschreiben..."
-                  rows={2}
-                  className="w-full mt-3 rounded-xl border border-border bg-background p-3 text-sm outline-none focus:ring-2 focus:ring-accent"
-                />
-              )}
-            </section>
-
-<section className="rounded-2xl border border-border bg-card p-5">
-              <div className="text-xs font-semibold text-accent mb-1">
-                FRAGE 8
-              </div>
-
-              <h2 className="text-xl font-semibold mb-4">
-                Schmerzen oder ungewöhnliche Beschwerden?
-              </h2>
-
-              <Grid
-                options={["Nein", "Ja"]}
-                value={
-                  a.has_pain === null
-                    ? null
-                    : a.has_pain
-                      ? "Ja"
-                      : "Nein"
-                }
-                onSelect={(value) => {
-                  const hasPain =
-                    value === "Ja";
-
-                  update(
-                    "has_pain",
-                    hasPain,
-                  );
-
-                  if (!hasPain) {
-                    update(
-                      "pain_area",
-                      null,
-                    );
-
-                    update(
-                      "pain_severity",
-                      null,
-                    );
-
-                    setPainText("");
-                  }
-                }}
-              />
-
-              {a.has_pain && (
-                <div className="mt-4 space-y-3">
-
-                  <div>
-                    <div className="text-sm font-medium mb-2">
-                      Wo?
-                    </div>
-
-                    <Grid
-                      options={painAreas}
-                      value={a.pain_area}
-                      onSelect={(value) =>
-                        update(
-                          "pain_area",
-                          value,
-                        )
-                      }
-                    />
-                  </div>
-
-                  <div>
-                    <div className="text-sm font-medium mb-2">
-                      Wie stark?
-                    </div>
-
-                    <Grid
-                      options={painSeverities}
-                      value={a.pain_severity}
-                      onSelect={(value) =>
-                        update(
-                          "pain_severity",
-                          value,
-                        )
-                      }
-                    />
-                  </div>
-
-                  <textarea
-                    value={painText}
-                    onChange={(e) =>
-                      setPainText(
-                        e.target.value,
-                      )
-                    }
-                    placeholder="Optional genauer beschreiben..."
-                    rows={2}
-                    className="w-full rounded-xl border border-border bg-background p-3 text-sm outline-none focus:ring-2 focus:ring-accent"
-                  />
-                </div>
-              )}
-            </section>
-
-            <Button
-              size="lg"
-              className="w-full bg-[#ff6b35] hover:bg-[#ff6b35]/90 text-white rounded-2xl min-h-[56px] font-semibold"
-              disabled={
-                a.physical_feeling === null ||
-                !a.mental_state ||
-                a.has_pain === null ||
-                (
-                  a.has_pain &&
-                  (
-                    !a.pain_area ||
-                    !a.pain_severity
-                  )
-                )
-              }
-              onClick={() => setPage(4)}
-            >
-              Weiter
-            </Button>
-          </div>
+          <BodyMindQuestionPage
+            physicalFeeling={a.physical_feeling}
+            mentalState={a.mental_state}
+            hasPain={a.has_pain}
+            painArea={a.pain_area}
+            painSeverity={a.pain_severity}
+            mentalOtherText={mentalOtherText}
+            painText={painText}
+            onPhysicalFeelingChange={(value) => update("physical_feeling", value)}
+            onMentalStateChange={(value) => update("mental_state", value)}
+            onMentalOtherTextChange={setMentalOtherText}
+            onPainChange={(value) => update("has_pain", value)}
+            onPainAreaChange={(value) => update("pain_area", value)}
+            onPainSeverityChange={(value) => update("pain_severity", value)}
+            onPainTextChange={setPainText}
+            onContinue={() => setPage(4)}
+          />
         )}
-
-        {/* =========================================================
-            PAGE 4 — CONTEXT
-        ========================================================== */}
+        {/* PAGE 4 — CONTEXT */}
         {page === 4 && (
-          <div className="space-y-4">
-
-            
-
-            <section className="rounded-2xl border border-border bg-card p-5">
-              <div className="text-xs font-semibold text-accent mb-1">
-                FRAGE 9
-              </div>
-
-              <h2 className="text-xl font-semibold mb-1">
-                Hat heute etwas deine Leistung beeinflusst?
-              </h2>
-
-              <p className="text-sm text-muted-foreground mb-4">
-                Mehrere Antworten sind möglich.
-              </p>
-
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                {performanceFactors.map(
-                  (factor) => {
-                    const selected =
-                      a.performance_factors.includes(
-                        factor,
-                      );
-
-                    return (
-                      <button
-                        key={factor}
-                        type="button"
-                        onClick={() =>
-                          togglePerformanceFactor(
-                            factor,
-                          )
-                        }
-                        style={{
-                          backgroundColor: selected ? "#ff6b35" : "#111827",
-                          color: "#ffffff",
-                          borderColor: selected ? "#ff6b35" : "#374151",
-                        }}
-                        className="min-h-[52px] px-4 py-3 rounded-2xl border text-sm font-semibold transition hover:opacity-90 shadow-sm"
-                      >
-                        {factor}
-                      </button>
-                    );
-                  },
-                )}
-              </div>
-
-              {a.performance_factors.includes(
-                "Sonstiges",
-              ) && (
-                <textarea
-                  value={factorOtherText}
-                  onChange={(e) =>
-                    setFactorOtherText(
-                      e.target.value,
-                    )
-                  }
-                  placeholder="Was hat deine Leistung beeinflusst?"
-                  rows={2}
-                  className="w-full mt-3 rounded-xl border border-border bg-background p-3 text-sm outline-none focus:ring-2 focus:ring-accent"
-                />
-              )}
-
-              <textarea
-                value={extraText}
-                onChange={(e) =>
-                  setExtraText(
-                    e.target.value,
-                  )
-                }
-                placeholder="Optional: Noch etwas Wichtiges zur Session?"
-                rows={2}
-                className="w-full mt-3 rounded-xl border border-border bg-background p-3 text-sm outline-none focus:ring-2 focus:ring-accent"
-              />
-            </section>
-
-            
-
-            <Button
-              size="lg"
-              className="w-full bg-[#ff6b35] hover:bg-[#ff6b35]/90 text-white rounded-2xl min-h-[56px] font-semibold"
-              disabled={
-                mutate.isPending ||
-                a.performance_factors.length === 0
-              }
-              onClick={finishCheckin}
-            >
-              {mutate.isPending ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                  Speichern...
-                </>
-              ) : (
-                "Check-In speichern"
-              )}
-            </Button>
-          </div>
+          <ContextQuestionPage
+            performanceFactors={a.performance_factors}
+            factorOtherText={factorOtherText}
+            extraText={extraText}
+            isSaving={mutate.isPending}
+            onToggleFactor={togglePerformanceFactor}
+            onFactorOtherTextChange={setFactorOtherText}
+            onExtraTextChange={setExtraText}
+            onSave={finishCheckin}
+          />
         )}
-
         {/* SUMMARY */}
         {page === 5 && (
-          <div className="flex-1 flex flex-col justify-center">
-            <div className="rounded-3xl border border-border bg-card p-7 text-center">
-
-              <div className="mx-auto w-16 h-16 rounded-full bg-accent/15 grid place-items-center mb-5">
-                <Check className="h-8 w-8 text-accent" />
-              </div>
-
-              <h2 className="text-2xl font-bold">
-                Check-In gespeichert
-              </h2>
-
-              <p className="text-muted-foreground mt-3 mb-7 max-w-md mx-auto">
-                {aiSummary ??
-                  "Deine Session wurde gespeichert."}
-              </p>
-
-              <Button
-                size="lg"
-                className="w-full bg-[#ff6b35] hover:bg-[#ff6b35]/90 text-white rounded-2xl font-semibold"
-                onClick={() => {
-                  onClose();
-
-                  navigate({
-                    to: "/workout-analysis",
-                  });
-                }}
-              >
-                Workout-Analyse ansehen
-              </Button>
-            </div>
-          </div>
+          <CheckinSuccess
+            aiSummary={aiSummary}
+            onViewWorkoutAnalysis={() => {
+              onClose();
+              navigate({ to: "/workout-analysis" });
+            }}
+          />
         )}
 
       </div>
@@ -1043,103 +478,6 @@ export function DailyCheckin({ name, onClose }: Props) {
     document.body,
   );
 }
+
 
-function Step({ question, sub, children }: { question: string; sub?: string; children: React.ReactNode }) {
-  return (
-    <div>
-      <h2 className="text-2xl font-semibold mb-2 leading-tight">{question}</h2>
-      {sub && <p className="text-white/60 mb-6">{sub}</p>}
-      <div className="mt-6">{children}</div>
-    </div>
-  );
-}
 
-function Grid({
-  options,
-  value,
-  onSelect,
-}: {
-  options: string[];
-  value: string | null;
-  onSelect: (v: string) => void;
-}) {
-  return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-      {options.map((opt) => {
-        const selected = value === opt;
-
-        return (
-          <button
-            key={opt}
-            type="button"
-            onClick={() => onSelect(opt)}
-            style={{
-              backgroundColor: selected ? "#ff6b35" : "#111827",
-              color: "#ffffff",
-              borderColor: selected ? "#ff6b35" : "#374151",
-            }}
-            className="min-h-[52px] px-4 py-3 rounded-2xl border text-sm font-semibold transition hover:opacity-90 shadow-sm"
-          >
-            {opt}
-          </button>
-        );
-      })}
-    </div>
-  );
-}
-
-function RateBar({
-  max,
-  value,
-  onSelect,
-}: {
-  max: number;
-  value: number | null;
-  onSelect: (v: number) => void;
-}) {
-  return (
-    <div
-      className="grid gap-2"
-      style={{
-        gridTemplateColumns: `repeat(${max}, minmax(0, 1fr))`,
-      }}
-    >
-      {Array.from({ length: max }, (_, i) => i + 1).map((n) => {
-        const selected = value === n;
-
-        return (
-          <button
-            key={n}
-            type="button"
-            onClick={() => onSelect(n)}
-            style={{
-              backgroundColor: selected ? "#ff6b35" : "#111827",
-              color: "#ffffff",
-              borderColor: selected ? "#ff6b35" : "#374151",
-            }}
-            className="min-h-[48px] rounded-2xl border font-semibold transition hover:opacity-90 shadow-sm"
-          >
-            {n}
-          </button>
-        );
-      })}
-    </div>
-  );
-}
-
-function EmojiRate({ options, value, onSelect }: { options: string[]; value: number | null; onSelect: (v: number) => void }) {
-  return (
-    <div className="grid grid-cols-5 gap-2">
-      {options.map((emo, i) => (
-        <button key={emo} onClick={() => onSelect(i + 1)}
-          className={`aspect-square rounded-xl border text-3xl transition ${
-            value === i + 1
-              ? "bg-accent/20 border-accent"
-              : "bg-white/5 border-white/10 hover:bg-white/10"
-          }`}>
-          {emo}
-        </button>
-      ))}
-    </div>
-  );
-}
