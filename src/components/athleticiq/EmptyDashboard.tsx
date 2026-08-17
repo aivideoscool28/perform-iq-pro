@@ -1,4 +1,4 @@
-﻿import { motion } from "framer-motion";
+import { motion } from "framer-motion";
 import {
   Battery, HeartPulse, Flame, Moon, Dumbbell, Timer, Zap, Gauge,
   Sparkles, Plus, FlaskConical, TrendingUp, Activity,
@@ -325,5 +325,7 @@ export function EmptyDashboard({ profile }: { profile?: Profile | null }) {
     </>
   );
 }
+
+
 
 

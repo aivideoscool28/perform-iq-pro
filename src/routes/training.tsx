@@ -1,5 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
+﻿import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
+import ReactMarkdown from "react-markdown";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import {
@@ -8,6 +9,12 @@ import {
   ChevronRight,
   CheckCircle2,
   Clock3,
+  Target,
+  Zap,
+  Activity,
+  History,
+  Lightbulb,
+  Trophy,
   X,
 } from "lucide-react";
 
@@ -22,6 +29,25 @@ import { explainPlannedWorkout } from "@/lib/training-explanation.functions";
 export const Route = createFileRoute("/training")({
   component: TrainingPage,
 });
+
+const EXERCISE_VISUALS = [
+  {
+    icon: Zap,
+    box: "bg-orange-100 text-orange-500",
+  },
+  {
+    icon: Target,
+    box: "bg-blue-100 text-blue-500",
+  },
+  {
+    icon: Activity,
+    box: "bg-green-100 text-green-600",
+  },
+  {
+    icon: Zap,
+    box: "bg-violet-100 text-violet-500",
+  },
+] as const;
 
 function startOfWeek(date: Date) {
   const copy = new Date(date);
@@ -211,35 +237,9 @@ function TrainingPage() {
     >
       <section className="rounded-2xl border border-border bg-card p-6 shadow-sm">
 
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
 
-          <div>
-            <div className="flex items-center gap-2 text-accent">
-              <CalendarDays className="h-5 w-5" />
-
-              <span className="font-semibold">
-                Wochenplan
-              </span>
-            </div>
-
-            <h2 className="mt-3 text-2xl font-bold">
-              {formatWeek(weekStart)}
-            </h2>
-
-            <p className="mt-2 text-sm text-muted-foreground">
-              {isLoading
-                ? "Trainingsplan wird geladen..."
-                : `${displayWorkouts.length} geplante Einheiten in dieser Woche`}
-            </p>
-
-            {error && (
-              <p className="mt-2 text-sm text-destructive">
-                Trainingsplan konnte nicht geladen werden.
-              </p>
-            )}
-          </div>
-
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-3">
 
             <Button
               variant="outline"
@@ -249,15 +249,33 @@ function TrainingPage() {
                   addDays(current, -7),
                 )
               }
+              className="h-10 w-10 rounded-xl"
             >
               <ChevronLeft className="h-4 w-4" />
             </Button>
+
+            <div>
+              <div className="flex items-center gap-2">
+                <CalendarDays className="h-4 w-4 text-accent" />
+
+                <h2 className="text-xl font-bold tracking-tight">
+                  {formatWeek(weekStart)}
+                </h2>
+              </div>
+
+              {error && (
+                <p className="mt-1 text-xs text-destructive">
+                  Trainingsplan konnte nicht geladen werden.
+                </p>
+              )}
+            </div>
 
             <Button
               variant="outline"
               onClick={() =>
                 setWeekStart(startOfWeek(new Date()))
               }
+              className="h-9 rounded-xl border-accent/20 bg-accent/5 px-4 text-sm font-semibold text-accent hover:bg-accent/10"
             >
               Heute
             </Button>
@@ -270,10 +288,21 @@ function TrainingPage() {
                   addDays(current, 7),
                 )
               }
+              className="h-10 w-10 rounded-xl"
             >
               <ChevronRight className="h-4 w-4" />
             </Button>
 
+          </div>
+
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <CalendarDays className="h-4 w-4" />
+
+            <span>
+              {isLoading
+                ? "Trainingsplan wird geladen..."
+                : `${displayWorkouts.length} Einheiten diese Woche`}
+            </span>
           </div>
 
         </div>
@@ -281,9 +310,9 @@ function TrainingPage() {
       </section>
 
       {/* 7-DAY TRAINING CALENDAR */}
-      <section className="mt-6 rounded-2xl border border-border bg-card p-4 shadow-sm">
+      <section className="mt-5 overflow-x-auto rounded-2xl border border-border bg-card p-4 shadow-sm">
 
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-7">
+        <div className="grid w-max grid-cols-[repeat(7,145px)] gap-3">
 
           {weekDays.map((date) => {
             const workout = workoutForDate(date);
@@ -307,7 +336,7 @@ function TrainingPage() {
                   }
                 }}
                 className={[
-                  "relative min-h-[150px] rounded-2xl border p-3 text-left transition",
+                  "relative h-[145px] w-[145px] overflow-hidden rounded-2xl border p-3.5 text-left transition",
                   workout
                     ? "cursor-pointer hover:-translate-y-0.5 hover:shadow-sm"
                     : "cursor-default",
@@ -340,7 +369,7 @@ function TrainingPage() {
                   </div>
 
                   {completed && (
-                    <CheckCircle2 className="h-5 w-5 text-accent" />
+                    <CheckCircle2 className="h-4 w-4 text-accent" />
                   )}
 
                 </div>
@@ -348,20 +377,20 @@ function TrainingPage() {
 
                 {/* WORKOUT */}
                 {workout ? (
-                  <div className="mt-5">
+                  <div className="mt-3">
 
-                    <div className="text-sm font-bold leading-snug">
+                    <div className="line-clamp-4 break-words text-[13px] font-bold leading-[1.18]">
                       {workout.title}
                     </div>
 
-                    <div className="mt-1 text-xs text-muted-foreground">
+                    <div className="mt-1 text-[11px] font-medium text-muted-foreground">
                       {workout.discipline}
                     </div>
 
                     {workout.duration_minutes && (
-                      <div className="mt-3 flex items-center gap-1.5 text-[11px] text-muted-foreground">
+                      <div className="mt-2 flex items-center gap-1.5 text-[11px] font-semibold text-accent">
 
-                        <Clock3 className="h-3.5 w-3.5" />
+                        <Clock3 className="h-3 w-3" />
 
                         ca. {workout.duration_minutes} min
 
@@ -371,7 +400,7 @@ function TrainingPage() {
                   </div>
                 ) : (
 
-                  <div className="mt-8 text-xs font-medium text-muted-foreground">
+                  <div className="mt-4 text-xs font-medium text-muted-foreground">
                     Frei
                   </div>
 
@@ -401,10 +430,10 @@ function TrainingPage() {
 
       {/* SELECTED WORKOUT DETAILS */}
       {selectedWorkout && (
-        <section className="mt-6 grid gap-6 lg:grid-cols-[1.7fr_1fr]">
+        <section className="mt-5 grid gap-4 lg:grid-cols-[minmax(0,1.55fr)_minmax(300px,0.8fr)] lg:items-start">
 
           {/* MAIN WORKOUT DETAILS */}
-          <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
+          <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
 
             <div className="flex flex-wrap items-center gap-2">
               <span className="rounded-lg bg-accent/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-accent">
@@ -440,58 +469,99 @@ function TrainingPage() {
 
             </div>
 
-            <div className="mt-2 flex items-center gap-2 text-sm text-muted-foreground">
-              <Clock3 className="h-4 w-4" />
-              ca. {selectedWorkout.duration_minutes ?? "—"} Minuten
+            <div className="mt-2 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+              <div className="flex items-center gap-1.5">
+                <Clock3 className="h-4 w-4" />
+                <span>ca. {selectedWorkout.duration_minutes ?? "—"} Minuten</span>
+              </div>
+
+              <span className="text-border">•</span>
+
+              <span>
+                {selectedWorkout.exercises.length} Trainingsblöcke
+              </span>
             </div>
 
             {selectedWorkout.session_goal && (
-              <div className="mt-6 rounded-xl border border-accent/15 bg-accent/5 p-4">
-                <div className="text-xs font-bold uppercase tracking-[0.16em] text-accent">
-                  Ziel der Einheit
+              <div className="mt-5 flex gap-4 rounded-xl border border-accent/15 bg-accent/5 p-4">
+
+                <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-orange-100 text-orange-500">
+                  <Target className="h-5 w-5" />
                 </div>
 
-                <p className="mt-2 text-sm leading-relaxed">
-                  {selectedWorkout.session_goal}
-                </p>
+                <div>
+                  <div className="text-xs font-bold uppercase tracking-[0.16em] text-accent">
+                    Ziel der Einheit
+                  </div>
+
+                  <p className="mt-2 text-sm font-medium leading-relaxed">
+                    {selectedWorkout.session_goal}
+                  </p>
+                </div>
+
               </div>
             )}
 
-            <div className="mt-6">
+            <div className="mt-5">
               <div className="mb-3 text-sm font-bold">
                 Training
               </div>
 
               {selectedWorkout.exercises.length > 0 ? (
-                <div className="space-y-2">
-                  {selectedWorkout.exercises.map((exercise, index) => (
-                    <div
-                      key={`${exercise.name}-${index}`}
-                      className="rounded-xl border border-border bg-background px-4 py-3"
-                    >
-                      {exercise.section && (
-                        <div className="text-[9px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
-                          {exercise.section}
-                        </div>
-                      )}
+                <div className="overflow-hidden rounded-xl border border-border bg-background">
+                  {selectedWorkout.exercises.map((exercise, index) => {
+                    const visual =
+                      EXERCISE_VISUALS[index % EXERCISE_VISUALS.length];
 
-                      <div className="mt-1 font-semibold">
-                        {exercise.name}
+                    const ExerciseIcon = visual.icon;
+
+                    return (
+                      <div
+                        key={`${exercise.name}-${index}`}
+                        className={[
+                          "grid gap-3 px-3 py-3 sm:grid-cols-[44px_92px_minmax(0,1fr)_auto] sm:items-center",
+                          index !== selectedWorkout.exercises.length - 1
+                            ? "border-b border-border"
+                            : "",
+                        ].join(" ")}
+                      >
+
+                        <div
+                          className={[
+                            "grid h-9 w-9 place-items-center rounded-xl",
+                            visual.box,
+                          ].join(" ")}
+                        >
+                          <ExerciseIcon className="h-4 w-4" />
+                        </div>
+
+                        <div className="text-[9px] font-extrabold uppercase tracking-[0.18em] text-muted-foreground">
+                          {exercise.section ?? "Training"}
+                        </div>
+
+                        <div className="min-w-0">
+                          <div className="text-sm font-bold">
+                            {exercise.name}
+                          </div>
+
+                          {exercise.details && (
+                            <div className="mt-0.5 text-[12px] font-medium text-muted-foreground">
+                              {exercise.details}
+                            </div>
+                          )}
+                        </div>
+
+                        {exercise.rest && (
+                          <div className="shrink-0 rounded-lg bg-muted/50 px-2.5 py-1 text-xs font-medium text-muted-foreground">
+                            {exercise.rest.toLowerCase().includes("pause")
+                              ? exercise.rest
+                              : `${exercise.rest} Pause`}
+                          </div>
+                        )}
+
                       </div>
-
-                      {exercise.details && (
-                        <div className="mt-1 text-sm text-muted-foreground">
-                          {exercise.details}
-                        </div>
-                      )}
-
-                      {exercise.rest && (
-                        <div className="mt-2 text-xs text-muted-foreground">
-                          Pause: {exercise.rest}
-                        </div>
-                      )}
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               ) : (
                 <div className="rounded-xl border border-dashed border-border p-4 text-sm text-muted-foreground">
@@ -530,7 +600,7 @@ function TrainingPage() {
                     ✨ Warum dieses Training?
                   </div>
 
-                  <div className="mt-1 text-xs text-muted-foreground">
+                  <div className="mt-1 text-[11px] font-medium text-muted-foreground">
                     Verstehe den Zweck hinter der Einheit.
                   </div>
                 </div>
@@ -540,84 +610,198 @@ function TrainingPage() {
                 </span>
               </button>
 
-              {whyOpen && (
-                <div className="mt-3 rounded-2xl border border-accent/15 bg-accent/5 p-5">
-
-                  {selectedWorkout.id.startsWith("demo-") ? (
-                    <div>
-                      <div className="text-sm font-bold">
-                        Demo-Training
-                      </div>
-
-                      <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                        Die echte Athletic IQ Erklärung wird mit einem realen
-                        Coach-Training aus Supabase getestet.
-                      </p>
-                    </div>
-                  ) : explanationMutation.isPending ? (
-                    <div>
-                      <div className="text-sm font-bold">
-                        Athletic IQ analysiert dein Training…
-                      </div>
-
-                      <p className="mt-2 text-sm text-muted-foreground">
-                        Trainingsziel, Übungen, Coach-Fokus und relevante
-                        vergangene Analysen werden berücksichtigt.
-                      </p>
-                    </div>
-                  ) : explanationMutation.isError ? (
-                    <div>
-                      <div className="text-sm font-bold text-destructive">
-                        Erklärung konnte nicht erstellt werden.
-                      </div>
-
-                      <p className="mt-2 text-sm text-muted-foreground">
-                        Bitte versuche es erneut.
-                      </p>
-
-                      <button
-                        type="button"
-                        onClick={() =>
-                          explanationMutation.mutate(selectedWorkout.id)
-                        }
-                        className="mt-3 text-sm font-semibold text-accent hover:underline"
-                      >
-                        Erneut versuchen
-                      </button>
-                    </div>
-                  ) : explanationMutation.data?.explanation ? (
-                    <div>
-                      <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-accent">
-                        Athletic IQ Erklärung
-                      </div>
-
-                      <div className="mt-3 whitespace-pre-line text-sm leading-relaxed">
-                        {explanationMutation.data.explanation}
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="text-sm text-muted-foreground">
-                      Klicke erneut auf „Warum dieses Training?“, um die Erklärung zu laden.
-                    </div>
-                  )}
-
-                </div>
-              )}
 
             </div>
 
           </div>
 
-          {/* COACH FOCUS */}
-          <aside className="rounded-2xl border border-accent/20 bg-accent/5 p-5 shadow-sm">
-            <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-accent">
-              Coach Fokus
+          {/* RIGHT SIDE */}
+          <aside className="self-start space-y-4">
+
+            {/* COACH FOCUS */}
+            <div className="rounded-xl border border-accent/20 bg-accent/5 px-4 py-3.5 shadow-sm">
+              <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-accent">
+                ✦ Coach Fokus
+              </div>
+
+              <p className="mt-3 text-base font-semibold leading-relaxed">
+                {selectedWorkout.coach_note ??
+                  "Für diese Einheit wurde noch kein zusätzlicher Coach-Fokus hinterlegt."}
+              </p>
             </div>
 
-            <p className="mt-3 text-base font-semibold leading-relaxed">
-              {selectedWorkout.coach_note ??
-                "Für diese Einheit wurde noch kein zusätzlicher Coach-Fokus hinterlegt."}
-            </p>
+            {/* ATHLETIC IQ EXPLANATION */}
+            {whyOpen && (
+              <div className="rounded-xl border border-sky-200/70 bg-sky-50/70 p-4 shadow-sm dark:border-sky-900/40 dark:bg-sky-950/20">
+
+                {selectedWorkout.id.startsWith("demo-") ? (
+                  <div>
+                    <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-sky-700 dark:text-sky-300">
+                      Athletic IQ Erklärung
+                    </div>
+
+                    <div className="mt-2 text-sm font-bold">
+                      Demo-Training
+                    </div>
+
+                    <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                      Die echte Athletic IQ Erklärung wird mit einem realen
+                      Coach-Training aus Supabase getestet.
+                    </p>
+                  </div>
+                ) : explanationMutation.isPending ? (
+                  <div>
+                    <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-sky-700 dark:text-sky-300">
+                      Athletic IQ Erklärung
+                    </div>
+
+                    <div className="mt-2 text-sm font-bold">
+                      Athletic IQ analysiert dein Training…
+                    </div>
+
+                    <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                      Trainingsziel, Übungen, Coach-Fokus und relevante
+                      vergangene Analysen werden berücksichtigt.
+                    </p>
+                  </div>
+                ) : explanationMutation.isError ? (
+                  <div>
+                    <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-sky-700 dark:text-sky-300">
+                      Athletic IQ Erklärung
+                    </div>
+
+                    <div className="mt-2 text-sm font-bold text-destructive">
+                      Erklärung konnte nicht erstellt werden.
+                    </div>
+
+                    <p className="mt-2 text-sm text-muted-foreground">
+                      Bitte versuche es erneut.
+                    </p>
+
+                    <button
+                      type="button"
+                      onClick={() =>
+                        explanationMutation.mutate(selectedWorkout.id)
+                      }
+                      className="mt-3 text-sm font-semibold text-accent hover:underline"
+                    >
+                      Erneut versuchen
+                    </button>
+                  </div>
+                ) : explanationMutation.data?.explanation ? (
+                  <div>
+                    <div className="mb-3 text-[10px] font-bold uppercase tracking-[0.18em] text-sky-700 dark:text-sky-300">
+                      Athletic IQ Erklärung
+                    </div>
+
+                    <ReactMarkdown
+                      components={{
+                        h1: ({ children }) => (
+                          <h3 className="mb-3 text-base font-bold tracking-tight">
+                            {children}
+                          </h3>
+                        ),
+
+                        h2: ({ children }) => (
+                          <h2 className="mb-4 text-lg font-extrabold tracking-tight text-foreground">
+                            {children}
+                          </h2>
+                        ),
+
+                        h3: ({ children }) => {
+                          const label = String(children);
+
+                          const visual =
+                            label.includes("Fokus")
+                              ? {
+                                  icon: Lightbulb,
+                                  color: "text-green-600",
+                                  box: "bg-green-100",
+                                }
+                              : label.includes("gute Einheit")
+                                ? {
+                                    icon: Trophy,
+                                    color: "text-amber-600",
+                                    box: "bg-amber-100",
+                                  }
+                                : label.includes("letzten Training")
+                                  ? {
+                                      icon: History,
+                                      color: "text-violet-600",
+                                      box: "bg-violet-100",
+                                    }
+                                  : {
+                                      icon: Target,
+                                      color: "text-sky-600",
+                                      box: "bg-sky-100",
+                                    };
+
+                          const SectionIcon = visual.icon;
+
+                          return (
+                            <div className="mt-4 mb-2 flex items-center gap-2">
+
+                              <div
+                                className={[
+                                  "grid h-6 w-6 shrink-0 place-items-center rounded-lg",
+                                  visual.box,
+                                  visual.color,
+                                ].join(" ")}
+                              >
+                                <SectionIcon className="h-3.5 w-3.5" />
+                              </div>
+
+                              <h3
+                                className={[
+                                  "text-[11px] font-extrabold uppercase tracking-[0.14em]",
+                                  visual.color,
+                                ].join(" ")}
+                              >
+                                {children}
+                              </h3>
+
+                            </div>
+                          );
+                        },
+
+                        p: ({ children }) => (
+                          <p className="mb-3 text-sm leading-relaxed text-foreground">
+                            {children}
+                          </p>
+                        ),
+
+                        strong: ({ children }) => (
+                          <strong className="font-bold text-foreground">
+                            {children}
+                          </strong>
+                        ),
+
+                        ul: ({ children }) => (
+                          <ul className="mb-3 space-y-2 pl-1">
+                            {children}
+                          </ul>
+                        ),
+
+                        li: ({ children }) => (
+                          <li className="flex gap-2 text-sm leading-relaxed text-foreground">
+                            <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-sky-500" />
+                            <span>{children}</span>
+                          </li>
+                        ),
+                      }}
+                    >
+                      {explanationMutation.data.explanation}
+                    </ReactMarkdown>
+                  </div>
+                ) : (
+                  <div className="text-sm text-muted-foreground">
+                    Klicke erneut auf „Warum dieses Training?“, um die Erklärung zu laden.
+                  </div>
+                )}
+
+              </div>
+            )}
+
           </aside>
 
         </section>
@@ -626,3 +810,37 @@ function TrainingPage() {
     </AppShell>
   );
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

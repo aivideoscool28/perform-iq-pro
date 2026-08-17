@@ -28,6 +28,8 @@ import { Route as CoachRouteImport } from './routes/coach'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TrainingBeforeV1RedesignRouteImport } from './routes/training.before-v1-redesign'
+import { Route as TrainingBeforeRightAiPanelRouteImport } from './routes/training.before-right-ai-panel'
+import { Route as TrainingBeforeFinalUiRouteImport } from './routes/training.before-final-ui'
 import { Route as IndexBeforeRealInsightRouteImport } from './routes/index.before-real-insight'
 import { Route as IndexBeforeDashboardRedesignRouteImport } from './routes/index.before-dashboard-redesign'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
@@ -128,6 +130,17 @@ const TrainingBeforeV1RedesignRoute =
     path: '/before-v1-redesign',
     getParentRoute: () => TrainingRoute,
   } as any)
+const TrainingBeforeRightAiPanelRoute =
+  TrainingBeforeRightAiPanelRouteImport.update({
+    id: '/before-right-ai-panel',
+    path: '/before-right-ai-panel',
+    getParentRoute: () => TrainingRoute,
+  } as any)
+const TrainingBeforeFinalUiRoute = TrainingBeforeFinalUiRouteImport.update({
+  id: '/before-final-ui',
+  path: '/before-final-ui',
+  getParentRoute: () => TrainingRoute,
+} as any)
 const IndexBeforeRealInsightRoute = IndexBeforeRealInsightRouteImport.update({
   id: '/index/before-real-insight',
   path: '/index/before-real-insight',
@@ -167,6 +180,8 @@ export interface FileRoutesByFullPath {
   '/api/chat': typeof ApiChatRoute
   '/index/before-dashboard-redesign': typeof IndexBeforeDashboardRedesignRoute
   '/index/before-real-insight': typeof IndexBeforeRealInsightRoute
+  '/training/before-final-ui': typeof TrainingBeforeFinalUiRoute
+  '/training/before-right-ai-panel': typeof TrainingBeforeRightAiPanelRoute
   '/training/before-v1-redesign': typeof TrainingBeforeV1RedesignRoute
 }
 export interface FileRoutesByTo {
@@ -191,6 +206,8 @@ export interface FileRoutesByTo {
   '/api/chat': typeof ApiChatRoute
   '/index/before-dashboard-redesign': typeof IndexBeforeDashboardRedesignRoute
   '/index/before-real-insight': typeof IndexBeforeRealInsightRoute
+  '/training/before-final-ui': typeof TrainingBeforeFinalUiRoute
+  '/training/before-right-ai-panel': typeof TrainingBeforeRightAiPanelRoute
   '/training/before-v1-redesign': typeof TrainingBeforeV1RedesignRoute
 }
 export interface FileRoutesById {
@@ -216,6 +233,8 @@ export interface FileRoutesById {
   '/api/chat': typeof ApiChatRoute
   '/index/before-dashboard-redesign': typeof IndexBeforeDashboardRedesignRoute
   '/index/before-real-insight': typeof IndexBeforeRealInsightRoute
+  '/training/before-final-ui': typeof TrainingBeforeFinalUiRoute
+  '/training/before-right-ai-panel': typeof TrainingBeforeRightAiPanelRoute
   '/training/before-v1-redesign': typeof TrainingBeforeV1RedesignRoute
 }
 export interface FileRouteTypes {
@@ -242,6 +261,8 @@ export interface FileRouteTypes {
     | '/api/chat'
     | '/index/before-dashboard-redesign'
     | '/index/before-real-insight'
+    | '/training/before-final-ui'
+    | '/training/before-right-ai-panel'
     | '/training/before-v1-redesign'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -266,6 +287,8 @@ export interface FileRouteTypes {
     | '/api/chat'
     | '/index/before-dashboard-redesign'
     | '/index/before-real-insight'
+    | '/training/before-final-ui'
+    | '/training/before-right-ai-panel'
     | '/training/before-v1-redesign'
   id:
     | '__root__'
@@ -290,6 +313,8 @@ export interface FileRouteTypes {
     | '/api/chat'
     | '/index/before-dashboard-redesign'
     | '/index/before-real-insight'
+    | '/training/before-final-ui'
+    | '/training/before-right-ai-panel'
     | '/training/before-v1-redesign'
   fileRoutesById: FileRoutesById
 }
@@ -452,6 +477,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TrainingBeforeV1RedesignRouteImport
       parentRoute: typeof TrainingRoute
     }
+    '/training/before-right-ai-panel': {
+      id: '/training/before-right-ai-panel'
+      path: '/before-right-ai-panel'
+      fullPath: '/training/before-right-ai-panel'
+      preLoaderRoute: typeof TrainingBeforeRightAiPanelRouteImport
+      parentRoute: typeof TrainingRoute
+    }
+    '/training/before-final-ui': {
+      id: '/training/before-final-ui'
+      path: '/before-final-ui'
+      fullPath: '/training/before-final-ui'
+      preLoaderRoute: typeof TrainingBeforeFinalUiRouteImport
+      parentRoute: typeof TrainingRoute
+    }
     '/index/before-real-insight': {
       id: '/index/before-real-insight'
       path: '/index/before-real-insight'
@@ -477,10 +516,14 @@ declare module '@tanstack/react-router' {
 }
 
 interface TrainingRouteChildren {
+  TrainingBeforeFinalUiRoute: typeof TrainingBeforeFinalUiRoute
+  TrainingBeforeRightAiPanelRoute: typeof TrainingBeforeRightAiPanelRoute
   TrainingBeforeV1RedesignRoute: typeof TrainingBeforeV1RedesignRoute
 }
 
 const TrainingRouteChildren: TrainingRouteChildren = {
+  TrainingBeforeFinalUiRoute: TrainingBeforeFinalUiRoute,
+  TrainingBeforeRightAiPanelRoute: TrainingBeforeRightAiPanelRoute,
   TrainingBeforeV1RedesignRoute: TrainingBeforeV1RedesignRoute,
 }
 
