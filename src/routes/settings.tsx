@@ -5,7 +5,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { AppShell } from "@/components/athleticiq/AppShell";
 import { Bell, Globe, Lock, Moon, Palette, Shield, Sparkles } from "lucide-react";
 import { SignOutButton } from "@/components/athleticiq/SignOutButton";
-import { fetchMyProfile, updateProfilePersonalization } from "@/lib/athletic.functions";
+import { fetchMyProfile, updateProfilePersonalization } from "@/lib/features/profile.functions";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/settings")({
@@ -373,3 +373,4 @@ function ActionButton({ icon, label }: { icon: React.ReactNode; label: string })
     </button>
   );
 }
+

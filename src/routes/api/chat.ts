@@ -5,10 +5,9 @@ import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
 import { createAiProvider } from "@/lib/ai-gateway.server";
 import { loadAthleteContext } from "@/lib/athlete-context.server";
+import { AI_COACH_SYSTEM_PROMPT } from "@/prompts/ai-coach.prompt";
 
-const SYSTEM_PROMPT = `Du bist der Athleticiq KI-Coach — ein persönlicher Performance-Assistent für Leichtathletinnen und Leichtathleten.
-
-Antworte immer auf Deutsch, knapp, motivierend und konkret. Gib praxisnahe Tipps zu Training, Regeneration, Ernährung, Technik (Sprint, Sprung, Wurf, Lauf), Wettkampfvorbereitung und HRV/Schlaf. Wenn der Athlet Beschwerden beschreibt, empfiehl bei ernsten Symptomen einen Arzt. Nutze Markdown (Listen, Fettdruck) für Übersichtlichkeit.`;
+const SYSTEM_PROMPT = AI_COACH_SYSTEM_PROMPT;
 
 export const Route = createFileRoute("/api/chat")({
   server: {
@@ -159,3 +158,4 @@ ${JSON.stringify(aiAthleteContext, null, 2)}
 // Receives athlete chat messages, adds the Athletic IQ system prompt,
 // connects directly to Gemini through our server-side AI provider,
 // and streams the Gemini response back to the frontend.
+

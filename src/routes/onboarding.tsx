@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useAuth } from "@/hooks/use-auth";
-import { saveOnboarding, generateGoalReply } from "@/lib/athletic.functions";
+import { saveOnboarding, generateGoalReply } from "@/lib/features/profile.functions";
 import { markTourPending } from "@/lib/tour";
 import { supabase } from "@/integrations/supabase/client";
 import { Activity, Camera, Loader2, Send, Sparkles, User } from "lucide-react";
@@ -708,3 +708,4 @@ function UnitToggle({ a, b, value, onChange }: { a: string; b: string; value: st
     </div>
   );
 }
+

@@ -8,7 +8,8 @@ import { DashboardCheckinCard } from "@/components/dashboard/DashboardCheckinCar
 import { MotivationCard } from "@/components/dashboard/MotivationCard";
 import { WeeklyProgressCards } from "@/components/dashboard/WeeklyProgressCards";
 import { KIInsightCard } from "@/components/dashboard/KIInsightCard";
-import { fetchDashboard, fetchTodayCheckin, deleteTodayCheckin } from "@/lib/athletic.functions";
+import { fetchDashboard } from "@/lib/features/dashboard.functions";
+import { fetchTodayCheckin, deleteTodayCheckin } from "@/lib/features/daily-checkin.functions";
 import { DailyCheckin } from "@/components/athleticiq/DailyCheckin";
 import { FeatureTour } from "@/components/athleticiq/FeatureTour";
 import { isTourPending, clearTourPending } from "@/lib/tour";
@@ -229,6 +230,8 @@ function Dashboard() {
     </AppShell>
   );
 }
+
+
 
 
 

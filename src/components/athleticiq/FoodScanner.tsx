@@ -5,7 +5,7 @@ import { Camera, Scan, X, Loader2, Sparkles, Flame, Apple, Beef, Wheat, Droplet,
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import { analyzeFoodImage } from "@/lib/athletic.functions";
+import { analyzeFoodImage } from "@/lib/features/nutrition.functions";
 import { toast } from "sonner";
 
 type FoodItem = {
@@ -463,3 +463,4 @@ function MacroRing({
     </div>
   );
 }
+

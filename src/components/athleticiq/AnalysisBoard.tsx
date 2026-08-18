@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { updateAnalysis } from "@/lib/athletic.functions";
+import { updateAnalysis } from "@/lib/features/workout-analysis.functions";
 import { Check, AlertTriangle, Target, Plus, X, Pencil, Save, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
@@ -154,3 +154,4 @@ export function AnalysisBoard({ board, workout }: Props) {
     </motion.div>
   );
 }
+

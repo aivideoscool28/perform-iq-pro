@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Footprints, Sparkles, ShieldCheck, Zap, Star, Plus, Trash2, History, LogIn, Search, SlidersHorizontal, X } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
-import { fetchDashboard } from "@/lib/athletic.functions";
+import { fetchDashboard } from "@/lib/features/dashboard.functions";
 import { fetchGear, upsertGearProfile, addGearLog, deleteGearLog } from "@/lib/gear.functions";
 import { DisciplineSelector } from "@/components/athleticiq/DisciplineSelector";
 import sprintImg from "@/assets/gear/sprint.jpg";
@@ -648,3 +648,4 @@ function GearPage() {
     </AppShell>
   );
 }
+

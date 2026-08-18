@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useNavigate } from "@tanstack/react-router";
-import { saveDailyCheckin } from "@/lib/athletic.functions";
+import { saveDailyCheckin } from "@/lib/features/daily-checkin.functions";
 import { X, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import { createPortal } from "react-dom";
@@ -478,6 +478,5 @@ export function DailyCheckin({ name, onClose }: Props) {
     document.body,
   );
 }
-
 
 

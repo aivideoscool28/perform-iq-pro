@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { AppShell } from "@/components/athleticiq/AppShell";
 import { AnalysisBoard } from "@/components/athleticiq/AnalysisBoard";
-import { fetchDashboard } from "@/lib/athletic.functions";
+import { fetchDashboard } from "@/lib/features/dashboard.functions";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, Loader2, Flame, Clock } from "lucide-react";

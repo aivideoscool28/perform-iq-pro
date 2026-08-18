@@ -30,8 +30,6 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as TrainingBeforeV1RedesignRouteImport } from './routes/training.before-v1-redesign'
 import { Route as TrainingBeforeRightAiPanelRouteImport } from './routes/training.before-right-ai-panel'
 import { Route as TrainingBeforeFinalUiRouteImport } from './routes/training.before-final-ui'
-import { Route as IndexBeforeRealInsightRouteImport } from './routes/index.before-real-insight'
-import { Route as IndexBeforeDashboardRedesignRouteImport } from './routes/index.before-dashboard-redesign'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 
 const WorkoutAnalysisRoute = WorkoutAnalysisRouteImport.update({
@@ -141,17 +139,6 @@ const TrainingBeforeFinalUiRoute = TrainingBeforeFinalUiRouteImport.update({
   path: '/before-final-ui',
   getParentRoute: () => TrainingRoute,
 } as any)
-const IndexBeforeRealInsightRoute = IndexBeforeRealInsightRouteImport.update({
-  id: '/index/before-real-insight',
-  path: '/index/before-real-insight',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const IndexBeforeDashboardRedesignRoute =
-  IndexBeforeDashboardRedesignRouteImport.update({
-    id: '/index/before-dashboard-redesign',
-    path: '/index/before-dashboard-redesign',
-    getParentRoute: () => rootRouteImport,
-  } as any)
 const ApiChatRoute = ApiChatRouteImport.update({
   id: '/api/chat',
   path: '/api/chat',
@@ -178,8 +165,6 @@ export interface FileRoutesByFullPath {
   '/video': typeof VideoRoute
   '/workout-analysis': typeof WorkoutAnalysisRoute
   '/api/chat': typeof ApiChatRoute
-  '/index/before-dashboard-redesign': typeof IndexBeforeDashboardRedesignRoute
-  '/index/before-real-insight': typeof IndexBeforeRealInsightRoute
   '/training/before-final-ui': typeof TrainingBeforeFinalUiRoute
   '/training/before-right-ai-panel': typeof TrainingBeforeRightAiPanelRoute
   '/training/before-v1-redesign': typeof TrainingBeforeV1RedesignRoute
@@ -204,8 +189,6 @@ export interface FileRoutesByTo {
   '/video': typeof VideoRoute
   '/workout-analysis': typeof WorkoutAnalysisRoute
   '/api/chat': typeof ApiChatRoute
-  '/index/before-dashboard-redesign': typeof IndexBeforeDashboardRedesignRoute
-  '/index/before-real-insight': typeof IndexBeforeRealInsightRoute
   '/training/before-final-ui': typeof TrainingBeforeFinalUiRoute
   '/training/before-right-ai-panel': typeof TrainingBeforeRightAiPanelRoute
   '/training/before-v1-redesign': typeof TrainingBeforeV1RedesignRoute
@@ -231,8 +214,6 @@ export interface FileRoutesById {
   '/video': typeof VideoRoute
   '/workout-analysis': typeof WorkoutAnalysisRoute
   '/api/chat': typeof ApiChatRoute
-  '/index/before-dashboard-redesign': typeof IndexBeforeDashboardRedesignRoute
-  '/index/before-real-insight': typeof IndexBeforeRealInsightRoute
   '/training/before-final-ui': typeof TrainingBeforeFinalUiRoute
   '/training/before-right-ai-panel': typeof TrainingBeforeRightAiPanelRoute
   '/training/before-v1-redesign': typeof TrainingBeforeV1RedesignRoute
@@ -259,8 +240,6 @@ export interface FileRouteTypes {
     | '/video'
     | '/workout-analysis'
     | '/api/chat'
-    | '/index/before-dashboard-redesign'
-    | '/index/before-real-insight'
     | '/training/before-final-ui'
     | '/training/before-right-ai-panel'
     | '/training/before-v1-redesign'
@@ -285,8 +264,6 @@ export interface FileRouteTypes {
     | '/video'
     | '/workout-analysis'
     | '/api/chat'
-    | '/index/before-dashboard-redesign'
-    | '/index/before-real-insight'
     | '/training/before-final-ui'
     | '/training/before-right-ai-panel'
     | '/training/before-v1-redesign'
@@ -311,8 +288,6 @@ export interface FileRouteTypes {
     | '/video'
     | '/workout-analysis'
     | '/api/chat'
-    | '/index/before-dashboard-redesign'
-    | '/index/before-real-insight'
     | '/training/before-final-ui'
     | '/training/before-right-ai-panel'
     | '/training/before-v1-redesign'
@@ -338,8 +313,6 @@ export interface RootRouteChildren {
   VideoRoute: typeof VideoRoute
   WorkoutAnalysisRoute: typeof WorkoutAnalysisRoute
   ApiChatRoute: typeof ApiChatRoute
-  IndexBeforeDashboardRedesignRoute: typeof IndexBeforeDashboardRedesignRoute
-  IndexBeforeRealInsightRoute: typeof IndexBeforeRealInsightRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -491,20 +464,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TrainingBeforeFinalUiRouteImport
       parentRoute: typeof TrainingRoute
     }
-    '/index/before-real-insight': {
-      id: '/index/before-real-insight'
-      path: '/index/before-real-insight'
-      fullPath: '/index/before-real-insight'
-      preLoaderRoute: typeof IndexBeforeRealInsightRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/index/before-dashboard-redesign': {
-      id: '/index/before-dashboard-redesign'
-      path: '/index/before-dashboard-redesign'
-      fullPath: '/index/before-dashboard-redesign'
-      preLoaderRoute: typeof IndexBeforeDashboardRedesignRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/api/chat': {
       id: '/api/chat'
       path: '/api/chat'
@@ -551,8 +510,6 @@ const rootRouteChildren: RootRouteChildren = {
   VideoRoute: VideoRoute,
   WorkoutAnalysisRoute: WorkoutAnalysisRoute,
   ApiChatRoute: ApiChatRoute,
-  IndexBeforeDashboardRedesignRoute: IndexBeforeDashboardRedesignRoute,
-  IndexBeforeRealInsightRoute: IndexBeforeRealInsightRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

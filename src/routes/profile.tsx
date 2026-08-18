@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
-import { fetchMyProfile, resetOnboarding, resetToNewUser } from "@/lib/athletic.functions";
+import { fetchMyProfile, resetOnboarding, resetToNewUser } from "@/lib/features/profile.functions";
 import { SignOutButton } from "@/components/athleticiq/SignOutButton";
 import { isDevPreview, markTourPending } from "@/lib/tour";
 import {
@@ -624,3 +624,4 @@ function Page() {
     </AppShell>
   );
 }
+

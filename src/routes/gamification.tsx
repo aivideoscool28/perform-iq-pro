@@ -4,7 +4,8 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { AppShell } from "@/components/athleticiq/AppShell";
 import { EditableShell } from "@/components/athleticiq/EditableShell";
-import { fetchFriends, acceptInviteCode, fetchDashboard } from "@/lib/athletic.functions";
+import { fetchDashboard } from "@/lib/features/dashboard.functions";
+import { fetchFriends, acceptInviteCode } from "@/lib/features/friends.functions";
 import { StreakManager } from "@/components/athleticiq/StreakManager";
 import { Flame, Copy, UserPlus, Share2, Loader2 } from "lucide-react";
 import { toast } from "sonner";
@@ -174,3 +175,5 @@ function FriendsPage() {
     </AppShell>
   );
 }
+
+

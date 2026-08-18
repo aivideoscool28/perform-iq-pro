@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { logWorkoutFromText } from "@/lib/athletic.functions";
+import { logWorkoutFromText } from "@/lib/features/workout.functions";
 import { Send, Loader2, Sparkles } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
@@ -124,3 +124,4 @@ export function WorkoutChat({ name }: { name: string }) {
     </div>
   );
 }
+

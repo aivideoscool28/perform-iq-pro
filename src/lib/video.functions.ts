@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { callAi } from "@/lib/ai-gateway.server";
+import { VIDEO_ANALYSIS_SYSTEM_PROMPT, buildVideoAnalysisUserPrompt } from "@/prompts/video-analysis.prompt";
 
 const FrameSchema = z.object({
   t: z.number().min(0),
@@ -19,11 +20,11 @@ export const analyzeVideoFrames = createServerFn({ method: "POST" })
     const content: Array<Record<string, unknown>> = [
       {
         type: "text",
-        text: `Analysiere die folgenden ${data.frames.length} Frames aus einem Trainingsvideo (Disziplin: ${data.discipline}${
-          data.durationSec
-            ? `, Dauer ${data.durationSec.toFixed(1)} s`
-            : ""
-        }). Identifiziere die Bewegung, schätze biomechanische Marker (Gelenkwinkel, Haltung, Bodenkontakt, Symmetrie), berechne einen Gesamtscore von 0–10 und gib präzise, athletengerechte Empfehlungen. Antworte auf Deutsch. Rufe IMMER das Tool report_video_analysis auf.`,
+        text: buildVideoAnalysisUserPrompt({
+          frameCount: data.frames.length,
+          discipline: data.discipline,
+          durationSec: data.durationSec,
+        }),
       },
       ...data.frames.map((f) => ({
         type: "image_url" as const,
@@ -36,8 +37,7 @@ export const analyzeVideoFrames = createServerFn({ method: "POST" })
       messages: [
         {
           role: "system",
-          content:
-            "Du bist ein Elite-Biomechanik-Coach mit Spezialisierung auf Leichtathletik. Du analysierst Bewegungsabläufe aus Videoframes und lieferst präzise, athletengerechte Diagnosen mit konkreten Trainingsempfehlungen. Sei spezifisch und vermeide Floskeln.",
+          content: VIDEO_ANALYSIS_SYSTEM_PROMPT,
         },
         {
           role: "user",
@@ -230,3 +230,5 @@ export const analyzeVideoFrames = createServerFn({ method: "POST" })
       }[];
     };
   });
+
+
