@@ -1,9 +1,10 @@
-import { createServerFn } from "@tanstack/react-start";
+﻿import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { callAi } from "@/lib/ai-gateway.server";
 import { buildDailyCheckinSummaryPrompt } from "@/prompts/daily-checkin-summary.prompt";
 import { buildDailyCheckinAnalysisPrompt } from "@/prompts/workout-analysis.prompt";
+import type { Json } from "@/integrations/supabase/types";
 
 interface AnalysisOutput {
   positives: string[];
@@ -112,6 +113,7 @@ export const saveDailyCheckin = createServerFn({ method: "POST" })
       .upsert(
         {
           ...data,
+          performance_results: data.performance_results as Json | null,
           user_id: userId,
           checkin_date: today,
           context_summary,
@@ -325,6 +327,9 @@ export const deleteTodayCheckin = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { ok: true };
   });
+
+
+
 
 
 

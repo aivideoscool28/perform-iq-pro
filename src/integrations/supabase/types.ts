@@ -1,4 +1,4 @@
-export type Json =
+﻿export type Json =
   | string
   | number
   | boolean
@@ -10,10 +10,69 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.5"
+    PostgrestVersion: "14.15"
   }
   public: {
     Tables: {
+      ai_conversations: {
+        Row: {
+          created_at: string
+          id: string
+          title: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          title?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          title?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      ai_messages: {
+        Row: {
+          content: string
+          conversation_id: string
+          created_at: string
+          id: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          conversation_id: string
+          created_at?: string
+          id?: string
+          role: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          conversation_id?: string
+          created_at?: string
+          id?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "ai_conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       analysis_boards: {
         Row: {
           created_at: string
@@ -63,130 +122,116 @@ export type Database = {
           ai_summary: string | null
           ate_around_training: string | null
           checkin_date: string
+          context_summary: string | null
           created_at: string
           discipline: string | null
           duration_min: number | null
+          expected_difficulty: string | null
           extra_note: string | null
           food_note: string | null
           has_pain: boolean | null
           id: string
           is_rest_day: boolean
           last_meal_before: string | null
+          mental_state: string | null
           overall_feeling: number | null
+          pain_area: string | null
           pain_note: string | null
+          pain_severity: string | null
+          performance_factors: string[] | null
+          performance_quality: string | null
+          performance_results: Json | null
+          physical_feeling: number | null
           rpe: number | null
           satisfaction: number | null
+          session_details: string | null
+          session_goal_achieved: string | null
+          session_goal_note: string | null
           sleep_hours: string | null
           sleep_quality: number | null
           updated_at: string
           user_id: string
           water_intake: string | null
           woke_recovered: string | null
+          workout_type: string | null
         }
         Insert: {
           ai_summary?: string | null
           ate_around_training?: string | null
           checkin_date?: string
+          context_summary?: string | null
           created_at?: string
           discipline?: string | null
           duration_min?: number | null
+          expected_difficulty?: string | null
           extra_note?: string | null
           food_note?: string | null
           has_pain?: boolean | null
           id?: string
           is_rest_day?: boolean
           last_meal_before?: string | null
+          mental_state?: string | null
           overall_feeling?: number | null
+          pain_area?: string | null
           pain_note?: string | null
+          pain_severity?: string | null
+          performance_factors?: string[] | null
+          performance_quality?: string | null
+          performance_results?: Json | null
+          physical_feeling?: number | null
           rpe?: number | null
           satisfaction?: number | null
+          session_details?: string | null
+          session_goal_achieved?: string | null
+          session_goal_note?: string | null
           sleep_hours?: string | null
           sleep_quality?: number | null
           updated_at?: string
           user_id: string
           water_intake?: string | null
           woke_recovered?: string | null
+          workout_type?: string | null
         }
         Update: {
           ai_summary?: string | null
           ate_around_training?: string | null
           checkin_date?: string
+          context_summary?: string | null
           created_at?: string
           discipline?: string | null
           duration_min?: number | null
+          expected_difficulty?: string | null
           extra_note?: string | null
           food_note?: string | null
           has_pain?: boolean | null
           id?: string
           is_rest_day?: boolean
           last_meal_before?: string | null
+          mental_state?: string | null
           overall_feeling?: number | null
+          pain_area?: string | null
           pain_note?: string | null
+          pain_severity?: string | null
+          performance_factors?: string[] | null
+          performance_quality?: string | null
+          performance_results?: Json | null
+          physical_feeling?: number | null
           rpe?: number | null
           satisfaction?: number | null
+          session_details?: string | null
+          session_goal_achieved?: string | null
+          session_goal_note?: string | null
           sleep_hours?: string | null
           sleep_quality?: number | null
           updated_at?: string
           user_id?: string
           water_intake?: string | null
           woke_recovered?: string | null
+          workout_type?: string | null
         }
         Relationships: []
       }
-      planned_workouts: {
-        Row: {
-          athlete_id: string
-          coach_id: string | null
-          completed_at: string | null
-          created_at: string
-          discipline: string | null
-          duration_minutes: number | null
-          exercises: Json
-          id: string
-          coach_note: string | null
-          session_goal: string | null
-          source: string
-          status: string
-          title: string
-          updated_at: string
-          workout_date: string
-        }
-        Insert: {
-          athlete_id: string
-          coach_id?: string | null
-          completed_at?: string | null
-          created_at?: string
-          discipline?: string | null
-          duration_minutes?: number | null
-          exercises?: Json
-          id?: string
-          coach_note?: string | null
-          session_goal?: string | null
-          source?: string
-          status?: string
-          title: string
-          updated_at?: string
-          workout_date: string
-        }
-        Update: {
-          athlete_id?: string
-          coach_id?: string | null
-          completed_at?: string | null
-          created_at?: string
-          discipline?: string | null
-          duration_minutes?: number | null
-          exercises?: Json
-          id?: string
-          coach_note?: string | null
-          session_goal?: string | null
-          source?: string
-          status?: string
-          title?: string
-          updated_at?: string
-          workout_date?: string
-        }
-        Relationships: []
-      }      friendships: {
+      friendships: {
         Row: {
           created_at: string
           friend_id: string
@@ -276,17 +321,74 @@ export type Database = {
         }
         Relationships: []
       }
+      planned_workouts: {
+        Row: {
+          athlete_id: string
+          coach_id: string | null
+          coach_note: string | null
+          completed_at: string | null
+          created_at: string
+          discipline: string | null
+          duration_minutes: number | null
+          exercises: Json
+          id: string
+          session_goal: string | null
+          source: string
+          status: string
+          title: string
+          updated_at: string
+          workout_date: string
+        }
+        Insert: {
+          athlete_id: string
+          coach_id?: string | null
+          coach_note?: string | null
+          completed_at?: string | null
+          created_at?: string
+          discipline?: string | null
+          duration_minutes?: number | null
+          exercises?: Json
+          id?: string
+          session_goal?: string | null
+          source?: string
+          status?: string
+          title: string
+          updated_at?: string
+          workout_date: string
+        }
+        Update: {
+          athlete_id?: string
+          coach_id?: string | null
+          coach_note?: string | null
+          completed_at?: string | null
+          created_at?: string
+          discipline?: string | null
+          duration_minutes?: number | null
+          exercises?: Json
+          id?: string
+          session_goal?: string | null
+          source?: string
+          status?: string
+          title?: string
+          updated_at?: string
+          workout_date?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           age: number | null
           avatar_url: string | null
           created_at: string
+          current_focus: string[] | null
           current_streak: number
-          disciplines: string[]
+          disciplines: string[] | null
           display_name: string
           experience: string | null
+          favourite_athlete: string | null
+          goal_motivation: string[] | null
           goal_text: string | null
-          goals: string[]
+          goals: string[] | null
           height_cm: number | null
           id: string
           injuries: string | null
@@ -294,6 +396,7 @@ export type Database = {
           last_workout_date: string | null
           longest_streak: number
           onboarded_at: string | null
+          receive_news_and_motivation: boolean | null
           streak_freezes_last_reset: string
           streak_freezes_remaining: number
           training_days_per_week: number | null
@@ -305,12 +408,15 @@ export type Database = {
           age?: number | null
           avatar_url?: string | null
           created_at?: string
+          current_focus?: string[] | null
           current_streak?: number
-          disciplines?: string[]
+          disciplines?: string[] | null
           display_name?: string
           experience?: string | null
+          favourite_athlete?: string | null
+          goal_motivation?: string[] | null
           goal_text?: string | null
-          goals?: string[]
+          goals?: string[] | null
           height_cm?: number | null
           id: string
           injuries?: string | null
@@ -318,6 +424,7 @@ export type Database = {
           last_workout_date?: string | null
           longest_streak?: number
           onboarded_at?: string | null
+          receive_news_and_motivation?: boolean | null
           streak_freezes_last_reset?: string
           streak_freezes_remaining?: number
           training_days_per_week?: number | null
@@ -329,12 +436,15 @@ export type Database = {
           age?: number | null
           avatar_url?: string | null
           created_at?: string
+          current_focus?: string[] | null
           current_streak?: number
-          disciplines?: string[]
+          disciplines?: string[] | null
           display_name?: string
           experience?: string | null
+          favourite_athlete?: string | null
+          goal_motivation?: string[] | null
           goal_text?: string | null
-          goals?: string[]
+          goals?: string[] | null
           height_cm?: number | null
           id?: string
           injuries?: string | null
@@ -342,12 +452,70 @@ export type Database = {
           last_workout_date?: string | null
           longest_streak?: number
           onboarded_at?: string | null
+          receive_news_and_motivation?: boolean | null
           streak_freezes_last_reset?: string
           streak_freezes_remaining?: number
           training_days_per_week?: number | null
           training_setup?: string | null
           updated_at?: string
           weight_kg?: number | null
+        }
+        Relationships: []
+      }
+      video_analyses: {
+        Row: {
+          ai_analysis: Json | null
+          athlete_request: string | null
+          coach_notes: string | null
+          created_at: string
+          detected_movement: string | null
+          discipline: string | null
+          findings: Json | null
+          id: string
+          kpis: Json | null
+          overall_rating: number | null
+          overall_reasoning: string | null
+          overall_recommendation: string | null
+          score_breakdown: Json | null
+          storage_path: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          ai_analysis?: Json | null
+          athlete_request?: string | null
+          coach_notes?: string | null
+          created_at?: string
+          detected_movement?: string | null
+          discipline?: string | null
+          findings?: Json | null
+          id?: string
+          kpis?: Json | null
+          overall_rating?: number | null
+          overall_reasoning?: string | null
+          overall_recommendation?: string | null
+          score_breakdown?: Json | null
+          storage_path: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          ai_analysis?: Json | null
+          athlete_request?: string | null
+          coach_notes?: string | null
+          created_at?: string
+          detected_movement?: string | null
+          discipline?: string | null
+          findings?: Json | null
+          id?: string
+          kpis?: Json | null
+          overall_rating?: number | null
+          overall_reasoning?: string | null
+          overall_recommendation?: string | null
+          score_breakdown?: Json | null
+          storage_path?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -363,6 +531,7 @@ export type Database = {
           summary: string | null
           user_id: string
           workout_date: string
+          workout_type: string | null
         }
         Insert: {
           created_at?: string
@@ -375,6 +544,7 @@ export type Database = {
           summary?: string | null
           user_id: string
           workout_date?: string
+          workout_type?: string | null
         }
         Update: {
           created_at?: string
@@ -387,6 +557,7 @@ export type Database = {
           summary?: string | null
           user_id?: string
           workout_date?: string
+          workout_type?: string | null
         }
         Relationships: []
       }

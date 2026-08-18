@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useNavigate } from "@tanstack/react-router";
@@ -9,6 +9,7 @@ import { createPortal } from "react-dom";
 import { TrainingQuestionPage, PerformanceQuestionPage } from "@/components/daily-checkin/Checkin12Training";
 import { BodyMindQuestionPage, ContextQuestionPage } from "@/components/daily-checkin/Checkin34BodyContext";
 import { CheckinSuccess } from "@/components/daily-checkin/CheckinSuccess";
+import { Button } from "@/components/ui/button";
 
 interface Props {
   name: string;
@@ -478,5 +479,6 @@ export function DailyCheckin({ name, onClose }: Props) {
     document.body,
   );
 }
+
 
 
