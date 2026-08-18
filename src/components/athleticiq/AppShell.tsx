@@ -10,9 +10,10 @@ interface Props {
   subtitle?: string;
   breadcrumbs?: Crumb[];
   children: ReactNode;
+  userInitials?: string;
 }
 
-export function AppShell({ title, subtitle, breadcrumbs, children }: Props) {
+export function AppShell({ title, subtitle, breadcrumbs, children, userInitials }: Props) {
   return (
     <div className="flex min-h-screen relative">
       {/* Cinematic stadium-light + energy-particle backdrop */}
@@ -90,7 +91,7 @@ export function AppShell({ title, subtitle, breadcrumbs, children }: Props) {
                 title="Athletenprofil"
                 className="h-10 w-10 rounded-xl bg-gradient-to-br from-neon-cyan via-neon-violet to-neon-magenta grid place-items-center font-bold text-sm text-background ml-1 glow-cyan ring-1 ring-white/20 hover:ring-neon-cyan/60 transition"
               >
-                LM
+                {userInitials ?? "AI"}
               </Link>
             </div>
           </div>
@@ -123,4 +124,10 @@ export function AppShell({ title, subtitle, breadcrumbs, children }: Props) {
     </div>
   );
 }
+
+
+
+
+
+
 

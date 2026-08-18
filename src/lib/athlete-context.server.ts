@@ -1,4 +1,4 @@
-/*
+﻿/*
 ===============================================================================
                     ATHLETIC IQ — ATHLETE CONTEXT SYSTEM
 ===============================================================================
@@ -93,6 +93,47 @@ It receives:
 The function then loads several useful categories of athlete information
 at the same time and returns them in one structured object.
 */
+function buildPurposeProfile(
+  profile: any,
+  purpose: AthleteContextPurpose,
+) {
+  if (!profile) return null;
+
+  const coreProfile = {
+    id: profile.id,
+    age: profile.age,
+    disciplines: profile.disciplines,
+    experience: profile.experience,
+    goal_text: profile.goal_text,
+    current_focus: profile.current_focus,
+  };
+
+  switch (purpose) {
+    case "ai-coach":
+      return {
+        ...coreProfile,
+        training_days_per_week: profile.training_days_per_week,
+        training_setup: profile.training_setup,
+        injuries: profile.injuries,
+      };
+
+    case "workout-analysis":
+      return {
+        ...coreProfile,
+        injuries: profile.injuries,
+      };
+
+    case "video-analysis":
+      return {
+        id: profile.id,
+        age: profile.age,
+        disciplines: profile.disciplines,
+        experience: profile.experience,
+        current_focus: profile.current_focus,
+      };
+  }
+}
+
 export async function loadAthleteContext({
   supabase,
   userId,
@@ -144,7 +185,10 @@ export async function loadAthleteContext({
         training_days_per_week,
         training_setup,
         injuries,
-        goal_text
+        goal_text,
+        goal_motivation,
+        current_focus,
+        favourite_athlete
         `,
       )
       .eq("id", userId)
@@ -331,7 +375,7 @@ export async function loadAthleteContext({
   return {
     purpose,
 
-    profile: profile ?? null,
+    profile: buildPurposeProfile(profile, purpose),
 
     recentWorkouts: workouts ?? [],
 
@@ -640,3 +684,6 @@ export function buildWorkoutComparisonContext(
     previousAnalysis,
   };
 }
+
+
+

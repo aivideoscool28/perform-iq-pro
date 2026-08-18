@@ -1,4 +1,4 @@
-import { createServerFn } from "@tanstack/react-start";
+﻿import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { callAi } from "@/lib/ai-gateway.server";
@@ -10,18 +10,16 @@ export const saveOnboarding = createServerFn({ method: "POST" })
   .inputValidator((input) =>
     z.object({
       display_name: z.string().min(1).max(60),
-      age: z.number().int().min(8).max(99).nullable(),
-      disciplines: z.array(z.string()).min(1).max(20),
-      goal_text: z.string().min(1).max(500),
-      experience: z.string().min(1).max(40),
+      age: z.number().int().min(8).max(99),
+      disciplines: z.array(z.string()).min(1).max(2),
+      goal_text: z.string().min(2).max(500),
+      goal_motivation: z.array(z.string().min(1).max(250)).min(1).max(2),
+      current_focus: z.array(z.string().min(1).max(120)).min(1).max(2),
+      experience: z.string().min(1).max(60),
       training_days_per_week: z.number().int().min(1).max(7),
-      training_setup: z.string().min(1).max(40),
+      training_setup: z.string().min(1).max(80),
       injuries: z.string().max(1000).optional().nullable(),
-      height_cm: z.number().min(50).max(260).nullable(),
-      weight_kg: z.number().min(20).max(300).nullable(),
-      avatar_url: z.string().max(500).optional().nullable(),
       favouriteAthlete: z.string().max(100).optional().nullable(),
-      receiveNewsAndMotivation: z.boolean().optional().nullable(),
     }).parse(input),
   )
   .handler(async ({ data, context }) => {
@@ -34,15 +32,15 @@ export const saveOnboarding = createServerFn({ method: "POST" })
         disciplines: data.disciplines,
         goals: [data.goal_text],
         goal_text: data.goal_text,
+        goal_motivation: data.goal_motivation,
+        current_focus: data.current_focus,
         experience: data.experience,
         training_days_per_week: data.training_days_per_week,
         training_setup: data.training_setup,
         injuries: data.injuries ?? null,
-        height_cm: data.height_cm,
-        weight_kg: data.weight_kg,
-        avatar_url: data.avatar_url ?? null,
-        favourite_athlete: data.favouriteAthlete?.trim() ? data.favouriteAthlete.trim() : null,
-        receive_news_and_motivation: data.receiveNewsAndMotivation ?? true,
+        favourite_athlete: data.favouriteAthlete?.trim()
+          ? data.favouriteAthlete.trim()
+          : null,
         onboarded_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       })
@@ -160,5 +158,11 @@ export const resetToNewUser = createServerFn({ method: "POST" })
 
     return { ok: true };
   });
+
+
+
+
+
+
 
 
