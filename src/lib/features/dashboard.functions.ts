@@ -1,4 +1,4 @@
-import { createServerFn } from "@tanstack/react-start";
+﻿import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 /* ------------------------ DASHBOARD ------------------------ */
@@ -10,7 +10,7 @@ export const fetchDashboard = createServerFn({ method: "GET" })
       supabase.from("profiles").select("*").eq("id", userId).maybeSingle(),
       supabase.from("workouts").select("*").eq("user_id", userId).order("created_at", { ascending: false }).limit(20),
       supabase.from("analysis_boards").select("*").eq("user_id", userId).order("created_at", { ascending: false }).limit(20),
-      supabase.from("daily_checkins").select("checkin_date,is_rest_day,discipline,ai_summary").eq("user_id", userId).order("checkin_date", { ascending: false }).limit(180),
+      supabase.from("daily_checkins").select("checkin_date,is_rest_day,discipline,rpe,expected_difficulty,performance_quality,session_goal_achieved,physical_feeling,has_pain,performance_factors,ai_summary").eq("user_id", userId).order("checkin_date", { ascending: false }).limit(180),
     ]);
     const today = new Date().toISOString().slice(0, 10);
     const workedOutToday = (workouts ?? []).some((w) => w.workout_date === today);
@@ -49,3 +49,5 @@ function computeStreakFromCheckins(
   }
   return streak;
 }
+
+

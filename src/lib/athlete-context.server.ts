@@ -253,14 +253,24 @@ export async function loadAthleteContext({
         checkin_date,
         discipline,
         is_rest_day,
+        workout_type,
+        session_details,
+        performance_results,
         duration_min,
         rpe,
+        expected_difficulty,
+        performance_quality,
+        session_goal_achieved,
+        session_goal_note,
+        physical_feeling,
+        mental_state,
         has_pain,
         pain_note,
-        satisfaction,
-        sleep_hours,
-        sleep_quality,
-        overall_feeling,
+        pain_area,
+        pain_severity,
+        performance_factors,
+        extra_note,
+        context_summary,
         ai_summary
         `,
       )
@@ -684,6 +694,7 @@ export function buildWorkoutComparisonContext(
     previousAnalysis,
   };
 }
+
 
 
 

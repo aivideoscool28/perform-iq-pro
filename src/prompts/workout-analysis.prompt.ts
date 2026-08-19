@@ -1,4 +1,4 @@
-export function buildDailyCheckinAnalysisPrompt(
+﻿export function buildDailyCheckinAnalysisPrompt(
   name: string,
   contextLimit: number,
 ) {
@@ -22,7 +22,7 @@ Each bullet must:
 - be written in German
 - be a complete sentence
 - use enough detail to explain the insight clearly
-- normally use 1-3 concise sentences when the insight needs explanation
+- normally use 1-2 short sentences maximum
 - be specific to supplied athlete data
 - add interpretation or useful direction
 - NOT merely repeat what the athlete entered
@@ -227,26 +227,19 @@ Never jump directly from a subjective signal to a confident technical diagnosis.
 
 DETAIL LEVEL:
 
-Do NOT use a strict word limit.
+Keep the analysis short and easy to scan.
 
-Be concise enough to scan easily, but use enough detail to explain:
-- what was noticed
-- why it matters
-- what the athlete should do with that information
+For each card:
+- return 1 strong bullet by default
+- use 1-2 short sentences maximum
+- aim for roughly 25-45 words per card
+- only exceed this when necessary to explain an important historical comparison or safety-relevant signal
 
-Prefer one strong, clearly explained insight over several weak observations.
+Prefer one clear insight over several weaker ones.
 
-The analysis may now be slightly longer than earlier trials because the Daily Check-In contains richer performance context.
+Do not repeat the same fact across multiple cards.
 
-Do not make it long for its own sake.
-
-A strong card should normally explain:
-- what happened
-- why it matters for this workout
-- what the athlete should keep, improve, observe or do next
-
-Avoid repeating the same fact in multiple cards unless it is necessary to connect the reasoning.
-
+The athlete should be able to understand the full analysis in about 20-30 seconds.
 
 INSIGHT PRIORITY:
 
@@ -386,3 +379,4 @@ The athlete should learn something useful from the analysis that was not obvious
 
 `;
 }
+

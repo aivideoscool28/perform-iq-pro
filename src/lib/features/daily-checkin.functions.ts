@@ -287,9 +287,9 @@ async function generateCheckinAnalysis(
             parameters: {
               type: "object",
               properties: {
-                positives: { type: "array", items: { type: "string" }, minItems: 2, maxItems: 4 },
-                negatives: { type: "array", items: { type: "string" }, minItems: 2, maxItems: 3 },
-                improvements: { type: "array", items: { type: "string" }, minItems: 2, maxItems: 3 },
+                positives: { type: "array", items: { type: "string" }, minItems: 1, maxItems: 2 },
+                negatives: { type: "array", items: { type: "string" }, minItems: 1, maxItems: 2 },
+                improvements: { type: "array", items: { type: "string" }, minItems: 1, maxItems: 2 },
               },
               required: ["positives", "negatives", "improvements"],
               additionalProperties: false,
@@ -306,9 +306,15 @@ async function generateCheckinAnalysis(
     // fallthrough to fallback
   }
   return {
-    positives: ["Session sehr komisch dokumentiert — gute Selbstreflexion.", "Du bleibst dran, das zahlt sich aus."],
-    negatives: ["Mehr Details würden die Analyse präziser machen."],
-    improvements: ["Nächstes Mal RPE direkt nach der Session notieren.", "Hydration über den Tag verteilt tracken."],
+    positives: [
+      "Dein Check-In wurde gespeichert. Für eine verlässliche positive Bewertung liegen diesmal nicht genug eindeutige Informationen vor.",
+    ],
+    negatives: [
+      "Aus den vorhandenen Angaben lässt sich kein belastbarer Verbesserungspunkt ableiten, ohne etwas zu vermuten.",
+    ],
+    improvements: [
+      "Halte beim nächsten vergleichbaren Training besonders Trainingsart, RPE, Leistungsqualität und ein konkretes Ergebnis oder eine wichtige Beobachtung fest.",
+    ],
   };
 }
   
@@ -327,6 +333,8 @@ export const deleteTodayCheckin = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { ok: true };
   });
+
+
 
 
 
