@@ -1,8 +1,13 @@
 ﻿import { useEffect, useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useNavigate } from "@tanstack/react-router";
 import { saveDailyCheckin } from "@/lib/features/daily-checkin.functions";
+import {
+  fetchTodayPlannedWorkout,
+  updatePlannedWorkoutStatus,
+  type PlannedWorkout,
+} from "@/lib/planned-workouts.functions";
 import { X, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import { createPortal } from "react-dom";
@@ -101,6 +106,18 @@ export function DailyCheckin({ name, onClose }: Props) {
   const qc = useQueryClient();
   const navigate = useNavigate();
   const saveFn = useServerFn(saveDailyCheckin);
+  const fetchTodayPlannedWorkoutFn =
+    useServerFn(fetchTodayPlannedWorkout);
+  const updatePlannedWorkoutStatusFn =
+    useServerFn(updatePlannedWorkoutStatus);
+
+  const { data: plannedWorkout } = useQuery({
+    queryKey: ["today-planned-workout"],
+    queryFn: () => fetchTodayPlannedWorkoutFn(),
+  });
+
+  const [plannedCompletionStatus, setPlannedCompletionStatus] =
+    useState<"completed" | "changed" | null>(null);
 
   /*
   ==========================================================================
@@ -147,6 +164,9 @@ export function DailyCheckin({ name, onClose }: Props) {
   const [mentalOtherText, setMentalOtherText] = useState("");
   const [factorOtherText, setFactorOtherText] = useState("");
   const [extraText, setExtraText] = useState("");
+  const [notCompletedReason, setNotCompletedReason] = useState<string | null>(null);
+  const [notCompletedNote, setNotCompletedNote] = useState("");
+
 
   // Only used when the athlete says the session goal was
   // partly achieved or not achieved.
@@ -215,6 +235,80 @@ export function DailyCheckin({ name, onClose }: Props) {
     });
   }
 
+  function usePlannedWorkout(
+    status: "completed" | "changed",
+  ) {
+    if (!plannedWorkout) return;
+
+    const plannedSession = plannedWorkout.exercises
+      .map((exercise) =>
+        [
+          exercise.name,
+          exercise.details,
+          exercise.rest
+            ? `Pause: ${exercise.rest}`
+            : null,
+        ]
+          .filter(Boolean)
+          .join(" · "),
+      )
+      .join("\n");
+
+    setPlannedCompletionStatus(status);
+
+    setA((current) => ({
+      ...current,
+      discipline:
+        plannedWorkout.discipline ?? current.discipline,
+      workout_type: plannedWorkout.title,
+      is_rest_day: false,
+    }));
+
+    setSessionText(plannedSession);
+  }
+
+  async function markPlannedWorkoutNotCompleted() {
+    if (!plannedWorkout || !notCompletedReason) return;
+
+    const payload: Answers = {
+      ...empty,
+      discipline: plannedWorkout.discipline,
+      workout_type: plannedWorkout.title,
+      is_rest_day: false,
+      extra_note: [
+        `Training nicht absolviert: ${notCompletedReason}`,
+        notCompletedNote.trim() || null,
+      ]
+        .filter(Boolean)
+        .join("\n"),
+    };
+
+    setA(payload);
+
+    await mutate.mutateAsync(payload);
+
+    await updatePlannedWorkoutStatusFn({
+      data: {
+        workoutId: plannedWorkout.id,
+        status: "not_completed",
+      },
+    });
+
+    await qc.invalidateQueries({
+      queryKey: ["today-planned-workout"],
+    });
+
+    await qc.invalidateQueries({
+      queryKey: ["planned-workouts"],
+    });
+
+    await qc.invalidateQueries({
+      queryKey: ["dashboard"],
+    });
+
+    setPage(5);
+  }
+
   async function finishCheckin() {
     const payload: Answers = {
       ...a,
@@ -253,6 +347,23 @@ export function DailyCheckin({ name, onClose }: Props) {
     setA(payload);
 
     await mutate.mutateAsync(payload);
+
+    if (plannedWorkout && plannedCompletionStatus) {
+      await updatePlannedWorkoutStatusFn({
+        data: {
+          workoutId: plannedWorkout.id,
+          status: plannedCompletionStatus,
+        },
+      });
+
+      await qc.invalidateQueries({
+        queryKey: ["today-planned-workout"],
+      });
+
+      await qc.invalidateQueries({
+        queryKey: ["planned-workouts"],
+      });
+    }
 
     setPage(5);
   }
@@ -390,12 +501,22 @@ export function DailyCheckin({ name, onClose }: Props) {
         {/* PAGE 1 — TRAINING */}
         {page === 1 && (
           <TrainingQuestionPage
+            plannedWorkout={plannedWorkout ?? null}
+            plannedCompletionStatus={plannedCompletionStatus}
             discipline={a.discipline}
             workoutType={a.workout_type}
             rpe={a.rpe}
             expectedDifficulty={a.expected_difficulty}
             sessionText={sessionText}
             performanceText={performanceText}
+            onUsePlannedWorkout={usePlannedWorkout}
+            notCompletedReason={notCompletedReason}
+            notCompletedNote={notCompletedNote}
+            isSavingNotCompleted={mutate.isPending}
+            onNotCompletedReasonChange={setNotCompletedReason}
+            onNotCompletedNoteChange={setNotCompletedNote}
+            onNotCompleted={markPlannedWorkoutNotCompleted}
+            onSaveRestDay={saveRestDay}
             onDisciplineChange={async (value) => {
               if (value === "Ruhetag") {
                 await saveRestDay();
@@ -479,6 +600,15 @@ export function DailyCheckin({ name, onClose }: Props) {
     document.body,
   );
 }
+
+
+
+
+
+
+
+
+
 
 
 
