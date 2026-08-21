@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Sparkles } from "lucide-react";
 
 import { TrainingOverview } from "@/components/coach-manager/training/TrainingOverview";
@@ -5,7 +6,12 @@ import { TrainingIntelligence } from "@/components/coach-manager/training/Traini
 import { TrainingTools } from "@/components/coach-manager/training/TrainingTools";
 import { TrainingSidebar } from "@/components/coach-manager/training/TrainingSidebar";
 
+type TrainingView = "today" | "create" | "history";
+
 export function TrainingPage() {
+  const [activeView, setActiveView] =
+    useState<TrainingView>("today");
+
   return (
     <div className="space-y-3">
       <section className="flex items-end justify-between">
@@ -19,28 +25,81 @@ export function TrainingPage() {
           </h1>
 
           <p className="mt-1 text-xs text-muted-foreground">
-            Plan, adjust and deliver the best training for your athletes.
+            Plan today's session, manage individual adjustments and reuse
+            previous training efficiently.
           </p>
         </div>
 
-        <button
-          type="button"
-          className="flex items-center gap-2 rounded-xl bg-slate-900 px-4 py-2 text-xs font-semibold text-white"
-        >
-          <Sparkles className="h-3.5 w-3.5" />
-          AI Training Check
-        </button>
+        {activeView === "today" && (
+          <button
+            type="button"
+            className="flex items-center gap-2 rounded-xl bg-slate-900 px-4 py-2 text-xs font-semibold text-white"
+          >
+            <Sparkles className="h-3.5 w-3.5" />
+            AI Training Check
+          </button>
+        )}
       </section>
 
-      <div className="grid grid-cols-[1fr_0.28fr] gap-3">
-        <main className="min-w-0 space-y-3">
-          <TrainingOverview />
-          <TrainingIntelligence />
-          <TrainingTools />
-        </main>
+      <nav className="flex w-fit items-center gap-1 rounded-xl border border-border bg-muted/20 p-1">
+        <button
+          type="button"
+          onClick={() => setActiveView("today")}
+          className={[
+            "rounded-lg px-4 py-2 text-xs font-semibold transition",
+            activeView === "today"
+              ? "bg-white text-foreground shadow-sm"
+              : "text-muted-foreground hover:text-foreground",
+          ].join(" ")}
+        >
+          Today & Training Plan
+        </button>
 
-        <TrainingSidebar />
-      </div>
+        <button
+          type="button"
+          onClick={() => setActiveView("create")}
+          className={[
+            "rounded-lg px-4 py-2 text-xs font-semibold transition",
+            activeView === "create"
+              ? "bg-white text-orange-600 shadow-sm"
+              : "text-muted-foreground hover:text-foreground",
+          ].join(" ")}
+        >
+          Create Training & Exercise Library
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveView("history")}
+          className={[
+            "rounded-lg px-4 py-2 text-xs font-semibold transition",
+            activeView === "history"
+              ? "bg-white text-violet-700 shadow-sm"
+              : "text-muted-foreground hover:text-foreground",
+          ].join(" ")}
+        >
+          History
+        </button>
+      </nav>
+
+      {activeView === "today" && (
+        <div className="grid grid-cols-[1fr_0.28fr] items-start gap-3">
+          <main className="min-w-0 space-y-3">
+            <TrainingOverview />
+            <TrainingIntelligence />
+          </main>
+
+          <TrainingSidebar mode="today" />
+        </div>
+      )}
+
+      {activeView === "create" && (
+        <TrainingTools />
+      )}
+
+      {activeView === "history" && (
+        <TrainingSidebar mode="history" />
+      )}
     </div>
   );
 }

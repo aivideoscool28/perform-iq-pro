@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { AthleteTrend } from "@/components/coach-manager/athletes/AthleteTrend";
 import {
   AlertTriangle,
@@ -20,8 +21,6 @@ type Athlete = {
   trend: number[];
   change: string;
   changeDetail: string;
-  action: string;
-  actionStyle: string;
 };
 
 const reviewAthletes: Athlete[] = [
@@ -36,8 +35,6 @@ const reviewAthletes: Athlete[] = [
     trend: [8, 7, 6, 5, 5, 4, 3],
     change: "Hamstring pain reported",
     changeDetail: "After training yesterday",
-    action: "Review now",
-    actionStyle: "bg-red-50 text-red-600",
   },
   {
     name: "Jonas Richter",
@@ -50,8 +47,6 @@ const reviewAthletes: Athlete[] = [
     trend: [8, 7, 6, 6, 5, 4, 3],
     change: "High fatigue for 2 days",
     changeDetail: "Higher than recent baseline",
-    action: "Review now",
-    actionStyle: "bg-red-50 text-red-600",
   },
   {
     name: "Lena Hoffmann",
@@ -64,8 +59,6 @@ const reviewAthletes: Athlete[] = [
     trend: [7, 6, 5, 6, 4, 5, 3],
     change: "Knee discomfort increasing",
     changeDetail: "Across recent check-ins",
-    action: "Review now",
-    actionStyle: "bg-red-50 text-red-600",
   },
 ];
 
@@ -81,8 +74,6 @@ const watchAthletes: Athlete[] = [
     trend: [4, 5, 4, 6, 5, 6, 5],
     change: "Recovery lower than usual",
     changeDetail: "Recent downward change",
-    action: "Monitor",
-    actionStyle: "bg-orange-50 text-orange-600",
   },
   {
     name: "Leon Fischer",
@@ -95,8 +86,6 @@ const watchAthletes: Athlete[] = [
     trend: [4, 5, 5, 6, 5, 6, 5],
     change: "Energy slightly lower",
     changeDetail: "Compared with usual level",
-    action: "Monitor",
-    actionStyle: "bg-orange-50 text-orange-600",
   },
   {
     name: "Niklas Bauer",
@@ -109,8 +98,6 @@ const watchAthletes: Athlete[] = [
     trend: [5, 5, 6, 5, 6, 5, 5],
     change: "Sleep quality declined",
     changeDetail: "Last night",
-    action: "Monitor",
-    actionStyle: "bg-orange-50 text-orange-600",
   },
 ];
 
@@ -126,8 +113,6 @@ const onTrackAthletes: Athlete[] = [
     trend: [4, 5, 4, 6, 5, 6, 5],
     change: "Sprint development positive",
     changeDetail: "No current flag",
-    action: "On track",
-    actionStyle: "bg-green-50 text-green-600",
   },
   {
     name: "Anna Neidert",
@@ -140,8 +125,6 @@ const onTrackAthletes: Athlete[] = [
     trend: [4, 5, 5, 6, 5, 6, 7],
     change: "Recovery remains consistent",
     changeDetail: "No meaningful negative change",
-    action: "On track",
-    actionStyle: "bg-green-50 text-green-600",
   },
   {
     name: "Mia Schmitz",
@@ -154,8 +137,6 @@ const onTrackAthletes: Athlete[] = [
     trend: [4, 5, 4, 6, 5, 6, 5],
     change: "Load and recovery balanced",
     changeDetail: "No current flag",
-    action: "On track",
-    actionStyle: "bg-green-50 text-green-600",
   },
 ];
 
@@ -176,7 +157,7 @@ function AthleteRow({
   return (
     <button
       type="button"
-      className="grid w-full grid-cols-[1.15fr_0.9fr_0.9fr_0.75fr_1.2fr_0.7fr_auto] items-center gap-3 border-t border-border/60 px-3 py-2 text-left transition hover:bg-muted/20"
+      className="grid w-full grid-cols-[1.15fr_0.9fr_0.9fr_0.75fr_1.35fr_auto] items-center gap-3 border-t border-border/60 px-3 py-2 text-left transition hover:bg-muted/20"
     >
       <div className="flex items-center gap-2.5">
         <div className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-orange-50 text-[10px] font-bold text-orange-600">
@@ -228,11 +209,6 @@ function AthleteRow({
         </p>
       </div>
 
-      <span
-        className={`w-fit rounded-lg px-2 py-1 text-[9px] font-semibold ${athlete.actionStyle}`}
-      >
-        {athlete.action}
-      </span>
 
       <span className="text-xs text-muted-foreground">•••</span>
     </button>
@@ -240,6 +216,9 @@ function AthleteRow({
 }
 
 export function AthletesTable() {
+  const [showOnTrackExamples, setShowOnTrackExamples] =
+    useState(false);
+
   return (
     <section className="overflow-hidden rounded-2xl border border-border bg-background shadow-sm">
       <div className="flex items-center gap-2 border-b border-border p-3">
@@ -269,13 +248,12 @@ export function AthletesTable() {
         </button>
       </div>
 
-      <div className="grid grid-cols-[1.15fr_0.9fr_0.9fr_0.75fr_1.2fr_0.7fr_auto] gap-3 bg-muted/20 px-3 py-2 text-[10px] font-semibold text-muted-foreground">
+      <div className="grid grid-cols-[1.15fr_0.9fr_0.9fr_0.75fr_1.35fr_auto] gap-3 bg-muted/20 px-3 py-2 text-[10px] font-semibold text-muted-foreground">
         <span>Athlete</span>
         <span>Group / Discipline</span>
         <span>Status & Driver</span>
         <span>Trend</span>
         <span>Key Change</span>
-        <span>Action</span>
         <span />
       </div>
 
@@ -316,26 +294,47 @@ export function AthletesTable() {
       </div>
 
       <div>
-        <div className="flex items-center justify-between bg-green-50/30 px-3 py-2">
+        <div className="flex items-center justify-between bg-green-50/30 px-3 py-2.5">
           <div className="flex items-center gap-2">
             <CircleCheck className="h-3.5 w-3.5 text-green-600" />
-            <p className="text-[11px] font-bold text-green-600">
-              ON TRACK · 79
-            </p>
+
+            <div>
+              <p className="text-[11px] font-bold text-green-600">
+                ON TRACK · 79
+              </p>
+
+              <p className="mt-0.5 text-[9px] text-muted-foreground">
+                No current meaningful change requiring coach attention.
+              </p>
+            </div>
           </div>
 
-          <button className="text-[10px] font-semibold text-green-600">
-            View all →
+          <button
+            type="button"
+            onClick={() =>
+              setShowOnTrackExamples((current) => !current)
+            }
+            className="text-[10px] font-semibold text-green-600"
+          >
+            {showOnTrackExamples ? "Hide examples ↑" : "View examples ↓"}
           </button>
         </div>
 
-        {onTrackAthletes.map((athlete) => (
-          <AthleteRow key={athlete.name} athlete={athlete} tone="good" />
-        ))}
+        {showOnTrackExamples && (
+          <>
+            {onTrackAthletes.map((athlete) => (
+              <AthleteRow
+                key={athlete.name}
+                athlete={athlete}
+                tone="good"
+              />
+            ))}
 
-        <div className="border-t border-border/60 px-3 py-2 text-[10px] font-medium text-green-600">
-          + 76 more on track →
-        </div>
+            <div className="border-t border-border/60 px-3 py-2 text-[10px] font-medium text-green-600">
+              + 76 more on track →
+            </div>
+          </>
+        )}
       </div>
 
       <div className="flex items-center justify-between border-t border-border bg-slate-50/50 px-3 py-2">
@@ -359,6 +358,14 @@ export function AthletesTable() {
     </section>
   );
 }
+
+
+
+
+
+
+
+
 
 
 

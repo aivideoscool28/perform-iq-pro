@@ -15,7 +15,6 @@ import {
 
 const futureItems = [
   { label: "Groups", icon: Users },
-  { label: "Analyses", icon: ChartNoAxesCombined },
   { label: "Video", icon: Video },
   { label: "Competitions", icon: Trophy },
   { label: "Notifications", icon: Bell },
@@ -65,6 +64,14 @@ export function CoachSideMenu() {
           Training
         </Link>
 
+        <Link
+          to="/coach-manager/analyses"
+          className={linkClass}
+        >
+          <ChartNoAxesCombined className="h-4 w-4" />
+          Analyses
+        </Link>
+
         {futureItems.map(({ label, icon: Icon }) => (
           <button
             key={label}
@@ -91,3 +98,4 @@ export function CoachSideMenu() {
     </aside>
   );
 }
+

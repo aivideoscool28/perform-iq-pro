@@ -1,9 +1,7 @@
 import {
-  Activity,
+  AlertTriangle,
   CircleCheck,
-  Dumbbell,
   HeartPulse,
-  TrendingUp,
   Users,
 } from "lucide-react";
 
@@ -19,7 +17,7 @@ const metrics = [
     detailColor: "text-green-600",
   },
   {
-    label: "Check-in Completion",
+    label: "Check-in Coverage",
     value: "92%",
     detail: "92 of 100 today",
     icon: CircleCheck,
@@ -29,39 +27,19 @@ const metrics = [
     detailColor: "text-blue-600",
   },
   {
-    label: "Team Readiness",
-    value: "Good",
-    detail: "Stable today",
-    icon: Activity,
-    box: "border-violet-100 bg-white",
-    iconBox: "bg-violet-50",
-    iconColor: "text-violet-600",
-    detailColor: "text-violet-600",
-  },
-  {
-    label: "Team Trend",
-    value: "Improving",
-    detail: "Last 7 days",
-    icon: TrendingUp,
-    box: "border-green-100 bg-white",
-    iconBox: "bg-green-50",
-    iconColor: "text-green-600",
-    detailColor: "text-green-600",
-  },
-  {
-    label: "Training Load",
-    value: "6,420",
-    detail: "Last 7 days",
-    icon: Dumbbell,
+    label: "Review Today",
+    value: "3",
+    detail: "Meaningful changes to inspect",
+    icon: AlertTriangle,
     box: "border-orange-100 bg-white",
     iconBox: "bg-orange-50",
-    iconColor: "text-orange-500",
+    iconColor: "text-orange-600",
     detailColor: "text-orange-600",
   },
   {
     label: "Pain Reports",
     value: "4",
-    detail: "Last 7 days",
+    detail: "Athlete-reported · last 7 days",
     icon: HeartPulse,
     box: "border-red-100 bg-white",
     iconBox: "bg-red-50",
@@ -72,7 +50,7 @@ const metrics = [
 
 export function AthletesSummaryCards() {
   return (
-    <div className="grid grid-cols-6 gap-2.5">
+    <div className="grid grid-cols-4 gap-2.5">
       {metrics.map(
         ({
           label,
@@ -88,7 +66,7 @@ export function AthletesSummaryCards() {
             key={label}
             className={`min-w-0 rounded-2xl border px-3 py-3 shadow-sm ${box}`}
           >
-            <div className="flex items-start gap-2.5">
+            <div className="flex items-center gap-3">
               <div
                 className={`grid h-9 w-9 shrink-0 place-items-center rounded-full ${iconBox}`}
               >
@@ -100,12 +78,7 @@ export function AthletesSummaryCards() {
                   {label}
                 </p>
 
-                <p
-                  className={[
-                    "mt-1 font-bold tracking-tight",
-                    value.length > 7 ? "text-lg" : "text-xl",
-                  ].join(" ")}
-                >
+                <p className="mt-1 text-xl font-bold tracking-tight">
                   {value}
                 </p>
 

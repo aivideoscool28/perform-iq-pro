@@ -1,5 +1,5 @@
 import {
-  Activity,
+
   CalendarDays,
   Clock3,
   Dumbbell,
@@ -27,24 +27,6 @@ const metrics = [
     iconBox: "bg-blue-50",
     iconColor: "text-blue-600",
     detailColor: "text-blue-600",
-  },
-  {
-    label: "Training load (7d)",
-    value: "6,420",
-    detail: "Moderate",
-    icon: Dumbbell,
-    iconBox: "bg-green-50",
-    iconColor: "text-green-600",
-    detailColor: "text-green-600",
-  },
-  {
-    label: "High intensity (7d)",
-    value: "18%",
-    detail: "Optimal range",
-    icon: Activity,
-    iconBox: "bg-red-50",
-    iconColor: "text-red-500",
-    detailColor: "text-red-500",
   },
 ];
 
@@ -84,7 +66,7 @@ const exercises = [
 export function TrainingOverview() {
   return (
     <div className="space-y-3">
-      <div className="grid grid-cols-4 gap-2.5">
+      <div className="grid max-w-[520px] grid-cols-2 gap-2.5">
         {metrics.map(({ label, value, detail, icon: Icon, iconBox, iconColor, detailColor }) => (
           <section
             key={label}
@@ -220,4 +202,7 @@ export function TrainingOverview() {
     </div>
   );
 }
+
+
+
 
