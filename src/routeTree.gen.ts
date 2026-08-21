@@ -29,11 +29,9 @@ import { Route as CoachRouteImport } from './routes/coach'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CoachManagerIndexRouteImport } from './routes/coach-manager/index'
-import { Route as TrainingBeforeV1RedesignRouteImport } from './routes/training.before-v1-redesign'
-import { Route as TrainingBeforeRightAiPanelRouteImport } from './routes/training.before-right-ai-panel'
-import { Route as TrainingBeforeFinalUiRouteImport } from './routes/training.before-final-ui'
 import { Route as CoachManagerTrainingRouteImport } from './routes/coach-manager/training'
 import { Route as CoachManagerAthletesRouteImport } from './routes/coach-manager/athletes'
+import { Route as CoachManagerAnalysesRouteImport } from './routes/coach-manager/analyses'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 
 const WorkoutAnalysisRoute = WorkoutAnalysisRouteImport.update({
@@ -136,23 +134,6 @@ const CoachManagerIndexRoute = CoachManagerIndexRouteImport.update({
   path: '/',
   getParentRoute: () => CoachManagerRoute,
 } as any)
-const TrainingBeforeV1RedesignRoute =
-  TrainingBeforeV1RedesignRouteImport.update({
-    id: '/before-v1-redesign',
-    path: '/before-v1-redesign',
-    getParentRoute: () => TrainingRoute,
-  } as any)
-const TrainingBeforeRightAiPanelRoute =
-  TrainingBeforeRightAiPanelRouteImport.update({
-    id: '/before-right-ai-panel',
-    path: '/before-right-ai-panel',
-    getParentRoute: () => TrainingRoute,
-  } as any)
-const TrainingBeforeFinalUiRoute = TrainingBeforeFinalUiRouteImport.update({
-  id: '/before-final-ui',
-  path: '/before-final-ui',
-  getParentRoute: () => TrainingRoute,
-} as any)
 const CoachManagerTrainingRoute = CoachManagerTrainingRouteImport.update({
   id: '/training',
   path: '/training',
@@ -161,6 +142,11 @@ const CoachManagerTrainingRoute = CoachManagerTrainingRouteImport.update({
 const CoachManagerAthletesRoute = CoachManagerAthletesRouteImport.update({
   id: '/athletes',
   path: '/athletes',
+  getParentRoute: () => CoachManagerRoute,
+} as any)
+const CoachManagerAnalysesRoute = CoachManagerAnalysesRouteImport.update({
+  id: '/analyses',
+  path: '/analyses',
   getParentRoute: () => CoachManagerRoute,
 } as any)
 const ApiChatRoute = ApiChatRouteImport.update({
@@ -186,15 +172,13 @@ export interface FileRoutesByFullPath {
   '/recovery': typeof RecoveryRoute
   '/reset-password': typeof ResetPasswordRoute
   '/settings': typeof SettingsRoute
-  '/training': typeof TrainingRouteWithChildren
+  '/training': typeof TrainingRoute
   '/video': typeof VideoRoute
   '/workout-analysis': typeof WorkoutAnalysisRoute
   '/api/chat': typeof ApiChatRoute
+  '/coach-manager/analyses': typeof CoachManagerAnalysesRoute
   '/coach-manager/athletes': typeof CoachManagerAthletesRoute
   '/coach-manager/training': typeof CoachManagerTrainingRoute
-  '/training/before-final-ui': typeof TrainingBeforeFinalUiRoute
-  '/training/before-right-ai-panel': typeof TrainingBeforeRightAiPanelRoute
-  '/training/before-v1-redesign': typeof TrainingBeforeV1RedesignRoute
   '/coach-manager/': typeof CoachManagerIndexRoute
 }
 export interface FileRoutesByTo {
@@ -213,15 +197,13 @@ export interface FileRoutesByTo {
   '/recovery': typeof RecoveryRoute
   '/reset-password': typeof ResetPasswordRoute
   '/settings': typeof SettingsRoute
-  '/training': typeof TrainingRouteWithChildren
+  '/training': typeof TrainingRoute
   '/video': typeof VideoRoute
   '/workout-analysis': typeof WorkoutAnalysisRoute
   '/api/chat': typeof ApiChatRoute
+  '/coach-manager/analyses': typeof CoachManagerAnalysesRoute
   '/coach-manager/athletes': typeof CoachManagerAthletesRoute
   '/coach-manager/training': typeof CoachManagerTrainingRoute
-  '/training/before-final-ui': typeof TrainingBeforeFinalUiRoute
-  '/training/before-right-ai-panel': typeof TrainingBeforeRightAiPanelRoute
-  '/training/before-v1-redesign': typeof TrainingBeforeV1RedesignRoute
   '/coach-manager': typeof CoachManagerIndexRoute
 }
 export interface FileRoutesById {
@@ -242,15 +224,13 @@ export interface FileRoutesById {
   '/recovery': typeof RecoveryRoute
   '/reset-password': typeof ResetPasswordRoute
   '/settings': typeof SettingsRoute
-  '/training': typeof TrainingRouteWithChildren
+  '/training': typeof TrainingRoute
   '/video': typeof VideoRoute
   '/workout-analysis': typeof WorkoutAnalysisRoute
   '/api/chat': typeof ApiChatRoute
+  '/coach-manager/analyses': typeof CoachManagerAnalysesRoute
   '/coach-manager/athletes': typeof CoachManagerAthletesRoute
   '/coach-manager/training': typeof CoachManagerTrainingRoute
-  '/training/before-final-ui': typeof TrainingBeforeFinalUiRoute
-  '/training/before-right-ai-panel': typeof TrainingBeforeRightAiPanelRoute
-  '/training/before-v1-redesign': typeof TrainingBeforeV1RedesignRoute
   '/coach-manager/': typeof CoachManagerIndexRoute
 }
 export interface FileRouteTypes {
@@ -276,11 +256,9 @@ export interface FileRouteTypes {
     | '/video'
     | '/workout-analysis'
     | '/api/chat'
+    | '/coach-manager/analyses'
     | '/coach-manager/athletes'
     | '/coach-manager/training'
-    | '/training/before-final-ui'
-    | '/training/before-right-ai-panel'
-    | '/training/before-v1-redesign'
     | '/coach-manager/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -303,11 +281,9 @@ export interface FileRouteTypes {
     | '/video'
     | '/workout-analysis'
     | '/api/chat'
+    | '/coach-manager/analyses'
     | '/coach-manager/athletes'
     | '/coach-manager/training'
-    | '/training/before-final-ui'
-    | '/training/before-right-ai-panel'
-    | '/training/before-v1-redesign'
     | '/coach-manager'
   id:
     | '__root__'
@@ -331,11 +307,9 @@ export interface FileRouteTypes {
     | '/video'
     | '/workout-analysis'
     | '/api/chat'
+    | '/coach-manager/analyses'
     | '/coach-manager/athletes'
     | '/coach-manager/training'
-    | '/training/before-final-ui'
-    | '/training/before-right-ai-panel'
-    | '/training/before-v1-redesign'
     | '/coach-manager/'
   fileRoutesById: FileRoutesById
 }
@@ -356,7 +330,7 @@ export interface RootRouteChildren {
   RecoveryRoute: typeof RecoveryRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SettingsRoute: typeof SettingsRoute
-  TrainingRoute: typeof TrainingRouteWithChildren
+  TrainingRoute: typeof TrainingRoute
   VideoRoute: typeof VideoRoute
   WorkoutAnalysisRoute: typeof WorkoutAnalysisRoute
   ApiChatRoute: typeof ApiChatRoute
@@ -504,27 +478,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CoachManagerIndexRouteImport
       parentRoute: typeof CoachManagerRoute
     }
-    '/training/before-v1-redesign': {
-      id: '/training/before-v1-redesign'
-      path: '/before-v1-redesign'
-      fullPath: '/training/before-v1-redesign'
-      preLoaderRoute: typeof TrainingBeforeV1RedesignRouteImport
-      parentRoute: typeof TrainingRoute
-    }
-    '/training/before-right-ai-panel': {
-      id: '/training/before-right-ai-panel'
-      path: '/before-right-ai-panel'
-      fullPath: '/training/before-right-ai-panel'
-      preLoaderRoute: typeof TrainingBeforeRightAiPanelRouteImport
-      parentRoute: typeof TrainingRoute
-    }
-    '/training/before-final-ui': {
-      id: '/training/before-final-ui'
-      path: '/before-final-ui'
-      fullPath: '/training/before-final-ui'
-      preLoaderRoute: typeof TrainingBeforeFinalUiRouteImport
-      parentRoute: typeof TrainingRoute
-    }
     '/coach-manager/training': {
       id: '/coach-manager/training'
       path: '/training'
@@ -539,6 +492,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CoachManagerAthletesRouteImport
       parentRoute: typeof CoachManagerRoute
     }
+    '/coach-manager/analyses': {
+      id: '/coach-manager/analyses'
+      path: '/analyses'
+      fullPath: '/coach-manager/analyses'
+      preLoaderRoute: typeof CoachManagerAnalysesRouteImport
+      parentRoute: typeof CoachManagerRoute
+    }
     '/api/chat': {
       id: '/api/chat'
       path: '/api/chat'
@@ -550,12 +510,14 @@ declare module '@tanstack/react-router' {
 }
 
 interface CoachManagerRouteChildren {
+  CoachManagerAnalysesRoute: typeof CoachManagerAnalysesRoute
   CoachManagerAthletesRoute: typeof CoachManagerAthletesRoute
   CoachManagerTrainingRoute: typeof CoachManagerTrainingRoute
   CoachManagerIndexRoute: typeof CoachManagerIndexRoute
 }
 
 const CoachManagerRouteChildren: CoachManagerRouteChildren = {
+  CoachManagerAnalysesRoute: CoachManagerAnalysesRoute,
   CoachManagerAthletesRoute: CoachManagerAthletesRoute,
   CoachManagerTrainingRoute: CoachManagerTrainingRoute,
   CoachManagerIndexRoute: CoachManagerIndexRoute,
@@ -563,22 +525,6 @@ const CoachManagerRouteChildren: CoachManagerRouteChildren = {
 
 const CoachManagerRouteWithChildren = CoachManagerRoute._addFileChildren(
   CoachManagerRouteChildren,
-)
-
-interface TrainingRouteChildren {
-  TrainingBeforeFinalUiRoute: typeof TrainingBeforeFinalUiRoute
-  TrainingBeforeRightAiPanelRoute: typeof TrainingBeforeRightAiPanelRoute
-  TrainingBeforeV1RedesignRoute: typeof TrainingBeforeV1RedesignRoute
-}
-
-const TrainingRouteChildren: TrainingRouteChildren = {
-  TrainingBeforeFinalUiRoute: TrainingBeforeFinalUiRoute,
-  TrainingBeforeRightAiPanelRoute: TrainingBeforeRightAiPanelRoute,
-  TrainingBeforeV1RedesignRoute: TrainingBeforeV1RedesignRoute,
-}
-
-const TrainingRouteWithChildren = TrainingRoute._addFileChildren(
-  TrainingRouteChildren,
 )
 
 const rootRouteChildren: RootRouteChildren = {
@@ -598,7 +544,7 @@ const rootRouteChildren: RootRouteChildren = {
   RecoveryRoute: RecoveryRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SettingsRoute: SettingsRoute,
-  TrainingRoute: TrainingRouteWithChildren,
+  TrainingRoute: TrainingRoute,
   VideoRoute: VideoRoute,
   WorkoutAnalysisRoute: WorkoutAnalysisRoute,
   ApiChatRoute: ApiChatRoute,
