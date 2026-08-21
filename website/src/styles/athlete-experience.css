@@ -1,0 +1,1653 @@
+.athlete-experience {
+  padding: 100px 30px;
+  background: #fff;
+  color: var(--text);
+}
+
+.athlete-experience__intro {
+  max-width: 900px;
+  margin: 0 auto 52px;
+  text-align: center;
+}
+
+.athlete-experience__eyebrow {
+  margin-bottom: 14px;
+  color: var(--orange);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: .14em;
+}
+
+.athlete-experience__intro h2 {
+  margin: 0;
+  font-size: clamp(42px, 5vw, 68px);
+  line-height: 1;
+  letter-spacing: -.045em;
+  font-weight: 650;
+}
+
+.athlete-experience__intro h2 span {
+  color: var(--orange);
+}
+
+.athlete-experience__lead {
+  max-width: 760px;
+  margin: 22px auto 0;
+  color: var(--muted);
+  font-size: 18px;
+  line-height: 1.6;
+}
+
+.athlete-cycle {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  max-width: 1380px;
+  margin: 0 auto;
+  gap: 18px;
+}
+
+.cycle-card {
+  min-height: 390px;
+  padding: 32px;
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  display: grid;
+  grid-template-columns: .85fr 1.15fr;
+  gap: 26px;
+  align-items: center;
+  overflow: hidden;
+}
+
+.cycle-card--train {
+  background: #fffaf7;
+  border-color: #ffd8c7;
+}
+
+.cycle-card--reflect {
+  background: #f9fbff;
+  border-color: #dbe6ff;
+}
+
+.cycle-card--understand {
+  background: #f9fcf9;
+  border-color: #dcebdd;
+}
+
+.cycle-card--support {
+  background: #fbfaff;
+  border-color: #e4ddfa;
+}
+
+.cycle-step {
+  margin: 0 0 9px;
+  color: var(--orange);
+  font-size: 13px;
+  font-weight: 850;
+  letter-spacing: .08em;
+}
+
+.cycle-card--reflect .cycle-step {
+  color: #3466d9;
+}
+
+.cycle-card--understand .cycle-step {
+  color: #37804a;
+}
+
+.cycle-card--support .cycle-step {
+  color: #7051cf;
+}
+
+.cycle-card h3 {
+  margin: 0 0 12px;
+  font-size: 28px;
+  line-height: 1.08;
+  letter-spacing: -.03em;
+}
+
+.cycle-card__copy > p:not(.cycle-step) {
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.cycle-card ul {
+  list-style: none;
+  padding: 0;
+  margin: 24px 0 0;
+  display: grid;
+  gap: 11px;
+}
+
+.cycle-card li {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.cycle-card li::before {
+  content: "✓";
+  margin-right: 9px;
+  color: var(--orange);
+  font-weight: 900;
+}
+
+.product-placeholder {
+  min-height: 245px;
+  padding: 24px;
+  border: 1px solid #e8e5e2;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 18px 45px rgba(30, 25, 20, .08);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+}
+
+.product-placeholder strong {
+  margin-bottom: 8px;
+  font-size: 18px;
+}
+
+.product-placeholder span {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.understand-previews {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.product-placeholder--mini {
+  min-height: 225px;
+  padding: 16px;
+}
+
+.product-placeholder--mini strong {
+  font-size: 15px;
+}
+
+.cycle-center {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 116px;
+  height: 116px;
+  transform: translate(-50%, -50%);
+  border: 9px solid #fff;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #fff0e8, #eef4ff, #eef9f0, #f3efff);
+  box-shadow: 0 10px 30px rgba(0,0,0,.09);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 3;
+  font-size: 11px;
+  line-height: 1.15;
+  text-align: center;
+}
+
+.cycle-center span {
+  font-weight: 800;
+}
+
+.athlete-pillars {
+  max-width: 1380px;
+  margin: 18px auto 0;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.athlete-pillars div {
+  padding: 22px;
+  display: grid;
+  gap: 7px;
+}
+
+.athlete-pillars div + div {
+  border-left: 1px solid var(--border);
+}
+
+.athlete-pillars strong {
+  color: var(--orange);
+  font-size: 13px;
+  letter-spacing: .06em;
+}
+
+.athlete-pillars span {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.athlete-more {
+  max-width: 1380px;
+  margin: 18px auto 0;
+  padding: 26px 32px;
+  border: 1px solid #ffd9c8;
+  border-radius: 20px;
+  background: var(--orange-soft);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 30px;
+}
+
+.athlete-more h3 {
+  margin: 0 0 5px;
+  font-size: 25px;
+}
+
+.athlete-more p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.athlete-more__button {
+  flex-shrink: 0;
+  padding: 17px 28px;
+  border-radius: 13px;
+  background: var(--orange);
+  color: #fff;
+  font-weight: 800;
+}
+
+@media (max-width: 1050px) {
+  .athlete-cycle {
+    grid-template-columns: 1fr;
+  }
+
+  .cycle-center {
+    display: none;
+  }
+
+  .athlete-pillars {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .athlete-pillars div + div {
+    border-left: 0;
+  }
+}
+
+@media (max-width: 700px) {
+  .athlete-experience {
+    padding: 72px 18px;
+  }
+
+  .cycle-card {
+    grid-template-columns: 1fr;
+  }
+
+  .understand-previews {
+    grid-template-columns: 1fr;
+  }
+
+  .athlete-pillars {
+    grid-template-columns: 1fr;
+  }
+
+  .athlete-more {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+/* =========================================================
+   Athlete section visual refinement
+   Numbers + icons + circular ticks + larger cards
+   ========================================================= */
+
+.athlete-cycle {
+  max-width: 1420px;
+  gap: 22px;
+}
+
+.cycle-card {
+  min-height: 430px;
+  padding: 36px;
+  gap: 32px;
+  grid-template-columns: 0.82fr 1.18fr;
+}
+
+.cycle-card__identity {
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+  margin-bottom: 12px;
+}
+
+.cycle-card__identity > div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 9px;
+}
+
+.step-number {
+  width: 48px;
+  height: 43px;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 12px;
+
+  background: #fff0e8;
+  border: 1px solid #ffd7c5;
+
+  color: var(--orange);
+
+  font-size: 18px;
+  font-weight: 850;
+}
+
+.step-icon {
+  width: 48px;
+  height: 48px;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 14px;
+
+  background: #fff0e8;
+
+  font-size: 23px;
+}
+
+.cycle-step {
+  padding-top: 7px;
+  font-size: 14px;
+}
+
+.cycle-card--reflect .step-number,
+.cycle-card--reflect .step-icon {
+  background: #eef4ff;
+  border-color: #d9e5ff;
+  color: #3466d9;
+}
+
+.cycle-card--understand .step-number,
+.cycle-card--understand .step-icon {
+  background: #eef8f0;
+  border-color: #d7eadb;
+  color: #37804a;
+}
+
+.cycle-card--support .step-number,
+.cycle-card--support .step-icon {
+  background: #f3efff;
+  border-color: #e4dcfa;
+  color: #7051cf;
+}
+
+.cycle-card h3 {
+  font-size: 30px;
+  margin-top: 4px;
+}
+
+.cycle-card__copy > p:not(.cycle-step) {
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.cycle-card ul {
+  gap: 13px;
+}
+
+.cycle-card li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+
+  font-size: 15px;
+  line-height: 1.35;
+}
+
+.cycle-card li::before {
+  display: none;
+}
+
+.feature-tick {
+  flex: 0 0 auto;
+
+  width: 20px;
+  height: 20px;
+
+  display: grid;
+  place-items: center;
+
+  border: 2px solid var(--orange);
+  border-radius: 999px;
+
+  color: var(--orange);
+
+  font-size: 11px;
+  font-weight: 900;
+
+  margin-top: 1px;
+}
+
+.cycle-card--reflect .feature-tick {
+  color: #3466d9;
+  border-color: #3466d9;
+}
+
+.cycle-card--understand .feature-tick {
+  color: #37804a;
+  border-color: #37804a;
+}
+
+.cycle-card--support .feature-tick {
+  color: #7051cf;
+  border-color: #7051cf;
+}
+
+.product-placeholder {
+  min-height: 275px;
+}
+
+.product-placeholder--mini {
+  min-height: 245px;
+}
+
+.cycle-center {
+  width: 126px;
+  height: 126px;
+}
+
+@media (max-width: 1050px) {
+  .cycle-card {
+    min-height: auto;
+  }
+}
+
+@media (max-width: 700px) {
+  .cycle-card {
+    padding: 26px;
+  }
+
+  .cycle-card__identity {
+    gap: 13px;
+  }
+
+  .step-number,
+  .step-icon {
+    width: 42px;
+    height: 42px;
+  }
+}
+
+/* =========================================================
+   Athletic IQ line-icon refinement
+   ========================================================= */
+
+.cycle-card__markers {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  align-items: center;
+}
+
+.step-icon {
+  color: var(--orange);
+}
+
+.cycle-card--reflect .step-icon {
+  color: #3466d9;
+}
+
+.cycle-card--understand .step-icon {
+  color: #37804a;
+}
+
+.cycle-card--support .step-icon {
+  color: #7051cf;
+}
+
+.cycle-step {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.feature-tick svg {
+  display: block;
+}
+
+/* Connected cycle with directional arrows */
+
+.cycle-center {
+  width: 138px;
+  height: 138px;
+  padding: 0;
+
+  background: #ffffff;
+  border: 8px solid #ffffff;
+
+  overflow: visible;
+}
+
+.cycle-center__text {
+  position: absolute;
+
+  width: 82px;
+  height: 82px;
+
+  left: 50%;
+  top: 50%;
+
+  transform: translate(-50%, -50%);
+
+  border-radius: 999px;
+
+  background: linear-gradient(
+    135deg,
+    #fff2eb 0%,
+    #eef4ff 35%,
+    #eef8f0 65%,
+    #f3efff 100%
+  );
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  z-index: 3;
+
+  font-size: 10px;
+  line-height: 1.05;
+  text-align: center;
+}
+
+.cycle-center__arrows {
+  position: absolute;
+  inset: 2px;
+
+  border-radius: 999px;
+
+  border:
+    7px solid transparent;
+
+  background:
+    linear-gradient(#fff, #fff) padding-box,
+    conic-gradient(
+      #ff5a1f 0deg 85deg,
+      #3466d9 90deg 175deg,
+      #7051cf 180deg 265deg,
+      #37804a 270deg 355deg,
+      #ff5a1f 360deg
+    ) border-box;
+}
+
+.cycle-arrow {
+  position: absolute;
+
+  padding: 3px;
+
+  border-radius: 999px;
+
+  background: #fff;
+
+  stroke-width: 2.4;
+}
+
+.cycle-arrow--top {
+  top: -8px;
+  left: 50%;
+
+  color: #ff5a1f;
+
+  transform: translateX(-50%);
+}
+
+.cycle-arrow--right {
+  right: -8px;
+  top: 50%;
+
+  color: #3466d9;
+
+  transform: translateY(-50%) rotate(90deg);
+}
+
+.cycle-arrow--bottom {
+  bottom: -8px;
+  left: 50%;
+
+  color: #7051cf;
+
+  transform: translateX(-50%) rotate(180deg);
+}
+
+.cycle-arrow--left {
+  left: -8px;
+  top: 50%;
+
+  color: #37804a;
+
+  transform: translateY(-50%) rotate(270deg);
+}
+
+/* =========================================================
+   Four Athletic IQ principle icons
+   ========================================================= */
+
+.athlete-pillars .pillar {
+  display: flex;
+  align-items: center;
+
+  gap: 15px;
+
+  padding: 20px 22px;
+}
+
+.pillar__icon {
+  flex: 0 0 auto;
+
+  width: 52px;
+  height: 52px;
+
+  border-radius: 999px;
+
+  display: grid;
+  place-items: center;
+}
+
+.pillar > div {
+  padding: 0;
+  display: grid;
+  gap: 5px;
+}
+
+.pillar--specialized .pillar__icon {
+  background: #fff0e8;
+  color: var(--orange);
+}
+
+.pillar--connected .pillar__icon {
+  background: #eef4ff;
+  color: #3466d9;
+}
+
+.pillar--intelligent .pillar__icon {
+  background: #eef8f0;
+  color: #37804a;
+}
+
+.pillar--human .pillar__icon {
+  background: #f3efff;
+  color: #7051cf;
+}
+
+.pillar--specialized strong {
+  color: var(--orange);
+}
+
+.pillar--connected strong {
+  color: #3466d9;
+}
+
+.pillar--intelligent strong {
+  color: #37804a;
+}
+
+.pillar--human strong {
+  color: #7051cf;
+}
+
+@media (max-width: 1050px) {
+  .cycle-center {
+    display: none;
+  }
+}
+
+/* =========================================================
+   FINAL ATHLETE SECTION REFINEMENT
+   Wider rectangular cards + four separate cycle arrows
+   ========================================================= */
+
+
+/* --- Make the 2x2 feature widgets closer to the dream --- */
+
+.athlete-cycle {
+  max-width: 1420px;
+  gap: 16px;
+}
+
+.cycle-card {
+  min-height: 340px;
+  padding: 28px 30px;
+
+  grid-template-columns: 0.88fr 1.12fr;
+  gap: 26px;
+
+  border-radius: 21px;
+}
+
+.cycle-card h3 {
+  font-size: 27px;
+  line-height: 1.06;
+}
+
+.cycle-card__copy > p:not(.cycle-step) {
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.cycle-card ul {
+  margin-top: 19px;
+  gap: 9px;
+}
+
+.cycle-card li {
+  font-size: 14px;
+}
+
+.cycle-card__identity {
+  margin-bottom: 8px;
+}
+
+
+/* Product areas become wider and less tall */
+
+.product-placeholder {
+  min-height: 220px;
+  border-radius: 16px;
+}
+
+.product-placeholder--mini {
+  min-height: 205px;
+}
+
+.understand-previews {
+  gap: 9px;
+}
+
+
+/* --- Connected cycle --- */
+
+.cycle-center {
+  width: 132px;
+  height: 132px;
+
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+
+  overflow: visible;
+}
+
+
+/* White center */
+
+.cycle-center__text {
+  width: 82px;
+  height: 82px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #fff1e9,
+      #eef4ff 38%,
+      #f2efff 70%,
+      #eef8f0
+    );
+
+  border: 7px solid #ffffff;
+
+  box-shadow:
+    0 8px 24px rgba(30, 25, 20, 0.10);
+
+  font-size: 10px;
+  line-height: 1.02;
+}
+
+
+/* Four separate curved arrow pieces */
+
+.cycle-segment {
+  position: absolute;
+
+  width: 56px;
+  height: 56px;
+
+  border-radius: 999px;
+
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+
+  pointer-events: none;
+}
+
+
+/* TRAIN -> REFLECT */
+
+.cycle-segment--orange {
+  top: -1px;
+  right: 4px;
+
+  color: #ff5a1f;
+
+  border-top: 8px solid #ff5a1f;
+  border-right: 8px solid #ff5a1f;
+
+  transform: rotate(-7deg);
+}
+
+.cycle-segment--orange svg {
+  position: absolute;
+  top: -14px;
+  right: -7px;
+
+  background: #fff;
+  border-radius: 999px;
+
+  transform: rotate(42deg);
+}
+
+
+/* REFLECT -> SUPPORT */
+
+.cycle-segment--blue {
+  right: -1px;
+  bottom: 4px;
+
+  color: #3466d9;
+
+  border-right: 8px solid #3466d9;
+  border-bottom: 8px solid #3466d9;
+
+  transform: rotate(-7deg);
+}
+
+.cycle-segment--blue svg {
+  position: absolute;
+  right: -13px;
+  bottom: -5px;
+
+  background: #fff;
+  border-radius: 999px;
+
+  transform: rotate(132deg);
+}
+
+
+/* SUPPORT -> UNDERSTAND */
+
+.cycle-segment--purple {
+  left: 4px;
+  bottom: -1px;
+
+  color: #7051cf;
+
+  border-bottom: 8px solid #7051cf;
+  border-left: 8px solid #7051cf;
+
+  transform: rotate(-7deg);
+}
+
+.cycle-segment--purple svg {
+  position: absolute;
+  bottom: -13px;
+  left: -5px;
+
+  background: #fff;
+  border-radius: 999px;
+
+  transform: rotate(222deg);
+}
+
+
+/* UNDERSTAND -> TRAIN */
+
+.cycle-segment--green {
+  left: -1px;
+  top: 4px;
+
+  color: #37804a;
+
+  border-left: 8px solid #37804a;
+  border-top: 8px solid #37804a;
+
+  transform: rotate(-7deg);
+}
+
+.cycle-segment--green svg {
+  position: absolute;
+  left: -13px;
+  top: -5px;
+
+  background: #fff;
+  border-radius: 999px;
+
+  transform: rotate(312deg);
+}
+
+
+/* Remove old rainbow circle if any old rules still exist */
+
+.cycle-center__arrows,
+.cycle-arrow {
+  display: none !important;
+}
+
+
+/* Keep tablet/mobile sensible */
+
+@media (max-width: 1050px) {
+  .cycle-card {
+    min-height: auto;
+  }
+
+  .cycle-center {
+    display: none;
+  }
+}
+
+@media (max-width: 700px) {
+  .cycle-card {
+    padding: 25px;
+    grid-template-columns: 1fr;
+  }
+
+  .product-placeholder {
+    min-height: 210px;
+  }
+}
+
+/* =========================================================
+   FINAL CONNECTED CYCLE — SVG VERSION
+   Four clean quarter-circle arrows
+   ========================================================= */
+
+.cycle-center {
+  width: 150px;
+  height: 150px;
+
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+
+  overflow: visible;
+}
+
+.cycle-wheel {
+  position: absolute;
+
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+
+  overflow: visible;
+}
+
+.cycle-wheel__arc {
+  fill: none;
+
+  stroke-width: 9;
+
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.cycle-wheel__arc--orange {
+  stroke: #ff5a1f;
+}
+
+.cycle-wheel__arc--blue {
+  stroke: #3466d9;
+}
+
+.cycle-wheel__arc--purple {
+  stroke: #7051cf;
+}
+
+.cycle-wheel__arc--green {
+  stroke: #37804a;
+}
+
+.cycle-center__text {
+  position: absolute;
+
+  left: 50%;
+  top: 50%;
+
+  width: 88px;
+  height: 88px;
+
+  transform: translate(-50%, -50%);
+
+  border: 7px solid #ffffff;
+  border-radius: 999px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #fff3ed 0%,
+      #eef4ff 34%,
+      #f2efff 67%,
+      #eef8f0 100%
+    );
+
+  box-shadow:
+    0 8px 25px rgba(25, 25, 30, 0.10);
+
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  z-index: 2;
+
+  font-size: 10px;
+  line-height: 1.04;
+
+  text-align: center;
+}
+
+/* Hide the older CSS-arrow implementation completely */
+
+.cycle-segment,
+.cycle-center__arrows,
+.cycle-arrow {
+  display: none !important;
+}
+
+@media (max-width: 1050px) {
+  .cycle-center {
+    display: none;
+  }
+}
+
+/* =========================================================
+   Connected cycle precision pass
+   ========================================================= */
+
+.cycle-center {
+  width: 132px;
+  height: 132px;
+}
+
+.cycle-wheel {
+  position: absolute;
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+
+  overflow: visible;
+}
+
+.cycle-wheel__arc {
+  fill: none;
+
+  stroke-width: 8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.cycle-wheel__arc--orange {
+  stroke: #ff5a1f;
+}
+
+.cycle-wheel__arc--blue {
+  stroke: #3466d9;
+}
+
+.cycle-wheel__arc--purple {
+  stroke: #7051cf;
+}
+
+.cycle-wheel__arc--green {
+  stroke: #37804a;
+}
+
+.cycle-center__text {
+  width: 76px;
+  height: 76px;
+
+  border-width: 6px;
+
+  font-size: 9px;
+  line-height: 1.02;
+}
+
+/* =========================================================
+   CONNECTED CYCLE — polished dream-image version
+   ========================================================= */
+
+.cycle-center {
+  width: 142px;
+  height: 142px;
+}
+
+.cycle-wheel {
+  position: absolute;
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+
+  overflow: visible;
+
+  filter:
+    drop-shadow(0 5px 8px rgba(40, 45, 60, 0.09));
+}
+
+.cycle-wheel__arc {
+  fill: none;
+
+  stroke-width: 9;
+
+  stroke-linecap: round;
+  stroke-linejoin: round;
+
+  filter: url(#cycle-soft-glow);
+}
+
+.cycle-wheel__head {
+  filter:
+    drop-shadow(0 2px 2px rgba(25, 30, 40, 0.09));
+}
+
+.cycle-center__text {
+  width: 84px;
+  height: 84px;
+
+  border: 7px solid rgba(255, 255, 255, 0.95);
+
+  background:
+    radial-gradient(
+      circle at 35% 30%,
+      #ffffff 0%,
+      #f5f7ff 42%,
+      #f1f3fb 100%
+    );
+
+  box-shadow:
+    0 8px 22px rgba(30, 30, 45, 0.10),
+    inset 0 0 20px rgba(255,255,255,0.9);
+
+  font-size: 9.5px;
+  line-height: 1.03;
+}
+
+.cycle-segment,
+.cycle-center__arrows,
+.cycle-arrow {
+  display: none !important;
+}
+
+/* =========================================================
+   Connected cycle final sizing / positioning
+   ========================================================= */
+
+.cycle-center {
+  width: 164px;
+  height: 164px;
+
+  left: 50%;
+  top: 50%;
+
+  transform: translate(-50%, -50%);
+}
+
+.cycle-wheel {
+  width: 100%;
+  height: 100%;
+}
+
+.cycle-wheel__arc {
+  stroke-width: 11;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.cycle-wheel__head {
+  filter: drop-shadow(0 2px 3px rgba(20, 25, 35, 0.10));
+}
+
+.cycle-center__text {
+  width: 94px;
+  height: 94px;
+
+  font-size: 10px;
+  line-height: 1.03;
+
+  border-width: 7px;
+}
+
+/* Make sure the wheel sits visually above the card junction */
+
+.cycle-center {
+  z-index: 6;
+}
+
+@media (max-width: 1050px) {
+  .cycle-center {
+    display: none;
+  }
+}
+
+/* Move connected cycle higher between the four cards */
+.cycle-center {
+  top: calc(50% - 42px);
+  transform: translate(-50%, -50%);
+}
+
+/* Final clean connected-cycle arrows */
+
+.cycle-wheel__arc {
+  fill: none;
+  stroke-width: 11;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.cycle-wheel__chevron {
+  fill: none;
+  stroke-width: 7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.cycle-wheel__chevron--orange {
+  stroke: #ff5a1f;
+}
+
+.cycle-wheel__chevron--blue {
+  stroke: #3466d9;
+}
+
+.cycle-wheel__chevron--purple {
+  stroke: #7051cf;
+}
+
+.cycle-wheel__chevron--green {
+  stroke: #37804a;
+}
+
+.cycle-center {
+  width: 164px;
+  height: 164px;
+  top: calc(50% - 42px);
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.cycle-center__text {
+  width: 92px;
+  height: 92px;
+}
+
+/* =========================================================
+   Athlete section final layout refinement
+   More breathing room around the connected cycle
+   ========================================================= */
+
+.athlete-cycle {
+  max-width: 1420px;
+  gap: 18px;
+}
+
+/* Make all four widgets a bit shorter */
+.cycle-card {
+  min-height: 305px;
+  padding: 26px 30px;
+  grid-template-columns: 0.9fr 1.1fr;
+  gap: 24px;
+}
+
+/* Push left-side card content slightly outward */
+.cycle-card--train .cycle-card__copy,
+.cycle-card--understand .cycle-card__copy {
+  padding-right: 22px;
+}
+
+/* Push right-side card content slightly outward */
+.cycle-card--reflect .cycle-card__copy,
+.cycle-card--support .cycle-card__copy {
+  padding-left: 22px;
+}
+
+/* Keep previews visually compact */
+.product-placeholder {
+  min-height: 195px;
+}
+
+.product-placeholder--mini {
+  min-height: 185px;
+}
+
+/* Open up the center area a bit more */
+.cycle-card--train,
+.cycle-card--understand {
+  padding-right: 44px;
+}
+
+.cycle-card--reflect,
+.cycle-card--support {
+  padding-left: 44px;
+}
+
+/* Make the connected cycle a clearer center hub */
+.cycle-center {
+  width: 184px;
+  height: 184px;
+
+  left: 50%;
+  top: calc(50% - 46px);
+
+  transform: translate(-50%, -50%);
+
+  z-index: 8;
+}
+
+.cycle-center__text {
+  width: 102px;
+  height: 102px;
+
+  font-size: 10.5px;
+  line-height: 1.02;
+
+  border-width: 7px;
+}
+
+/* Slightly larger wheel without making it overpowering */
+.cycle-wheel__arc {
+  stroke-width: 11.5;
+}
+
+/* Keep the four pillar strip compact */
+.athlete-pillars {
+  margin-top: 16px;
+}
+
+.athlete-more {
+  margin-top: 16px;
+}
+
+/* Tablet */
+@media (max-width: 1050px) {
+  .cycle-card {
+    min-height: auto;
+  }
+
+  .cycle-card--train,
+  .cycle-card--understand,
+  .cycle-card--reflect,
+  .cycle-card--support {
+    padding-left: 30px;
+    padding-right: 30px;
+  }
+
+  .cycle-card--train .cycle-card__copy,
+  .cycle-card--understand .cycle-card__copy,
+  .cycle-card--reflect .cycle-card__copy,
+  .cycle-card--support .cycle-card__copy {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .cycle-center {
+    display: none;
+  }
+}
+
+/* Mobile */
+@media (max-width: 700px) {
+  .cycle-card {
+    padding: 24px;
+    grid-template-columns: 1fr;
+  }
+
+  .product-placeholder,
+  .product-placeholder--mini {
+    min-height: 190px;
+  }
+}
+
+/* =========================================================
+   FINAL 2x2 athlete experience geometry
+   ========================================================= */
+
+/* All four cards now have the SAME outer height */
+.cycle-card {
+  height: 315px;
+  min-height: 315px;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+/* Push content away from the center hub */
+.cycle-card--train,
+.cycle-card--understand {
+  padding-right: 58px;
+}
+
+.cycle-card--reflect,
+.cycle-card--support {
+  padding-left: 58px;
+}
+
+/* Compact the product previews so 3 and 4 do not grow taller */
+.product-placeholder {
+  min-height: 180px;
+  height: 180px;
+  box-sizing: border-box;
+}
+
+.product-placeholder--mini {
+  min-height: 170px;
+  height: 170px;
+}
+
+/* Bigger hub that intentionally enters the four cards slightly */
+.cycle-center {
+  width: 205px;
+  height: 205px;
+
+  left: 50%;
+  top: calc(50% - 20px);
+
+  transform: translate(-50%, -50%);
+
+  z-index: 10;
+
+  pointer-events: none;
+}
+
+.cycle-wheel {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.cycle-wheel__arc {
+  fill: none;
+
+  stroke-width: 13;
+
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.cycle-arrowhead {
+  fill: none;
+
+  stroke-width: 10;
+
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.cycle-arrowhead--orange {
+  stroke: #ff5a1f;
+}
+
+.cycle-arrowhead--blue {
+  stroke: #3466d9;
+}
+
+.cycle-arrowhead--purple {
+  stroke: #7051cf;
+}
+
+.cycle-arrowhead--green {
+  stroke: #37804a;
+}
+
+/* Bigger clean center */
+.cycle-center__text {
+  width: 108px;
+  height: 108px;
+
+  border: 8px solid rgba(255,255,255,.97);
+
+  font-size: 11px;
+
+  box-shadow:
+    0 10px 30px rgba(30, 35, 45, .12),
+    inset 0 0 22px rgba(255,255,255,.95);
+}
+
+/* Keep responsive version safe */
+@media (max-width: 1050px) {
+  .cycle-card {
+    height: auto;
+    min-height: auto;
+  }
+
+  .cycle-card--train,
+  .cycle-card--understand,
+  .cycle-card--reflect,
+  .cycle-card--support {
+    padding-left: 30px;
+    padding-right: 30px;
+  }
+
+  .product-placeholder,
+  .product-placeholder--mini {
+    height: auto;
+    min-height: 190px;
+  }
+
+  .cycle-center {
+    display: none;
+  }
+}
+
+/* Restore larger feature cards */
+.cycle-card {
+  height: auto;
+  min-height: 390px;
+  padding: 32px 36px;
+}
+
+.product-placeholder {
+  height: auto;
+  min-height: 245px;
+}
+
+.product-placeholder--mini {
+  height: auto;
+  min-height: 225px;
+}
+
+/* Final dream-style connected cycle */
+
+.cycle-wheel__arc {
+  fill: none;
+  stroke-width: 13;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: url(#cycleGlow);
+}
+
+.cycle-arrowhead {
+  fill: none;
+  stroke-width: 9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: url(#cycleGlow);
+}
+
+.cycle-arrowhead--orange {
+  stroke: #ff5a1f;
+}
+
+.cycle-arrowhead--blue {
+  stroke: #4779e8;
+}
+
+.cycle-arrowhead--purple {
+  stroke: #8060df;
+}
+
+.cycle-arrowhead--green {
+  stroke: #4b9b61;
+}
+
+/* Restore the cleaner arrow proportions while keeping the glossy look */
+
+.cycle-wheel__arc {
+  fill: none;
+  stroke-width: 11;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: url(#cycleGlow);
+}
+
+.cycle-arrowhead {
+  fill: none;
+  stroke-width: 8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: url(#cycleGlow);
+}
+
+/* Final clean connected-cycle arrows — no glow/shine */
+
+.cycle-wheel__arc {
+  fill: none;
+  stroke-width: 11;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: none;
+}
+
+.cycle-arrowhead {
+  fill: none;
+  stroke-width: 8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: none;
+}
+
+.cycle-arrowhead--orange {
+  stroke: #ff5a1f;
+}
+
+.cycle-arrowhead--blue {
+  stroke: #3466d9;
+}
+
+.cycle-arrowhead--purple {
+  stroke: #7051cf;
+}
+
+.cycle-arrowhead--green {
+  stroke: #37804a;
+}
