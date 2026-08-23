@@ -1,3 +1,5 @@
+import type { CoachAthlete } from "@/hooks/useCoachAthletes";
+
 import {
   Activity,
   AlertCircle,
@@ -11,61 +13,39 @@ import {
   Users,
 } from "lucide-react";
 
-const changes = [
-  {
-    initials: "TK",
-    name: "Tom Klein",
-    reason: "Hamstring pain reported",
-    tag: "Pain",
-    icon: HeartPulse,
-    style: "bg-red-50 text-red-600",
-  },
-  {
-    initials: "JR",
-    name: "Jonas Richter",
-    reason: "Fatigue elevated for 2 days",
-    tag: "Fatigue",
+type TrainingIntelligenceProps = {
+  athletes: CoachAthlete[];
+};
+export function TrainingIntelligence({
+  athletes,
+}: TrainingIntelligenceProps) {
+  const changes = athletes.map((athlete) => ({
+    initials: athlete.display_name
+      .split(" ")
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((part) => part[0]?.toUpperCase())
+      .join(""),
+    name: athlete.display_name,
+    reason: "Latest athlete data connected",
+    tag: "Linked",
     icon: Activity,
-    style: "bg-orange-50 text-orange-600",
-  },
-  {
-    initials: "SB",
-    name: "Sarah Braun",
-    reason: "Recovery lower than usual",
-    tag: "Recovery",
-    icon: RefreshCw,
-    style: "bg-orange-50 text-orange-600",
-  },
-];
+    style: "bg-slate-50 text-slate-600",
+  }));
 
-const adjustments = [
-  {
-    initials: "TK",
-    name: "Tom Klein",
-    change: "Modified session",
-    tag: "Pain",
-    icon: HeartPulse,
-    style: "bg-red-50 text-red-600",
-  },
-  {
-    initials: "SB",
-    name: "Sarah Braun",
-    change: "Reduced volume (-20%)",
-    tag: "Recovery",
-    icon: RefreshCw,
-    style: "bg-orange-50 text-orange-600",
-  },
-  {
-    initials: "JR",
-    name: "Jonas Richter",
-    change: "Alternative session",
-    tag: "Fatigue",
-    icon: Activity,
-    style: "bg-orange-50 text-orange-600",
-  },
-];
-
-export function TrainingIntelligence() {
+  const adjustments = athletes.map((athlete) => ({
+    initials: athlete.display_name
+      .split(" ")
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((part) => part[0]?.toUpperCase())
+      .join(""),
+    name: athlete.display_name,
+    change: "Individual training connection pending",
+    tag: "Linked",
+    icon: Target,
+    style: "bg-slate-50 text-slate-600",
+  }));
   return (
     <div className="grid grid-cols-[1.05fr_0.95fr_0.9fr] gap-3">
       <section className="rounded-2xl border border-border bg-white p-3 shadow-sm">
@@ -317,6 +297,7 @@ export function TrainingIntelligence() {
     </div>
   );
 }
+
 
 
 

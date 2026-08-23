@@ -15,10 +15,7 @@ import {
 
 const futureItems = [
   { label: "Groups", icon: Users },
-  { label: "Video", icon: Video },
-  { label: "Competitions", icon: Trophy },
   { label: "Notifications", icon: Bell },
-  { label: "Notes", icon: NotebookPen },
   { label: "AI Assistant", icon: Sparkles },
 ];
 
@@ -72,6 +69,30 @@ export function CoachSideMenu() {
           Analyses
         </Link>
 
+        <Link
+          to="/coach-manager/video"
+          className={linkClass}
+        >
+          <Video className="h-4 w-4" />
+          Video
+        </Link>
+
+        <Link
+          to="/coach-manager/competitions"
+          className={linkClass}
+        >
+          <Trophy className="h-4 w-4" />
+          Competitions
+        </Link>
+
+        <Link
+          to="/coach-manager/notes"
+          className={linkClass}
+        >
+          <NotebookPen className="h-4 w-4" />
+          Notes
+        </Link>
+
         {futureItems.map(({ label, icon: Icon }) => (
           <button
             key={label}
@@ -98,4 +119,11 @@ export function CoachSideMenu() {
     </aside>
   );
 }
+
+
+
+
+
+
+
 

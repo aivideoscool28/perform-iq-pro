@@ -12,4 +12,20 @@ export default defineConfig({
   tanstackStart: {
     server: { entry: "server" },
   },
+
+  vite: {
+    server: {
+      warmup: {
+        clientFiles: [
+          "./src/routes/index.tsx",
+          "./src/components/athleticiq/AppShell.tsx",
+          "./src/components/athleticiq/Sidebar.tsx",
+          "./src/components/dashboard/TodaysTrainingCard.tsx",
+          "./src/components/dashboard/DashboardCheckinCard.tsx",
+          "./src/components/dashboard/WeeklyProgressCards.tsx",
+          "./src/components/dashboard/KIInsightCard.tsx",
+        ],
+      },
+    },
+  },
 });

@@ -1,3 +1,4 @@
+﻿import { Link } from "@tanstack/react-router";
 const sessions = [
   {
     day: "Mon",
@@ -70,12 +71,13 @@ export function WeeklyTrainingOverview() {
         ))}
       </div>
 
-      <button
-        type="button"
-        className="mt-3 text-xs font-semibold text-orange-600"
-      >
-        Go to Training Plan →
-      </button>
+      <Link
+  to="/coach-manager/training"
+  className="mt-3 inline-block text-xs font-semibold text-orange-600"
+>
+  Go to Training Plan →
+</Link>
     </section>
   );
 }
+

@@ -18,6 +18,31 @@ export const Route = createFileRoute("/auth")({
 
 function AuthPage() {
   const navigate = useNavigate();
+
+  const navigateForUser = async (userId: string) => {
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", userId)
+      .single();
+
+    if (error) {
+      console.error("Could not load user role:", error);
+      navigate({ to: "/" });
+      return;
+    }
+
+    const profile = data as typeof data & {
+      role?: "athlete" | "coach";
+    };
+
+    if (profile.role === "coach") {
+      navigate({ to: "/coach-manager" });
+      return;
+    }
+
+    navigate({ to: "/" });
+  };
   const [mode, setMode] = useState<"login" | "signup" | "forgot">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -63,7 +88,7 @@ function AuthPage() {
           setRememberMe(remember);
           markJustLoggedIn();
           toast.success("Konto erstellt und erfolgreich eingeloggt. Willkommen! 🎉");
-          navigate({ to: "/" });
+          await navigateForUser(data.session.user.id);
           return;
         }
         // Supabase returns an obfuscated user with no identities when the email exists.
@@ -83,7 +108,7 @@ function AuthPage() {
           setRememberMe(remember);
           markJustLoggedIn();
           toast.success("Konto erstellt und erfolgreich eingeloggt. Willkommen! 🎉");
-          navigate({ to: "/" });
+          await navigateForUser(signInData.session.user.id);
           return;
         }
 
@@ -102,7 +127,7 @@ function AuthPage() {
       setRememberMe(remember);
       markJustLoggedIn();
       toast.success("Erfolgreich angemeldet. Schön dich zu sehen! 👋");
-      navigate({ to: "/" });
+      await navigateForUser(data.session.user.id);
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Fehler beim Login");
     } finally {
@@ -301,4 +326,8 @@ function AuthPage() {
     </div>
   );
 }
+
+
+
+
 

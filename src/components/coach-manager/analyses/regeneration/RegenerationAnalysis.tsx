@@ -1,4 +1,6 @@
 import { useState } from "react";
+
+import type { CoachAthlete } from "@/hooks/useCoachAthletes";
 import {
   BatteryCharging,
   ChevronRight,
@@ -43,45 +45,9 @@ const topMetrics = [
   },
 ];
 
-const athletesToCheck = [
-  {
-    initials: "JR",
-    name: "Jonas Richter",
-    reason: "Energy + soreness changed",
-    detail: "Repeated across 3 check-ins",
-    context: "Performance currently stable",
-    status: "bg-orange-500",
-    signals: ["soreness", "energy"],
-  },
-  {
-    initials: "SB",
-    name: "Sarah Braun",
-    reason: "Sleep below recent normal",
-    detail: "3 recent check-ins",
-    context: "Worth checking before training",
-    status: "bg-orange-500",
-    signals: ["sleep"],
-  },
-  {
-    initials: "TK",
-    name: "Tom Klein",
-    reason: "Soreness above recent normal",
-    detail: "2 recent check-ins",
-    context: "Review individual history",
-    status: "bg-orange-500",
-    signals: ["soreness"],
-  },
-  {
-    initials: "LM",
-    name: "Liam Peters",
-    reason: "Energy declining",
-    detail: "2 recent check-ins",
-    context: "No major performance decline reported",
-    status: "bg-orange-400",
-    signals: ["energy"],
-  },
-];
-
+type RegenerationAnalysisProps = {
+  athletes: CoachAthlete[];
+};
 const recurringSignals = [
   {
     label: "Poor sleep repeatedly",
@@ -154,7 +120,23 @@ const trainingTypes = [
   },
 ];
 
-export function RegenerationAnalysis() {
+export function RegenerationAnalysis({
+  athletes,
+}: RegenerationAnalysisProps) {
+  const athletesToCheck = athletes.map((athlete) => ({
+    initials: athlete.display_name
+      .split(" ")
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((part) => part[0]?.toUpperCase())
+      .join(""),
+    name: athlete.display_name,
+    reason: "Linked athlete",
+    detail: "Real regeneration analysis connects next",
+    context: "No regeneration status calculated yet",
+    status: "bg-slate-400",
+    signals: [] as string[],
+  }));
   const [metric, setMetric] =
     useState<"sleep" | "soreness" | "energy">("sleep");
 
@@ -753,3 +735,5 @@ export function RegenerationAnalysis() {
     </div>
   );
 }
+
+

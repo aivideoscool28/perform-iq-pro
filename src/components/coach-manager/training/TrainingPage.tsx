@@ -1,4 +1,6 @@
 import { useState } from "react";
+
+import { useCoachAthletes } from "@/hooks/useCoachAthletes";
 import { Sparkles } from "lucide-react";
 
 import { TrainingOverview } from "@/components/coach-manager/training/TrainingOverview";
@@ -11,6 +13,8 @@ type TrainingView = "today" | "create" | "history";
 export function TrainingPage() {
   const [activeView, setActiveView] =
     useState<TrainingView>("today");
+
+  const { athletes } = useCoachAthletes();
 
   return (
     <div className="space-y-3">
@@ -86,10 +90,10 @@ export function TrainingPage() {
         <div className="grid grid-cols-[1fr_0.28fr] items-start gap-3">
           <main className="min-w-0 space-y-3">
             <TrainingOverview />
-            <TrainingIntelligence />
+            <TrainingIntelligence athletes={athletes} />
           </main>
 
-          <TrainingSidebar mode="today" />
+          <TrainingSidebar mode="today" athletes={athletes} />
         </div>
       )}
 
@@ -98,8 +102,10 @@ export function TrainingPage() {
       )}
 
       {activeView === "history" && (
-        <TrainingSidebar mode="history" />
+        <TrainingSidebar mode="history" athletes={athletes} />
       )}
     </div>
   );
 }
+
+

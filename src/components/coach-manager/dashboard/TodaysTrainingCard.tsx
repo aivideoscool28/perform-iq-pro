@@ -1,3 +1,5 @@
+﻿import { Link } from "@tanstack/react-router";
+
 import { Clock, Dumbbell, Users } from "lucide-react";
 
 export function TodaysTrainingCard() {
@@ -53,15 +55,17 @@ export function TodaysTrainingCard() {
         </div>
 
         <div className="flex justify-end">
-          <button
-            type="button"
-            className="rounded-xl border border-orange-400 bg-white px-6 py-3 text-sm font-semibold text-orange-600 transition hover:bg-orange-50"
-          >
-            View Training →
-          </button>
+          <Link
+  to="/coach-manager/training"
+  className="rounded-xl border border-orange-400 bg-white px-6 py-3 text-sm font-semibold text-orange-600 transition hover:bg-orange-50"
+>
+  View Training →
+</Link>
         </div>
 
       </div>
     </section>
   );
 }
+
+

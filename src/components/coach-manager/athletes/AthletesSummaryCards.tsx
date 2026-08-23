@@ -1,3 +1,5 @@
+import type { CoachAthlete } from "@/hooks/useCoachAthletes";
+
 import {
   AlertTriangle,
   CircleCheck,
@@ -5,11 +7,12 @@ import {
   Users,
 } from "lucide-react";
 
-const metrics = [
+function getMetrics(athletes: CoachAthlete[]) {
+  return [
   {
     label: "Total Athletes",
-    value: "100",
-    detail: "100 active",
+    value: String(athletes.length),
+    detail: `${athletes.length} linked to this coach`,
     icon: Users,
     box: "border-slate-200 bg-white",
     iconBox: "bg-slate-900",
@@ -46,9 +49,16 @@ const metrics = [
     iconColor: "text-red-500",
     detailColor: "text-red-600",
   },
-];
+  ];
+}
 
-export function AthletesSummaryCards() {
+export function AthletesSummaryCards({
+  athletes,
+}: {
+  athletes: CoachAthlete[];
+}) {
+  const metrics = getMetrics(athletes);
+
   return (
     <div className="grid grid-cols-4 gap-2.5">
       {metrics.map(
@@ -95,3 +105,4 @@ export function AthletesSummaryCards() {
     </div>
   );
 }
+

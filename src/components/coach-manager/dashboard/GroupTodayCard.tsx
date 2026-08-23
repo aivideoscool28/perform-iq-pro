@@ -1,3 +1,5 @@
+﻿import { Link } from "@tanstack/react-router";
+
 import {
   Activity,
   CircleAlert,
@@ -54,12 +56,12 @@ export function GroupTodayCard() {
           </h3>
         </div>
 
-        <button
-          type="button"
-          className="text-xs font-semibold text-orange-600"
-        >
-          Open Group Overview →
-        </button>
+        <Link
+  to="/coach-manager/athletes"
+  className="text-xs font-semibold text-orange-600"
+>
+  Open Group Overview →
+</Link>
       </div>
 
       <div className="mt-4 grid grid-cols-4 gap-2">
@@ -111,3 +113,5 @@ export function GroupTodayCard() {
     </section>
   );
 }
+
+

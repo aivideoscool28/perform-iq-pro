@@ -1,5 +1,7 @@
 import { useState } from "react";
 
+import { useCoachAthletes } from "@/hooks/useCoachAthletes";
+
 import { AthletesSummaryCards } from "@/components/coach-manager/athletes/AthletesSummaryCards";
 import { AthletesTable } from "@/components/coach-manager/athletes/AthletesTable";
 import { CoachActionCenter } from "@/components/coach-manager/athletes/CoachActionCenter";
@@ -11,6 +13,8 @@ type AthleteView = "overview" | "intelligence";
 export function AthletesPage() {
   const [activeView, setActiveView] =
     useState<AthleteView>("overview");
+
+  const { athletes, loading, error } = useCoachAthletes();
 
   return (
     <div className="space-y-3">
@@ -61,8 +65,12 @@ export function AthletesPage() {
 
       {activeView === "overview" && (
         <>
-          <AthletesSummaryCards />
-          <AthletesTable />
+          <AthletesSummaryCards athletes={athletes} />
+          <AthletesTable
+            athletes={athletes}
+            loading={loading}
+            error={error}
+          />
         </>
       )}
 
@@ -81,4 +89,5 @@ export function AthletesPage() {
     </div>
   );
 }
+
 

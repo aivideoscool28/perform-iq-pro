@@ -1,4 +1,6 @@
 import { useState } from "react";
+
+import { useCoachAthletes } from "@/hooks/useCoachAthletes";
 import {
   CalendarDays,
   SlidersHorizontal,
@@ -15,15 +17,19 @@ import { AnalysisOverviewPanels } from "@/components/coach-manager/analyses/over
 import { CheckinAnalysis } from "@/components/coach-manager/analyses/check-in/CheckinAnalysis";
 import { RegenerationAnalysis } from "@/components/coach-manager/analyses/regeneration/RegenerationAnalysis";
 import { TrainingResponse } from "@/components/coach-manager/analyses/training-response/TrainingResponse";
+import { SessionComparison } from "@/components/coach-manager/analyses/session-comparison/SessionComparison";
 
 export function AnalysesPage() {
   const [activeTab, setActiveTab] =
     useState<AnalysisTab>("overview");
 
+  const { athletes } = useCoachAthletes();
+
   const isOverview = activeTab === "overview";
   const isCheckin = activeTab === "checkin";
   const isRegeneration = activeTab === "regeneration";
   const isTrainingResponse = activeTab === "training-response";
+  const isSessionComparison = activeTab === "session-comparison";
 
   return (
     <div className="space-y-3">
@@ -34,7 +40,7 @@ export function AnalysesPage() {
           </p>
 
           <h1 className="mt-1 text-2xl font-bold tracking-tight">
-            {isCheckin ? "Check-In Analysis" : isRegeneration ? "Regeneration Analysis" : isTrainingResponse ? "Training Response" : "Analyses"}
+            {isCheckin ? "Check-In Analysis" : isRegeneration ? "Regeneration Analysis" : isTrainingResponse ? "Training Response" : isSessionComparison ? "Session Comparison" : "Analyses"}
           </h1>
 
           <p className="mt-1 text-xs text-muted-foreground">
@@ -102,11 +108,13 @@ export function AnalysesPage() {
 
       {isCheckin && <CheckinAnalysis />}
 
-      {isRegeneration && <RegenerationAnalysis />}
+      {isRegeneration && <RegenerationAnalysis athletes={athletes} />}
 
       {isTrainingResponse && <TrainingResponse />}
 
-      {!isOverview && !isCheckin && !isRegeneration && !isTrainingResponse && (
+      {isSessionComparison && <SessionComparison />}
+
+      {!isOverview && !isCheckin && !isRegeneration && !isTrainingResponse && !isSessionComparison && (
         <section className="grid min-h-[360px] place-items-center rounded-2xl border border-dashed border-border bg-white">
           <div className="text-center">
             <Sparkles className="mx-auto h-6 w-6 text-violet-500" />
@@ -125,6 +133,10 @@ export function AnalysesPage() {
     </div>
   );
 }
+
+
+
+
 
 
 

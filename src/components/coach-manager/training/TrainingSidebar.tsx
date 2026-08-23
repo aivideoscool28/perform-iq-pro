@@ -1,3 +1,5 @@
+import type { CoachAthlete } from "@/hooks/useCoachAthletes";
+
 import {
   CalendarDays,
   Dumbbell,
@@ -50,33 +52,6 @@ const week = [
   },
 ];
 
-const individualPlans = [
-  {
-    initials: "TK",
-    name: "Tom Klein",
-    plan: "Modified Acceleration",
-    time: "Today · 18:00",
-    badge: "bg-red-50 text-red-600",
-    icon: HeartPulse,
-  },
-  {
-    initials: "SB",
-    name: "Sarah Braun",
-    plan: "Reduced Sprint Volume",
-    time: "Tomorrow · 17:00",
-    badge: "bg-orange-50 text-orange-600",
-    icon: Gauge,
-  },
-  {
-    initials: "JR",
-    name: "Jonas Richter",
-    plan: "Individual Recovery Session",
-    time: "Fri · 16:00",
-    badge: "bg-green-50 text-green-600",
-    icon: Zap,
-  },
-];
-
 const recent = [
   {
     name: "Acceleration",
@@ -103,9 +78,24 @@ const recent = [
 
 export function TrainingSidebar({
   mode = "today",
+  athletes,
 }: {
   mode?: "today" | "history";
+  athletes: CoachAthlete[];
 }) {
+  const individualPlans = athletes.map((athlete) => ({
+    initials: athlete.display_name
+      .split(" ")
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((part) => part[0]?.toUpperCase())
+      .join(""),
+    name: athlete.display_name,
+    plan: "Training plan connection pending",
+    time: "Linked athlete",
+    badge: "bg-slate-50 text-slate-600",
+    icon: Gauge,
+  }));
   if (mode === "history") {
     return (
       <section className="rounded-2xl border border-border bg-white p-4 shadow-sm">
@@ -289,3 +279,4 @@ export function TrainingSidebar({
     </aside>
   );
 }
+
