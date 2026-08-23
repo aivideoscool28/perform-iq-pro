@@ -73,6 +73,45 @@ export type Database = {
           },
         ]
       }
+      athlete_questions: {
+        Row: {
+          answer: string | null
+          answered_at: string | null
+          asked_at: string
+          athlete_id: string
+          coach_id: string | null
+          created_at: string
+          id: string
+          question: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          answer?: string | null
+          answered_at?: string | null
+          asked_at?: string
+          athlete_id: string
+          coach_id?: string | null
+          created_at?: string
+          id?: string
+          question: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          answer?: string | null
+          answered_at?: string | null
+          asked_at?: string
+          athlete_id?: string
+          coach_id?: string | null
+          created_at?: string
+          id?: string
+          question?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       analysis_boards: {
         Row: {
           created_at: string
@@ -375,6 +414,27 @@ export type Database = {
         }
         Relationships: []
       }
+      coach_athletes: {
+        Row: {
+          athlete_id: string
+          coach_id: string
+          created_at: string
+          id: string
+        }
+        Insert: {
+          athlete_id: string
+          coach_id: string
+          created_at?: string
+          id?: string
+        }
+        Update: {
+          athlete_id?: string
+          coach_id?: string
+          created_at?: string
+          id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           age: number | null
@@ -397,6 +457,7 @@ export type Database = {
           longest_streak: number
           onboarded_at: string | null
           receive_news_and_motivation: boolean | null
+          role: "athlete" | "coach" | null
           streak_freezes_last_reset: string
           streak_freezes_remaining: number
           training_days_per_week: number | null
@@ -425,6 +486,7 @@ export type Database = {
           longest_streak?: number
           onboarded_at?: string | null
           receive_news_and_motivation?: boolean | null
+          role?: "athlete" | "coach" | null
           streak_freezes_last_reset?: string
           streak_freezes_remaining?: number
           training_days_per_week?: number | null
@@ -453,6 +515,7 @@ export type Database = {
           longest_streak?: number
           onboarded_at?: string | null
           receive_news_and_motivation?: boolean | null
+          role?: "athlete" | "coach" | null
           streak_freezes_last_reset?: string
           streak_freezes_remaining?: number
           training_days_per_week?: number | null
@@ -699,3 +762,9 @@ export const Constants = {
     Enums: {},
   },
 } as const
+
+
+
+
+
+
