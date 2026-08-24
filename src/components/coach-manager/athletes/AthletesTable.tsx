@@ -110,6 +110,7 @@ export function AthletesTable({
                 navigate({
                   to: "/coach-manager/athletes/$athleteId",
                   params: { athleteId: athlete.id },
+                  search: { from: "athletes" },
                 })
               }
               className="grid w-full cursor-pointer grid-cols-[1.2fr_1fr_1fr_1.2fr_auto] items-center gap-3 border-t border-border/60 px-3 py-3 text-left transition hover:bg-muted/20 active:bg-orange-50/40"
@@ -157,5 +158,6 @@ export function AthletesTable({
     </section>
   );
 }
+
 
 

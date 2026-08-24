@@ -5,5 +5,12 @@ import { AthleteDetailPage } from "@/components/coach-manager/athletes/AthleteDe
 export const Route = createFileRoute(
   "/coach-manager/athletes/$athleteId",
 )({
+  validateSearch: (search: Record<string, unknown>) => ({
+    from:
+      search.from === "training"
+        ? "training"
+        : "athletes",
+  }),
+
   component: AthleteDetailPage,
 });

@@ -1,0 +1,26 @@
+
+/* Center Know Your Athlete description */
+.coach-feature-card__lead {
+  max-width: 560px;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+
+
+/* Coach feature 01 — Aether brand orange */
+.coach-feature-card {
+  --coach-accent: #ff5a1f;
+}
+
+.coach-feature-card__number {
+  background: #ff5a1f;
+}
+
+.coach-feature-card__eyebrow,
+.coach-feature-card h2 span,
+.coach-feature-card__footer svg,
+.coach-feature-card__benefit svg {
+  color: #ff5a1f;
+}
+

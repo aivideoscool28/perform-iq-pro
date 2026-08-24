@@ -1,4 +1,9 @@
-import type { CoachAthlete } from "@/hooks/useCoachAthletes";
+﻿import type { CoachAthlete } from "@/hooks/useCoachAthletes";
+
+import {
+  useCoachUpcomingTraining,
+} from "@/hooks/coach-manager/useCoachUpcomingTraining";
+import { Link } from "@tanstack/react-router";
 
 import {
   CalendarDays,
@@ -79,11 +84,22 @@ const recent = [
 export function TrainingSidebar({
   mode = "today",
   athletes,
+  onOpenCalendar,
+  onOpenIndividualPlans,
 }: {
   mode?: "today" | "history";
   athletes: CoachAthlete[];
+  onOpenCalendar?: () => void;
+  onOpenIndividualPlans?: (athleteId?: string) => void;
 }) {
+  const {
+    sessions: upcomingSessions,
+    loading: upcomingLoading,
+    error: upcomingError,
+  } = useCoachUpcomingTraining();
+
   const individualPlans = athletes.map((athlete) => ({
+    id: athlete.id,
     initials: athlete.display_name
       .split(" ")
       .filter(Boolean)
@@ -168,7 +184,7 @@ export function TrainingSidebar({
     <aside className="space-y-3">
       <section className="rounded-2xl border border-border bg-white p-3 shadow-sm">
         <div className="flex items-center justify-between">
-          <h3 className="text-xs font-bold">This Week</h3>
+          <h3 className="text-xs font-bold">Upcoming Training</h3>
 
           <div className="grid h-7 w-7 place-items-center rounded-lg bg-orange-50">
             <CalendarDays className="h-3.5 w-3.5 text-orange-500" />
@@ -176,42 +192,88 @@ export function TrainingSidebar({
         </div>
 
         <div className="mt-2">
-          {week.map((session, index) => (
-            <button
-              key={`${session.day}-${session.title}`}
-              type="button"
-              className={[
-                "grid w-full grid-cols-[42px_10px_1fr_auto] items-center gap-2 px-1 py-2 text-left transition hover:bg-muted/20",
-                index !== week.length - 1
-                  ? "border-b border-border/60"
-                  : "",
-              ].join(" ")}
-            >
-              <p className="text-[8px] font-semibold text-muted-foreground">
-                {session.day}
-              </p>
+          {upcomingLoading &&
+            Array.from({ length: 4 }).map((_, index) => (
+              <div
+                key={index}
+                className="mb-1 h-11 animate-pulse rounded-lg bg-muted/40"
+              />
+            ))}
 
-              <span className={`h-2 w-2 rounded-full ${session.dot}`} />
+          {!upcomingLoading &&
+            upcomingSessions.map((session, index) => {
+              const sessionDate = new Date(
+                `${session.session_date}T12:00:00`,
+              );
 
-              <div>
+              const dayLabel =
+                sessionDate.toLocaleDateString(
+                  "en-GB",
+                  {
+                    weekday: "short",
+                    day: "2-digit",
+                  },
+                );
+
+              return (
+                <button
+                  key={session.id}
+                  type="button"
+                  className={[
+                    "grid w-full grid-cols-[46px_10px_1fr_auto] items-center gap-2 px-1 py-2 text-left transition hover:bg-muted/20",
+                    index !== upcomingSessions.length - 1
+                      ? "border-b border-border/60"
+                      : "",
+                  ].join(" ")}
+                >
+                  <p className="text-[8px] font-semibold text-muted-foreground">
+                    {dayLabel}
+                  </p>
+
+                  <span className="h-2 w-2 rounded-full bg-orange-500" />
+
+                  <div className="min-w-0">
+                    <p className="truncate text-[9px] font-semibold">
+                      {session.title}
+                    </p>
+
+                    <p className="truncate text-[8px] text-muted-foreground">
+                      {session.group_name ?? "No group"}
+                    </p>
+                  </div>
+
+                  <p className="text-[8px] font-semibold text-orange-600">
+                    {session.start_time
+                      ? session.start_time.slice(0, 5)
+                      : "—"}
+                  </p>
+                </button>
+              );
+            })}
+
+          {!upcomingLoading &&
+            upcomingSessions.length === 0 && (
+              <div className="py-4 text-center">
                 <p className="text-[9px] font-semibold">
-                  {session.title}
+                  No upcoming training
                 </p>
 
-                <p className="text-[8px] text-muted-foreground">
-                  {session.group}
+                <p className="mt-1 text-[8px] text-muted-foreground">
+                  Create a future session to see it here.
                 </p>
               </div>
+            )}
 
-              <p className={`text-[8px] font-semibold ${session.text}`}>
-                {session.time}
-              </p>
-            </button>
-          ))}
+          {upcomingError && (
+            <p className="py-2 text-[8px] font-semibold text-red-600">
+              {upcomingError}
+            </p>
+          )}
         </div>
 
         <button
           type="button"
+          onClick={onOpenCalendar}
           className="mt-2 text-[9px] font-semibold text-orange-600"
         >
           View full calendar →
@@ -232,6 +294,7 @@ export function TrainingSidebar({
 
           <button
             type="button"
+            onClick={() => onOpenIndividualPlans?.()}
             className="text-[8px] font-semibold text-orange-600"
           >
             View all →
@@ -244,8 +307,11 @@ export function TrainingSidebar({
 
             return (
               <button
-                key={plan.name}
+                key={plan.id}
                 type="button"
+                onClick={() =>
+                  onOpenIndividualPlans?.(plan.id)
+                }
                 className="flex w-full items-center gap-2 rounded-xl px-1.5 py-2 text-left transition hover:bg-muted/20"
               >
                 <div className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-orange-50 text-[8px] font-bold text-orange-600">
@@ -279,4 +345,15 @@ export function TrainingSidebar({
     </aside>
   );
 }
+
+
+
+
+
+
+
+
+
+
+
 

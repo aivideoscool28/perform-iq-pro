@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+﻿import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -77,6 +77,7 @@ function createDemoWorkouts(weekStart: Date): PlannedWorkout[] {
       exercises: [],
       status: "completed",
       source: "coach",
+      is_published: true,
       completed_at: now,
       created_at: now,
       updated_at: now,
@@ -94,6 +95,7 @@ function createDemoWorkouts(weekStart: Date): PlannedWorkout[] {
       exercises: [],
       status: "completed",
       source: "coach",
+      is_published: true,
       completed_at: now,
       created_at: now,
       updated_at: now,
@@ -111,6 +113,7 @@ function createDemoWorkouts(weekStart: Date): PlannedWorkout[] {
       exercises: [],
       status: "planned",
       source: "coach",
+      is_published: true,
       completed_at: null,
       created_at: now,
       updated_at: now,
@@ -128,6 +131,7 @@ function createDemoWorkouts(weekStart: Date): PlannedWorkout[] {
       exercises: [],
       status: "planned",
       source: "coach",
+      is_published: true,
       completed_at: null,
       created_at: now,
       updated_at: now,
@@ -239,6 +243,9 @@ function TrainingPage() {
     </AppShell>
   );
 }
+
+
+
 
 
 

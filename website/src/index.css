@@ -3,3 +3,111 @@
 @import "./styles/navbar.css";
 @import "./styles/hero.css";
 @import "./styles/athlete-experience.css";
+@import "./styles/trust-strip.css";
+
+@import "./styles/audience-switcher.css";
+
+.coach-coming-soon {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 110px 24px 160px;
+  text-align: center;
+}
+
+.coach-coming-soon__eyebrow {
+  margin-bottom: 18px;
+
+  color: #ff5722;
+
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+}
+
+.coach-coming-soon h1 {
+  margin: 0;
+
+  color: #151515;
+
+  font-size: clamp(48px, 6vw, 82px);
+  line-height: 0.98;
+  letter-spacing: -0.045em;
+}
+
+.coach-coming-soon h1 span {
+  color: #ff5722;
+}
+
+.coach-coming-soon > p:not(.coach-coming-soon__eyebrow) {
+  max-width: 720px;
+  margin: 30px auto 0;
+
+  color: #666;
+  font-size: 18px;
+  line-height: 1.6;
+}
+
+.coach-coming-soon__card {
+  margin: 60px auto 0;
+  padding: 70px 30px;
+
+  max-width: 800px;
+
+  border: 1px solid #ece9e6;
+  border-radius: 24px;
+
+  background: #faf9f8;
+
+  color: #777;
+  font-weight: 700;
+}
+@import "./styles/coach-connection.css";
+
+/* Coach page hero refinement */
+
+.coach-coming-soon {
+  width: 100%;
+  max-width: none;
+
+  margin: 0 auto;
+
+  padding: 58px 0 120px;
+
+  box-sizing: border-box;
+
+  text-align: center;
+}
+
+.coach-coming-soon__eyebrow {
+  margin-bottom: 18px;
+}
+
+.coach-coming-soon h1 {
+  max-width: 1100px;
+  margin: 0 auto;
+
+  padding: 0 24px;
+
+  box-sizing: border-box;
+}
+
+.coach-coming-soon > p:not(.coach-coming-soon__eyebrow) {
+  max-width: 760px;
+
+  margin: 28px auto 0;
+
+  padding: 0 24px;
+
+  box-sizing: border-box;
+}
+
+/* Move Coach hero closer to navbar */
+
+.coach-coming-soon {
+  padding-top: 20px;
+}
+
+.coach-coming-soon__eyebrow {
+  margin-top: 0;
+}
+

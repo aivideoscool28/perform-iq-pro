@@ -1651,3 +1651,137 @@
 .cycle-arrowhead--green {
   stroke: #37804a;
 }
+
+/* =========================================================
+   Athlete cycle — swap stages 03 and 04
+   New clockwise layout:
+   01 TRAIN       -> 02 REFLECT
+   04 GET SUPPORT <- 03 UNDERSTAND
+   ========================================================= */
+
+/* 03 UNDERSTAND moves to bottom-right */
+.cycle-card--understand {
+  grid-column: 2;
+  grid-row: 2;
+}
+
+/* 04 GET SUPPORT moves to bottom-left */
+.cycle-card--support {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+
+/* ---------------------------------------------------------
+   Logical connected-cycle colors
+
+   Orange = TRAIN -> REFLECT
+   Blue   = REFLECT -> UNDERSTAND
+   Green  = UNDERSTAND -> GET SUPPORT
+   Purple = GET SUPPORT -> TRAIN
+   --------------------------------------------------------- */
+
+/* Top */
+.cycle-wheel__arc:nth-of-type(1) {
+  stroke: #ff5a1f;
+}
+
+/* Right */
+.cycle-wheel__arc:nth-of-type(2) {
+  stroke: #3466d9;
+}
+
+/* Bottom */
+.cycle-wheel__arc:nth-of-type(3) {
+  stroke: #37804a;
+}
+
+/* Left */
+.cycle-wheel__arc:nth-of-type(4) {
+  stroke: #7051cf;
+}
+
+
+/* Arrowheads follow the same stage colors */
+
+.cycle-arrowhead--orange {
+  stroke: #ff5a1f;
+}
+
+.cycle-arrowhead--blue {
+  stroke: #3466d9;
+}
+
+/*
+   The bottom physical arrow used to be purple,
+   but it now represents UNDERSTAND -> GET SUPPORT,
+   so make it green.
+*/
+.cycle-arrowhead--purple {
+  stroke: #37804a;
+}
+
+/*
+   The left physical arrow used to be green,
+   but it now represents GET SUPPORT -> TRAIN,
+   so make it purple.
+*/
+.cycle-arrowhead--green {
+  stroke: #7051cf;
+}
+
+
+/* Responsive layout goes back to natural stacking */
+@media (max-width: 1050px) {
+  .cycle-card--understand,
+  .cycle-card--support {
+    grid-column: auto;
+    grid-row: auto;
+  }
+}
+
+/* =========================================================
+   Connected cycle — keep logical positions,
+   restore earlier softer gradient texture
+   ========================================================= */
+
+/* TRAIN -> REFLECT : orange */
+.cycle-wheel__arc:nth-of-type(1) {
+  stroke: url(#cycle-orange);
+}
+
+/* REFLECT -> UNDERSTAND : blue */
+.cycle-wheel__arc:nth-of-type(2) {
+  stroke: url(#cycle-blue);
+}
+
+/* UNDERSTAND -> GET SUPPORT : green */
+.cycle-wheel__arc:nth-of-type(3) {
+  stroke: url(#cycle-green);
+}
+
+/* GET SUPPORT -> TRAIN : purple */
+.cycle-wheel__arc:nth-of-type(4) {
+  stroke: url(#cycle-purple);
+}
+
+
+/* Keep the physical arrowheads matching the corrected positions */
+
+.cycle-arrowhead--orange {
+  stroke: #ff5a1f;
+}
+
+.cycle-arrowhead--blue {
+  stroke: #4779e8;
+}
+
+/* Bottom physical arrow is now UNDERSTAND -> GET SUPPORT */
+.cycle-arrowhead--purple {
+  stroke: #4b9b61;
+}
+
+/* Left physical arrow is now GET SUPPORT -> TRAIN */
+.cycle-arrowhead--green {
+  stroke: #8060df;
+}

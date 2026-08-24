@@ -3,6 +3,8 @@
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
 
+import { canCoachAccessAthlete } from "@/lib/coach-manager/coach-athlete-access";
+
 export type AthleteCheckin =
   Tables<"daily_checkins">;
 
@@ -41,6 +43,9 @@ export function useAthleteDetailData(
   const [error, setError] =
     useState<string | null>(null);
 
+  const [accessDenied, setAccessDenied] =
+    useState(false);
+
   useEffect(() => {
     if (!athleteId) {
       setData(emptyData);
@@ -53,6 +58,25 @@ export function useAthleteDetailData(
     async function loadAthleteData() {
       setLoading(true);
       setError(null);
+      setAccessDenied(false);
+
+      const access =
+        await canCoachAccessAthlete(athleteId!);
+
+      if (cancelled) {
+        return;
+      }
+
+      if (!access.allowed) {
+        setData(emptyData);
+        setAccessDenied(true);
+        setError(
+          access.error ??
+            "This athlete is not linked to the current coach.",
+        );
+        setLoading(false);
+        return;
+      }
 
       const [
         checkinResult,
@@ -129,13 +153,10 @@ export function useAthleteDetailData(
       setData({
         latestCheckin:
           checkinResult.data ?? null,
-
         latestWorkout:
           workoutResult.data ?? null,
-
         latestAnalysis:
           analysisResult.data ?? null,
-
         latestVideoAnalysis:
           videoResult.data ?? null,
       });
@@ -154,5 +175,6 @@ export function useAthleteDetailData(
     ...data,
     loading,
     error,
+    accessDenied,
   };
 }

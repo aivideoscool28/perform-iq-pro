@@ -1,0 +1,388 @@
+.coach-connection {
+  width: min(1440px, calc(100vw - 70px));
+  margin: 34px auto 0;
+  padding: 26px 30px;
+
+  display: grid;
+  grid-template-columns:
+    minmax(430px, 1.25fr)
+    34px
+    245px
+    34px
+    minmax(370px, 1fr);
+
+  align-items: center;
+  gap: 14px;
+
+  box-sizing: border-box;
+
+  border: 1px solid #ece8e4;
+  border-radius: 22px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #ffffff 0%,
+      #fffdfc 100%
+    );
+
+  box-shadow:
+    0 14px 38px rgba(30, 25, 20, 0.055);
+}
+
+
+/* -----------------------------
+   SECTION LABELS
+   ----------------------------- */
+
+.coach-connection__label {
+  margin: 0 0 20px;
+
+  text-align: center;
+
+  font-size: 11px;
+  line-height: 1;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+}
+
+.coach-connection__label--athlete {
+  color: #3466d9;
+}
+
+.coach-connection__label--coach {
+  color: #ff5722;
+}
+
+
+/* -----------------------------
+   FEATURE GROUPS
+   ----------------------------- */
+
+.coach-connection__items {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.coach-connection__items--coach {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.coach-connection__item {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  gap: 5px;
+
+  text-align: center;
+}
+
+.coach-connection__item svg {
+  width: 25px;
+  height: 25px;
+
+  margin-bottom: 4px;
+
+  stroke-width: 2;
+}
+
+.coach-connection__item strong {
+  min-height: 23px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #171717;
+
+  font-size: 9.5px;
+  line-height: 1.15;
+  font-weight: 850;
+}
+
+.coach-connection__item span {
+  max-width: 90px;
+
+  color: #6f6f72;
+
+  font-size: 8.5px;
+  line-height: 1.32;
+}
+
+
+/* Athlete-side icon colors */
+
+.coach-connection__item--orange svg {
+  color: #ff5722;
+}
+
+.coach-connection__item--green svg {
+  color: #37804a;
+}
+
+.coach-connection__item--purple svg {
+  color: #7051cf;
+}
+
+.coach-connection__item--teal svg {
+  color: #149b9b;
+}
+
+
+/* Coach-side icons use the brand color */
+
+.coach-connection__item--coach svg {
+  color: #ff5722;
+}
+
+
+/* -----------------------------
+   CONNECTION ARROWS
+   ----------------------------- */
+
+.coach-connection__arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #bbb9b6;
+
+  font-size: 27px;
+  line-height: 1;
+  font-weight: 400;
+}
+
+
+/* -----------------------------
+   AETHER HUB
+   ----------------------------- */
+
+.coach-connection__aether {
+  min-height: 128px;
+
+  padding: 20px 18px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  box-sizing: border-box;
+
+  border: 1px solid #ece7e2;
+  border-radius: 18px;
+
+  background:
+    radial-gradient(
+      circle at 50% -10%,
+      rgba(255, 87, 34, 0.18) 0%,
+      rgba(255, 87, 34, 0.06) 42%,
+      rgba(255,255,255,0) 72%
+    ),
+    #ffffff;
+
+  box-shadow:
+    0 10px 28px rgba(30, 25, 20, 0.08);
+
+  text-align: center;
+}
+
+.coach-connection__aether > span {
+  color: #ff5722;
+
+  font-size: 14px;
+  line-height: 1;
+  font-weight: 850;
+  letter-spacing: 0.035em;
+}
+
+.coach-connection__aether > strong {
+  margin-top: 6px;
+
+  color: #161616;
+
+  font-size: 27px;
+  line-height: 0.95;
+  font-weight: 850;
+  letter-spacing: -0.035em;
+}
+
+.coach-connection__aether p {
+  margin: 15px 0 0;
+
+  color: #747474;
+
+  font-size: 8px;
+  line-height: 1;
+  font-weight: 800;
+  letter-spacing: 0.035em;
+}
+
+.coach-connection__aether i {
+  padding: 0 2px;
+
+  color: #ff5722;
+
+  font-style: normal;
+}
+
+
+/* ---------------------------------------------------------
+   Keep the dream horizontal layout on desktop AND iPad
+   --------------------------------------------------------- */
+
+@media (max-width: 900px) {
+  .coach-connection {
+    width: calc(100% - 28px);
+
+    grid-template-columns: 1fr;
+    gap: 24px;
+
+    padding: 24px 18px;
+  }
+
+  .coach-connection__arrow {
+    transform: rotate(90deg);
+  }
+
+  .coach-connection__aether {
+    width: min(350px, 100%);
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 650px) {
+  .coach-connection__items,
+  .coach-connection__items--coach {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px 12px;
+  }
+}
+
+/* ===== Coach connection final sizing refinement ===== */
+
+.coach-connection {
+  width: min(1360px, calc(100vw - 72px));
+
+  grid-template-columns:
+    minmax(420px, 1.35fr)
+    26px
+    190px
+    26px
+    minmax(350px, 1.1fr);
+
+  gap: 10px;
+  padding: 22px 24px;
+}
+
+/* Smaller Aether bridge */
+
+.coach-connection__aether {
+  min-height: 108px;
+  padding: 16px 12px;
+  border-radius: 17px;
+}
+
+.coach-connection__aether > span {
+  font-size: 11px;
+}
+
+.coach-connection__aether > strong {
+  margin-top: 4px;
+  font-size: 23px;
+}
+
+.coach-connection__aether p {
+  margin-top: 12px;
+  font-size: 7px;
+}
+
+/* Slightly tighten feature items so all coach items fit */
+
+.coach-connection__items {
+  gap: 7px;
+}
+
+.coach-connection__items--coach {
+  gap: 7px;
+}
+
+.coach-connection__item strong {
+  font-size: 8.8px;
+}
+
+.coach-connection__item span {
+  font-size: 8px;
+}
+
+.coach-connection__item svg {
+  width: 23px;
+  height: 23px;
+}
+
+
+/* Coach side now has five equal outcomes */
+.coach-connection__items--coach {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+
+/* ===== Balance athlete + coach sides equally ===== */
+
+.coach-connection {
+  grid-template-columns:
+    minmax(0, 1fr)
+    26px
+    190px
+    26px
+    minmax(0, 1fr);
+}
+
+.coach-connection__items,
+.coach-connection__items--coach {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+  width: 100%;
+}
+
+.coach-connection__item {
+  width: 100%;
+}
+
+
+/* ===== Coach outcome icon color progression ===== */
+
+/* 1 — See what matters */
+.coach-connection__items--coach
+.coach-connection__item:nth-child(1) svg {
+  color: #3569dc;
+}
+
+/* 2 — Understand why */
+.coach-connection__items--coach
+.coach-connection__item:nth-child(2) svg {
+  color: #7051cf;
+}
+
+/* 3 — Investigate */
+.coach-connection__items--coach
+.coach-connection__item:nth-child(3) svg {
+  color: #149b9b;
+}
+
+/* 4 — Make the decision */
+.coach-connection__items--coach
+.coach-connection__item:nth-child(4) svg {
+  color: #37804a;
+}
+
+/* 5 — Create & adapt */
+.coach-connection__items--coach
+.coach-connection__item:nth-child(5) svg {
+  color: #ff5722;
+}
+

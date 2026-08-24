@@ -1,4 +1,5 @@
-import type { CoachAthlete } from "@/hooks/useCoachAthletes";
+﻿import type { CoachAthlete } from "@/hooks/useCoachAthletes";
+import { Link } from "@tanstack/react-router";
 
 import {
   Activity,
@@ -20,6 +21,7 @@ export function TrainingIntelligence({
   athletes,
 }: TrainingIntelligenceProps) {
   const changes = athletes.map((athlete) => ({
+    id: athlete.id,
     initials: athlete.display_name
       .split(" ")
       .filter(Boolean)
@@ -34,6 +36,7 @@ export function TrainingIntelligence({
   }));
 
   const adjustments = athletes.map((athlete) => ({
+    id: athlete.id,
     initials: athlete.display_name
       .split(" ")
       .filter(Boolean)
@@ -135,9 +138,11 @@ export function TrainingIntelligence({
             const Icon = athlete.icon;
 
             return (
-              <button
-                key={athlete.name}
-                type="button"
+              <Link
+                key={athlete.id}
+                to="/coach-manager/athletes/$athleteId"
+                params={{ athleteId: athlete.id }}
+                search={{ from: "training" }}
                 className="flex w-full items-center gap-2 rounded-lg border border-border/70 px-2 py-1.5 text-left transition hover:bg-muted/20"
               >
                 <div className={`grid h-7 w-7 shrink-0 place-items-center rounded-full ${athlete.style}`}>
@@ -158,7 +163,7 @@ export function TrainingIntelligence({
                 </span>
 
                 <span className="text-[10px] text-muted-foreground">→</span>
-              </button>
+              </Link>
             );
           })}
         </div>
@@ -195,10 +200,11 @@ export function TrainingIntelligence({
           </p>
 
           {adjustments.map((athlete) => (
-            <button
-              key={athlete.name}
-              type="button"
-              className="flex w-full items-center gap-2 rounded-lg border border-border/70 px-2 py-1.5 text-left"
+            <Link
+              key={athlete.id}
+              to="/coach-manager/athletes/$athleteId"
+              params={{ athleteId: athlete.id }} search={{ from: "training" }}
+              className="flex w-full items-center gap-2 rounded-lg border border-border/70 px-2 py-1.5 text-left transition hover:bg-muted/20"
             >
               <div className="grid h-7 w-7 place-items-center rounded-full bg-orange-50 text-[9px] font-bold text-orange-600">
                 {athlete.initials}
@@ -216,7 +222,7 @@ export function TrainingIntelligence({
               </span>
 
               <span>›</span>
-            </button>
+            </Link>
           ))}
         </div>
 
@@ -297,6 +303,9 @@ export function TrainingIntelligence({
     </div>
   );
 }
+
+
+
 
 
 
