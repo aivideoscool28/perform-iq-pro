@@ -1,4 +1,4 @@
-import { supabase } from "@/integrations/supabase/client";
+﻿import { supabase } from "@/integrations/supabase/client";
 import {
   getCurrentCoachId,
 } from "@/lib/coach-manager/coach-athlete-access";
@@ -37,6 +37,10 @@ export async function getCoachCheckinData(): Promise<CoachCheckinData> {
     .from("coach_athletes")
     .select("athlete_id")
     .eq("coach_id", coachId);
+
+  console.log("CHECKIN DEBUG coachId:", coachId);
+  console.log("CHECKIN DEBUG relationships:", relationships);
+  console.log("CHECKIN DEBUG relationshipError:", relationshipError);
 
   if (relationshipError) {
     throw new Error(
@@ -119,3 +123,4 @@ export async function getCoachCheckinData(): Promise<CoachCheckinData> {
       checkins ?? [],
   };
 }
+

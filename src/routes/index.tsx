@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+﻿import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -10,6 +10,8 @@ import { WeeklyProgressCards } from "@/components/dashboard/WeeklyProgressCards"
 import { KIInsightCard } from "@/components/dashboard/KIInsightCard";
 import { fetchDashboard } from "@/lib/features/dashboard.functions";
 import { fetchTodayPlannedWorkout } from "@/lib/planned-workouts.functions";
+import { RegenerationCheckin } from "@/components/athleticiq/RegenerationCheckin";
+import { fetchTodayRegeneration } from "@/lib/features/regeneration.functions";
 import { fetchTodayCheckin, deleteTodayCheckin } from "@/lib/features/daily-checkin.functions";
 import { DailyCheckin } from "@/components/athleticiq/DailyCheckin";
 import { FeatureTour } from "@/components/athleticiq/FeatureTour";
@@ -51,6 +53,7 @@ function Dashboard() {
   const fetchFn = useServerFn(fetchDashboard);
   const fetchCheckin = useServerFn(fetchTodayCheckin);
   const fetchTodayTraining = useServerFn(fetchTodayPlannedWorkout);
+  const fetchRegeneration = useServerFn(fetchTodayRegeneration);
   const resetCheckinFn = useServerFn(deleteTodayCheckin);
   const qc = useQueryClient();
   const [checkinOpen, setCheckinOpen] = useState(false);
@@ -74,6 +77,15 @@ function Dashboard() {
   const { data: todayTraining, isLoading: todayTrainingLoading } = useQuery({
     queryKey: ["today-planned-workout"],
     queryFn: () => fetchTodayTraining(),
+    enabled: !!session,
+  });
+
+  const {
+    data: regenerationData,
+    isLoading: regenerationLoading,
+  } = useQuery({
+    queryKey: ["today-regeneration"],
+    queryFn: () => fetchRegeneration(),
     enabled: !!session,
   });
 
@@ -240,10 +252,23 @@ function Dashboard() {
       {checkinOpen && (
         <DailyCheckin name={name} onClose={() => setCheckinOpen(false)} />
       )}
+      {!regenerationLoading &&
+        !regenerationData?.regeneration &&
+        !showTour && (
+          <RegenerationCheckin
+            onComplete={() => {
+              qc.invalidateQueries({
+                queryKey: ["today-regeneration"],
+              });
+            }}
+          />
+        )}
+
       {showTour && <FeatureTour onClose={closeTour} />}
     </AppShell>
   );
 }
+
 
 
 

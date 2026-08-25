@@ -1,4 +1,4 @@
-import { Link, useRouterState } from "@tanstack/react-router";
+﻿import { Link, useRouterState } from "@tanstack/react-router";
 import {
   Activity,
   LayoutDashboard,
@@ -25,10 +25,7 @@ const nav: NavItem[] = [
   { to: "/training", label: "Training", icon: Dumbbell },
   { to: "/workout-analysis", label: "Workout Analysis", icon: BarChart3, tour: "nav-analysis" },
   { to: "/video", label: "Videoanalyse", icon: Video },
-  { to: "/nutrition", label: "Food Scanner", icon: Scan },
   { to: "/recovery", label: "Regeneration", icon: HeartPulse },
-  { to: "/devices", label: "Geräte und Wearables", icon: Watch },
-  { to: "/gear", label: "Schuhe und Spikes", icon: Footprints },
   { to: "/competition", label: "Wettkämpfe", icon: Trophy },
   { to: "/coach", label: "KI Coach", icon: Sparkles },
   { to: "/gamification", label: "Friends & Streak", icon: Gamepad2, tour: "nav-friends" },
@@ -128,3 +125,4 @@ export function Sidebar() {
     </>
   );
 }
+

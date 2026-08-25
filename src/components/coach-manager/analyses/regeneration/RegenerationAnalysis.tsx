@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 import type { CoachAthlete } from "@/hooks/useCoachAthletes";
+import { useCoachRegeneration } from "@/hooks/coach-manager/useCoachRegeneration";
 import {
   BatteryCharging,
   ChevronRight,
@@ -11,10 +12,15 @@ import {
   Users,
 } from "lucide-react";
 
-const topMetrics = [
+const createTopMetrics = (
+  sleepAverage: number | null,
+  sorenessAverage: number | null,
+  energyAverage: number | null,
+  notableChangesCount: number,
+) => [
   {
     label: "Sleep Quality",
-    value: "3.6",
+    value: sleepAverage?.toFixed(1) ?? "—",
     suffix: "/5",
     detail: "Group average today",
     icon: MoonStar,
@@ -22,7 +28,7 @@ const topMetrics = [
   },
   {
     label: "Muscle Soreness",
-    value: "3.2",
+    value: sorenessAverage?.toFixed(1) ?? "—",
     suffix: "/5",
     detail: "Group average today",
     icon: ThermometerSun,
@@ -30,7 +36,7 @@ const topMetrics = [
   },
   {
     label: "Energy Level",
-    value: "3.8",
+    value: energyAverage?.toFixed(1) ?? "—",
     suffix: "/5",
     detail: "Group average today",
     icon: BatteryCharging,
@@ -38,7 +44,7 @@ const topMetrics = [
   },
   {
     label: "Notable Changes",
-    value: "7",
+    value: notableChangesCount.toString(),
     detail: "Compared with personal recent normal",
     icon: Users,
     style: "bg-blue-50 text-blue-600",
@@ -48,51 +54,6 @@ const topMetrics = [
 type RegenerationAnalysisProps = {
   athletes: CoachAthlete[];
 };
-const recurringSignals = [
-  {
-    label: "Poor sleep repeatedly",
-    detail: "3+ below-normal sleep responses",
-    athletes: 4,
-    icon: MoonStar,
-    style: "bg-violet-50 text-violet-600",
-  },
-  {
-    label: "Soreness staying elevated",
-    detail: "3+ below-normal freshness responses",
-    athletes: 3,
-    icon: ThermometerSun,
-    style: "bg-orange-50 text-orange-600",
-  },
-  {
-    label: "Energy declining",
-    detail: "Repeated change from personal normal",
-    athletes: 5,
-    icon: BatteryCharging,
-    style: "bg-green-50 text-green-600",
-  },
-];
-
-const combinations = [
-  {
-    label: "Low sleep only",
-    detail: "Other regeneration signals remain near normal",
-    athletes: 8,
-    style: "bg-violet-50 text-violet-700",
-  },
-  {
-    label: "Soreness elevated only",
-    detail: "Energy and sleep remain near normal",
-    athletes: 6,
-    style: "bg-orange-50 text-orange-700",
-  },
-  {
-    label: "Low energy + soreness",
-    detail: "Two signals changed together",
-    athletes: 5,
-    style: "bg-red-50 text-red-700",
-  },
-];
-
 const trainingTypes = [
   {
     label: "Speed Endurance",
@@ -123,25 +84,547 @@ const trainingTypes = [
 export function RegenerationAnalysis({
   athletes,
 }: RegenerationAnalysisProps) {
-  const athletesToCheck = athletes.map((athlete) => ({
-    initials: athlete.display_name
-      .split(" ")
-      .filter(Boolean)
-      .slice(0, 2)
-      .map((part) => part[0]?.toUpperCase())
-      .join(""),
-    name: athlete.display_name,
-    reason: "Linked athlete",
-    detail: "Real regeneration analysis connects next",
-    context: "No regeneration status calculated yet",
-    status: "bg-slate-400",
-    signals: [] as string[],
-  }));
+  const {
+    regeneration,
+    loading: regenerationLoading,
+    error: regenerationError,
+  } = useCoachRegeneration(athletes);
+
+  const todaysCheckins = regeneration
+    .map((item) => item.today)
+    .filter((checkin) => checkin !== null);
+
+  function average(values: number[]) {
+    if (values.length === 0) return null;
+
+    return (
+      values.reduce((sum, value) => sum + value, 0) /
+      values.length
+    );
+  }
+
+  const sleepAverage = average(
+    todaysCheckins.map((checkin) => checkin.sleep_quality),
+  );
+
+  const sorenessAverage = average(
+    todaysCheckins.map((checkin) => checkin.muscle_soreness),
+  );
+
+  const energyAverage = average(
+    todaysCheckins.map((checkin) => checkin.energy_level),
+  );
+
+  /*
+  ---------------------------------------------------------
+  PERSONAL REGENERATION BASELINES
+  ---------------------------------------------------------
+
+  Compare today's regeneration values with each athlete's
+  own recent history.
+
+  Today's check-in is excluded from the baseline.
+  ---------------------------------------------------------
+  */
+
+  const athleteBaselines = regeneration.map((item) => {
+    const previousCheckins = item.checkins.filter(
+      (checkin) =>
+        checkin.checkin_date !== item.today?.checkin_date,
+    );
+
+    const baselineSleep = average(
+      previousCheckins.map(
+        (checkin) => checkin.sleep_quality,
+      ),
+    );
+
+    const baselineSoreness = average(
+      previousCheckins.map(
+        (checkin) => checkin.muscle_soreness,
+      ),
+    );
+
+    const baselineEnergy = average(
+      previousCheckins.map(
+        (checkin) => checkin.energy_level,
+      ),
+    );
+
+    return {
+      athlete: item.athlete,
+      today: item.today,
+
+      baseline: {
+        sleep: baselineSleep,
+        soreness: baselineSoreness,
+        energy: baselineEnergy,
+      },
+
+      change: {
+        sleep:
+          item.today && baselineSleep !== null
+            ? item.today.sleep_quality - baselineSleep
+            : null,
+
+        soreness:
+          item.today && baselineSoreness !== null
+            ? item.today.muscle_soreness - baselineSoreness
+            : null,
+
+        energy:
+          item.today && baselineEnergy !== null
+            ? item.today.energy_level - baselineEnergy
+            : null,
+      },
+    };
+  });
+  const notableThreshold = 1;
+
+  const notableAthletes = athleteBaselines.filter((item) => {
+    if (!item.today) return false;
+
+    const sleepChanged =
+      item.change.sleep !== null &&
+      Math.abs(item.change.sleep) >= notableThreshold;
+
+    const sorenessChanged =
+      item.change.soreness !== null &&
+      Math.abs(item.change.soreness) >= notableThreshold;
+
+    const energyChanged =
+      item.change.energy !== null &&
+      Math.abs(item.change.energy) >= notableThreshold;
+
+    return sleepChanged || sorenessChanged || energyChanged;
+  });
+
+  const notableChangesCount = notableAthletes.length;
+
+  const topMetrics = createTopMetrics(
+    sleepAverage,
+    sorenessAverage,
+    energyAverage,
+    notableChangesCount,
+  );
+  const validBaselines = athleteBaselines.filter(
+    (item) => item.today !== null,
+  );
+
+  const baselineSleepAverage = average(
+    validBaselines
+      .map((item) => item.baseline.sleep)
+      .filter((value): value is number => value !== null),
+  );
+
+  const baselineSorenessAverage = average(
+    validBaselines
+      .map((item) => item.baseline.soreness)
+      .filter((value): value is number => value !== null),
+  );
+
+  const baselineEnergyAverage = average(
+    validBaselines
+      .map((item) => item.baseline.energy)
+      .filter((value): value is number => value !== null),
+  );
+
+  function comparisonResult(
+    today: number | null,
+    baseline: number | null,
+  ) {
+    if (today === null || baseline === null) {
+      return "Not enough data";
+    }
+
+    const difference = Math.abs(today - baseline);
+
+    if (difference >= notableThreshold) {
+      return "Meaningfully different";
+    }
+
+    return "Mostly near normal";
+  }
+
+  const comparisonMetrics = [
+    {
+      label: "Sleep",
+      today: sleepAverage?.toFixed(1) ?? "—",
+      normal:
+        baselineSleepAverage !== null
+          ? `Recent normal ${baselineSleepAverage.toFixed(1)}`
+          : "No recent baseline",
+      result: comparisonResult(
+        sleepAverage,
+        baselineSleepAverage,
+      ),
+      icon: MoonStar,
+      style: "bg-violet-50 text-violet-600",
+    },
+    {
+      label: "Soreness",
+      today: sorenessAverage?.toFixed(1) ?? "—",
+      normal:
+        baselineSorenessAverage !== null
+          ? `Recent normal ${baselineSorenessAverage.toFixed(1)}`
+          : "No recent baseline",
+      result: comparisonResult(
+        sorenessAverage,
+        baselineSorenessAverage,
+      ),
+      icon: ThermometerSun,
+      style: "bg-orange-50 text-orange-600",
+    },
+    {
+      label: "Energy",
+      today: energyAverage?.toFixed(1) ?? "—",
+      normal:
+        baselineEnergyAverage !== null
+          ? `Recent normal ${baselineEnergyAverage.toFixed(1)}`
+          : "No recent baseline",
+      result: comparisonResult(
+        energyAverage,
+        baselineEnergyAverage,
+      ),
+      icon: BatteryCharging,
+      style: "bg-green-50 text-green-600",
+    },
+  ];
+  const athletesToCheck = notableAthletes.map((item) => {
+    const signals: string[] = [];
+
+    if (
+      item.change.sleep !== null &&
+      Math.abs(item.change.sleep) >= notableThreshold
+    ) {
+      signals.push("sleep");
+    }
+
+    if (
+      item.change.soreness !== null &&
+      Math.abs(item.change.soreness) >= notableThreshold
+    ) {
+      signals.push("soreness");
+    }
+
+    if (
+      item.change.energy !== null &&
+      Math.abs(item.change.energy) >= notableThreshold
+    ) {
+      signals.push("energy");
+    }
+
+    const changes = [
+      item.change.sleep !== null &&
+      Math.abs(item.change.sleep) >= notableThreshold
+        ? `Sleep ${item.change.sleep > 0 ? "+" : ""}${item.change.sleep.toFixed(1)}`
+        : null,
+
+      item.change.soreness !== null &&
+      Math.abs(item.change.soreness) >= notableThreshold
+        ? `Soreness ${item.change.soreness > 0 ? "+" : ""}${item.change.soreness.toFixed(1)}`
+        : null,
+
+      item.change.energy !== null &&
+      Math.abs(item.change.energy) >= notableThreshold
+        ? `Energy ${item.change.energy > 0 ? "+" : ""}${item.change.energy.toFixed(1)}`
+        : null,
+    ].filter((change): change is string => change !== null);
+
+    return {
+      initials: item.athlete.display_name
+        .split(" ")
+        .filter(Boolean)
+        .slice(0, 2)
+        .map((part) => part[0]?.toUpperCase())
+        .join(""),
+
+      name: item.athlete.display_name,
+
+      reason:
+        signals.length > 1
+          ? `${signals.length} regeneration signals changed`
+          : `${signals[0] ?? "Regeneration"} changed`,
+
+      detail: changes.join(" · "),
+
+      context: "Compared with personal recent normal",
+
+      status:
+        signals.length > 1
+          ? "bg-red-500"
+          : "bg-orange-500",
+
+      signals,
+    };
+  });
+  /*
+  ---------------------------------------------------------
+  REGENERATION SIGNAL COMBINATIONS
+  ---------------------------------------------------------
+
+  Classify today's regeneration changes using each athlete's
+  own recent baseline.
+
+  V1 rules:
+  - Low sleep = sleep is >= 1 point below baseline
+  - High soreness = soreness score is >= 1 point below baseline
+  - Low energy = energy is >= 1 point below baseline
+
+  Counts are calculated dynamically for all linked athletes.
+  ---------------------------------------------------------
+  */
+
+  const regenerationCombinationCounts = athleteBaselines.reduce(
+    (counts, item) => {
+      if (!item.today) {
+        return counts;
+      }
+
+      const lowSleep =
+        item.change.sleep !== null &&
+        item.change.sleep <= -notableThreshold;
+
+      const highSoreness =
+        item.change.soreness !== null &&
+        item.change.soreness <= -notableThreshold;
+
+      const lowEnergy =
+        item.change.energy !== null &&
+        item.change.energy <= -notableThreshold;
+
+      if (lowSleep && !highSoreness && !lowEnergy) {
+        counts.lowSleepOnly += 1;
+      }
+
+      if (highSoreness && !lowSleep && !lowEnergy) {
+        counts.sorenessOnly += 1;
+      }
+
+      if (lowEnergy && highSoreness) {
+        counts.lowEnergyAndSoreness += 1;
+      }
+
+      return counts;
+    },
+    {
+      lowSleepOnly: 0,
+      sorenessOnly: 0,
+      lowEnergyAndSoreness: 0,
+    },
+  );
+
+  const combinations = [
+    {
+      label: "Low sleep only",
+      detail: "Other regeneration signals remain near normal",
+      athletes: regenerationCombinationCounts.lowSleepOnly,
+      style: "bg-violet-50 text-violet-700",
+    },
+    {
+      label: "Soreness elevated only",
+      detail: "Energy and sleep remain near normal",
+      athletes: regenerationCombinationCounts.sorenessOnly,
+      style: "bg-orange-50 text-orange-700",
+    },
+    {
+      label: "Low energy + soreness",
+      detail: "Two signals changed together",
+      athletes:
+        regenerationCombinationCounts.lowEnergyAndSoreness,
+      style: "bg-red-50 text-red-700",
+    },
+  ];
+  /*
+  ---------------------------------------------------------
+  RECURRING REGENERATION SIGNALS
+  ---------------------------------------------------------
+
+  Count athletes who repeatedly report regeneration values
+  meaningfully different from their own recent baseline.
+
+  V1 rule:
+  - Sleep: 3+ responses at least 1 point below baseline
+  - Soreness: 3+ responses at least 1 point below baseline
+  - Energy: 3+ responses at least 1 point below baseline
+  ---------------------------------------------------------
+  */
+
+  const recurringSleepCount = regeneration.filter((item) => {
+    const baselineItem = athleteBaselines.find(
+      (baseline) => baseline.athlete.id === item.athlete.id,
+    );
+
+    const baseline = baselineItem?.baseline.sleep;
+
+    if (baseline === null || baseline === undefined) {
+      return false;
+    }
+
+    const repeatedLowSleep = item.checkins.filter(
+      (checkin) =>
+        checkin.sleep_quality <= baseline - notableThreshold,
+    );
+
+    return repeatedLowSleep.length >= 3;
+  }).length;
+
+  const recurringSorenessCount = regeneration.filter((item) => {
+    const baselineItem = athleteBaselines.find(
+      (baseline) => baseline.athlete.id === item.athlete.id,
+    );
+
+    const baseline = baselineItem?.baseline.soreness;
+
+    if (baseline === null || baseline === undefined) {
+      return false;
+    }
+
+    const repeatedHighSoreness = item.checkins.filter(
+      (checkin) =>
+        checkin.muscle_soreness <= baseline - notableThreshold,
+    );
+
+    return repeatedHighSoreness.length >= 3;
+  }).length;
+
+  const recurringEnergyCount = regeneration.filter((item) => {
+    const baselineItem = athleteBaselines.find(
+      (baseline) => baseline.athlete.id === item.athlete.id,
+    );
+
+    const baseline = baselineItem?.baseline.energy;
+
+    if (baseline === null || baseline === undefined) {
+      return false;
+    }
+
+    const repeatedLowEnergy = item.checkins.filter(
+      (checkin) =>
+        checkin.energy_level <= baseline - notableThreshold,
+    );
+
+    return repeatedLowEnergy.length >= 3;
+  }).length;
+
+  const recurringSignals = [
+    {
+      label: "Poor sleep repeatedly",
+      detail: "3+ below-normal sleep responses",
+      athletes: recurringSleepCount,
+      icon: MoonStar,
+      style: "bg-violet-50 text-violet-600",
+    },
+    {
+      label: "Soreness staying elevated",
+      detail: "3+ worse-than-normal soreness responses",
+      athletes: recurringSorenessCount,
+      icon: ThermometerSun,
+      style: "bg-orange-50 text-orange-600",
+    },
+    {
+      label: "Energy declining",
+      detail: "3+ below-normal energy responses",
+      athletes: recurringEnergyCount,
+      icon: BatteryCharging,
+      style: "bg-green-50 text-green-600",
+    },
+  ];
   const [metric, setMetric] =
     useState<"sleep" | "soreness" | "energy">("sleep");
 
   const [mode, setMode] =
     useState<"average" | "unusual">("average");
+
+  /*
+  ---------------------------------------------------------
+  REGENERATION GROUP TREND
+  ---------------------------------------------------------
+
+  Build one group-average data point for every date that
+  contains regeneration check-ins.
+
+  The graph can then switch between sleep, soreness and
+  energy without another Supabase request.
+  ---------------------------------------------------------
+  */
+
+  const checkinsByDate = new Map<
+    string,
+    {
+      sleep: number[];
+      soreness: number[];
+      energy: number[];
+    }
+  >();
+
+  regeneration.forEach((item) => {
+    item.checkins.forEach((checkin) => {
+      const existing = checkinsByDate.get(checkin.checkin_date) ?? {
+        sleep: [],
+        soreness: [],
+        energy: [],
+      };
+
+      existing.sleep.push(checkin.sleep_quality);
+      existing.soreness.push(checkin.muscle_soreness);
+      existing.energy.push(checkin.energy_level);
+
+      checkinsByDate.set(checkin.checkin_date, existing);
+    });
+  });
+
+  const trendData = Array.from(checkinsByDate.entries())
+    .sort(([dateA], [dateB]) => dateA.localeCompare(dateB))
+    .map(([date, values]) => ({
+      date,
+      sleep: average(values.sleep) ?? 0,
+      soreness: average(values.soreness) ?? 0,
+      energy: average(values.energy) ?? 0,
+    }));
+
+  const graphPoints = trendData.map((point, index) => {
+    const x =
+      trendData.length <= 1
+        ? 250
+        : (index / (trendData.length - 1)) * 500;
+
+    const value = point[metric];
+
+    const y = 105 - ((value - 1) / 4) * 100;
+
+    return {
+      x,
+      y,
+      value,
+      date: point.date,
+    };
+  });
+
+  const polylinePoints = graphPoints
+    .map((point) => `${point.x},${point.y}`)
+    .join(" ");
+
+  const graphDateLabels =
+    graphPoints.length <= 5
+      ? graphPoints
+      : [
+          graphPoints[0],
+          graphPoints[Math.floor((graphPoints.length - 1) * 0.25)],
+          graphPoints[Math.floor((graphPoints.length - 1) * 0.5)],
+          graphPoints[Math.floor((graphPoints.length - 1) * 0.75)],
+          graphPoints[graphPoints.length - 1],
+        ];
+
+  function formatTrendDate(date: string) {
+    return new Date(`${date}T00:00:00`).toLocaleDateString(
+      "en-US",
+      {
+        month: "short",
+        day: "numeric",
+      },
+    );
+  }
 
   return (
     <div className="space-y-3">
@@ -216,32 +699,7 @@ export function RegenerationAnalysis({
           </div>
 
           <div className="mt-3 grid grid-cols-3 gap-2">
-            {[
-              {
-                label: "Sleep",
-                today: "3.6",
-                normal: "Recent normal 3.3",
-                result: "Mostly near normal",
-                icon: MoonStar,
-                style: "bg-violet-50 text-violet-600",
-              },
-              {
-                label: "Soreness",
-                today: "3.2",
-                normal: "Recent normal 3.1",
-                result: "Mostly near normal",
-                icon: ThermometerSun,
-                style: "bg-orange-50 text-orange-600",
-              },
-              {
-                label: "Energy",
-                today: "3.8",
-                normal: "Recent normal 3.5",
-                result: "Mostly near normal",
-                icon: BatteryCharging,
-                style: "bg-green-50 text-green-600",
-              },
-            ].map(
+            {comparisonMetrics.map(
               ({
                 label,
                 today,
@@ -287,7 +745,7 @@ export function RegenerationAnalysis({
 
           <div className="mt-3 rounded-xl border border-violet-100 bg-violet-50/40 px-3 py-2">
             <p className="text-[8px] font-semibold text-violet-700">
-              7 athletes differ meaningfully from their own recent pattern.
+              {notableChangesCount} athletes differ meaningfully from their own recent pattern.
             </p>
 
             <p className="mt-0.5 text-[7px] text-muted-foreground">
@@ -310,7 +768,7 @@ export function RegenerationAnalysis({
             </div>
 
             <span className="rounded-full bg-orange-50 px-2 py-1 text-[8px] font-bold text-orange-600">
-              7 athletes
+              {notableChangesCount} athletes
             </span>
           </div>
 
@@ -376,7 +834,7 @@ export function RegenerationAnalysis({
             type="button"
             className="mt-2 text-[8px] font-semibold text-violet-600"
           >
-            View all 7 athletes →
+            View all {notableChangesCount} athletes →
           </button>
         </section>
       </div>
@@ -469,60 +927,52 @@ export function RegenerationAnalysis({
                   className="absolute left-6 top-1 h-[105px] w-[calc(100%-24px)]"
                   preserveAspectRatio="none"
                 >
-                  <polyline
-                    points="0,66 50,48 100,56 150,47 200,55 250,37 300,39 350,53 400,42 450,33 500,48"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2.4"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className={
-                      metric === "soreness"
-                        ? "text-orange-500"
-                        : metric === "energy"
-                          ? "text-green-600"
-                          : "text-violet-600"
-                    }
-                  />
+                  {graphPoints.length > 0 && (
+                    <>
+                      <polyline
+                        points={polylinePoints}
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.4"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className={
+                          metric === "soreness"
+                            ? "text-orange-500"
+                            : metric === "energy"
+                              ? "text-green-600"
+                              : "text-violet-600"
+                        }
+                      />
 
-                  {[
-                    [0, 66],
-                    [50, 48],
-                    [100, 56],
-                    [150, 47],
-                    [200, 55],
-                    [250, 37],
-                    [300, 39],
-                    [350, 53],
-                    [400, 42],
-                    [450, 33],
-                    [500, 48],
-                  ].map(([x, y], index) => (
-                    <circle
-                      key={index}
-                      cx={x}
-                      cy={y}
-                      r="2.3"
-                      fill="white"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      className={
-                        metric === "soreness"
-                          ? "text-orange-500"
-                          : metric === "energy"
-                            ? "text-green-600"
-                            : "text-violet-600"
-                      }
-                    />
-                  ))}
+                      {graphPoints.map((point, index) => (
+                        <circle
+                          key={`${point.date}-${index}`}
+                          cx={point.x}
+                          cy={point.y}
+                          r="2.3"
+                          fill="white"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          className={
+                            metric === "soreness"
+                              ? "text-orange-500"
+                              : metric === "energy"
+                                ? "text-green-600"
+                                : "text-violet-600"
+                          }
+                        />
+                      ))}
+                    </>
+                  )}
                 </svg>
 
                 <div className="absolute bottom-0 left-6 right-0 flex justify-between text-[7px] text-muted-foreground">
-                  <span>May 13</span>
-                  <span>May 20</span>
-                  <span>May 27</span>
-                  <span>Jun 3</span>
-                  <span>Jun 9</span>
+                  {graphDateLabels.map((point, index) => (
+                    <span key={`${point.date}-${index}`}>
+                      {formatTrendDate(point.date)}
+                    </span>
+                  ))}
                 </div>
               </div>
 
@@ -735,5 +1185,20 @@ export function RegenerationAnalysis({
     </div>
   );
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

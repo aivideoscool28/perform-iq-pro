@@ -84,7 +84,7 @@ function getPerformanceFactorIcon(
 }
 
 export function CheckinAnalysis() {
-  const [trendMetric, setTrendMetric] = useState("RPE");
+  const [trendMetric, setTrendMetric] = useState<"RPE" | "Physical Feeling" | "Performance Quality" | "Goal Achievement">("RPE");
   const [trendMode, setTrendMode] =
     useState<"average" | "unusual">("average");
 
@@ -197,6 +197,56 @@ export function CheckinAnalysis() {
       [data],
     );
 
+  const previousPeriodCheckins =
+    useMemo(
+      () => {
+        const today =
+          new Date();
+
+        today.setHours(
+          0,
+          0,
+          0,
+          0,
+        );
+
+        const previousEnd =
+          new Date(today);
+
+        previousEnd.setDate(
+          previousEnd.getDate() -
+            28,
+        );
+
+        const previousStart =
+          new Date(today);
+
+        previousStart.setDate(
+          previousStart.getDate() -
+            55,
+        );
+
+        return (
+          data?.checkins ?? []
+        ).filter(
+          (checkin) => {
+            const date =
+              new Date(
+                `${checkin.checkin_date.slice(
+                  0,
+                  10,
+                )}T00:00:00`,
+              );
+
+            return (
+              date >= previousStart &&
+              date <= previousEnd
+            );
+          },
+        );
+      },
+      [data],
+    );
   const unexpectedDifficulty =
     useMemo(
       () =>
@@ -253,10 +303,184 @@ export function CheckinAnalysis() {
       () =>
         calculateCheckinTrend(
           currentPeriodCheckins,
+          trendMetric,
         ),
-      [currentPeriodCheckins],
+      [
+        currentPeriodCheckins,
+        trendMetric,
+      ],
     );
 
+  const previousTrendData =
+    useMemo(
+      () =>
+        calculateCheckinTrend(
+          previousPeriodCheckins,
+          trendMetric,
+        ),
+      [
+        previousPeriodCheckins,
+        trendMetric,
+      ],
+    );
+
+  const trendAxisMax =
+    trendMetric === "RPE"
+      ? 10
+      : trendMetric ===
+          "Physical Feeling"
+        ? 5
+        : trendMetric ===
+            "Performance Quality"
+          ? 4
+          : 3;
+
+  const trendAxisLabels =
+    [
+      trendAxisMax,
+      trendAxisMax * 0.75,
+      trendAxisMax * 0.5,
+      trendAxisMax * 0.25,
+      0,
+    ].map(
+      (value) =>
+        Number.isInteger(value)
+          ? value
+          : Number(
+              value.toFixed(1),
+            ),
+    );
+
+  function createTrendPoints(
+    points:
+      typeof trendData,
+  ) {
+    if (
+      points.length === 0
+    ) {
+      return "";
+    }
+
+    return points
+      .map(
+        (point, index) => {
+          const x =
+            points.length === 1
+              ? 250
+              : (
+                  index /
+                  (
+                    points.length -
+                    1
+                  )
+                ) *
+                500;
+
+          const normalized =
+            Math.max(
+              0,
+              Math.min(
+                1,
+                point.value /
+                  trendAxisMax,
+              ),
+            );
+
+          const y =
+            105 -
+            normalized * 95;
+
+          return `${x},${y}`;
+        },
+      )
+      .join(" ");
+  }
+
+  function getTrendPointPosition(
+    value: number,
+    index: number,
+    length: number,
+  ) {
+    const x =
+      length === 1
+        ? 250
+        : (
+            index /
+            (
+              length -
+              1
+            )
+          ) *
+          500;
+
+    const normalized =
+      Math.max(
+        0,
+        Math.min(
+          1,
+          value /
+            trendAxisMax,
+        ),
+      );
+
+    const y =
+      105 -
+      normalized * 95;
+
+    return {
+      x,
+      y,
+    };
+  }
+
+  const trendPoints =
+    createTrendPoints(
+      trendData,
+    );
+
+  const previousTrendPoints =
+    createTrendPoints(
+      previousTrendData,
+    );
+
+  const currentTrendAverage =
+    trendData.length > 0
+      ? trendData.reduce(
+          (total, point) =>
+            total +
+            point.value,
+          0,
+        ) /
+        trendData.length
+      : null;
+
+  const previousTrendAverage =
+    previousTrendData.length >
+    0
+      ? previousTrendData.reduce(
+          (total, point) =>
+            total +
+            point.value,
+          0,
+        ) /
+        previousTrendData.length
+      : null;
+
+  const trendInsight =
+    currentTrendAverage === null
+      ? `No recent ${trendMetric.toLowerCase()} data available.`
+      : previousTrendAverage ===
+          null
+        ? `Current ${trendMetric.toLowerCase()} data is available, but there is not enough previous-period data for comparison.`
+        : Math.abs(
+              currentTrendAverage -
+                previousTrendAverage,
+            ) < 0.05
+          ? `${trendMetric} is approximately unchanged compared with the previous 4 weeks.`
+          : currentTrendAverage >
+              previousTrendAverage
+            ? `${trendMetric} is higher than during the previous 4 weeks.`
+            : `${trendMetric} is lower than during the previous 4 weeks.`;
   const checkinInsight =
     useMemo(() => {
       const topDifficulty =
@@ -460,6 +684,11 @@ export function CheckinAnalysis() {
   if (!data || data.athleteIds.length === 0) {
     return (
       <div className="rounded-2xl border border-border bg-white p-6 text-center shadow-sm">
+        <div className="mb-4 rounded-lg bg-yellow-50 p-3 text-left text-xs text-yellow-900">
+          <p>DEBUG athleteIds: {JSON.stringify(data?.athleteIds ?? [])}</p>
+          <p>DEBUG athletes: {JSON.stringify(data?.athletes ?? [])}</p>
+          <p>DEBUG checkins: {data?.checkins.length ?? 0}</p>
+        </div>
         <p className="text-sm font-bold">
           No athletes connected
         </p>
@@ -554,7 +783,7 @@ export function CheckinAnalysis() {
           </div>
 
           <div className="mt-3 flex gap-1">
-            {["RPE", "Physical Feeling", "Performance Quality", "Goal Achievement"].map(
+            {(["RPE", "Physical Feeling", "Performance Quality", "Goal Achievement"] as const).map(
               (item) => (
                 <button
                   key={item}
@@ -577,7 +806,7 @@ export function CheckinAnalysis() {
             <>
               <div className="relative mt-3 h-36">
                 <div className="absolute inset-x-0 top-0 bottom-5 flex flex-col justify-between">
-                  {[10, 7.5, 5, 2.5, 0].map((value) => (
+                  {trendAxisLabels.map((value) => (
                     <div key={value} className="flex items-center gap-2">
                       <span className="w-5 text-[7px] text-muted-foreground">
                         {value}
@@ -593,61 +822,65 @@ export function CheckinAnalysis() {
                   className="absolute left-6 top-1 h-[105px] w-[calc(100%-24px)]"
                   preserveAspectRatio="none"
                 >
-                  {trendData.length > 0 && (
-                    <>
-                      <polyline
-                        points={trendData
-                          .map((point, index) => {
-                            const x =
-                              trendData.length === 1
-                                ? 250
-                                : (index / (trendData.length - 1)) * 500;
+                  {previousTrendPoints && (
+                    <polyline
+                      points={
+                        previousTrendPoints
+                      }
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeDasharray="4 5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="text-slate-300"
+                    />
+                  )}
 
-                            const rpe =
-                              point.value ?? 0;
+                  {trendPoints && (
+                    <polyline
+                      points={
+                        trendPoints
+                      }
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.4"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="text-violet-600"
+                    />
+                  )}
 
-                            const y =
-                              110 -
-                              (Math.max(0, Math.min(10, rpe)) / 10) * 100;
-
-                            return `${x},${y}`;
-                          })
-                          .join(" ")}
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2.4"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        className="text-violet-600"
-                      />
-
-                      {trendData.map((point, index) => {
-                        const x =
-                          trendData.length === 1
-                            ? 250
-                            : (index / (trendData.length - 1)) * 500;
-
-                        const rpe =
-                          point.value ?? 0;
-
-                        const y =
-                          110 -
-                          (Math.max(0, Math.min(10, rpe)) / 10) * 100;
-
-                        return (
-                          <circle
-                            key={point.date}
-                            cx={x}
-                            cy={y}
-                            r="2.6"
-                            fill="white"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            className="text-violet-600"
-                          />
+                  {trendData.map(
+                    (
+                      point,
+                      index,
+                    ) => {
+                      const {
+                        x,
+                        y,
+                      } =
+                        getTrendPointPosition(
+                          point.value,
+                          index,
+                          trendData.length,
                         );
-                      })}
-                    </>
+
+                      return (
+                        <circle
+                          key={
+                            point.date
+                          }
+                          cx={x}
+                          cy={y}
+                          r="2.8"
+                          fill="white"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          className="text-violet-600"
+                        />
+                      );
+                    },
                   )}
                 </svg>
 
@@ -659,7 +892,7 @@ export function CheckinAnalysis() {
                       </span>
                     ))
                   ) : (
-                    <span>No recent RPE data</span>
+                    <span>No recent {trendMetric} data</span>
                   )}
                 </div>
               </div>
@@ -677,7 +910,7 @@ export function CheckinAnalysis() {
               </div>
 
               <div className="mt-3 rounded-lg bg-violet-50 px-2.5 py-2 text-[8px] text-violet-700">
-                Average RPE is slightly lower than during the previous period.
+                {trendInsight}
               </div>
             </>
           ) : (
@@ -1067,6 +1300,10 @@ export function CheckinAnalysis() {
     </div>
   );
 }
+
+
+
+
 
 
 

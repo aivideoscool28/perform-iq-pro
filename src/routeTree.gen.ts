@@ -29,6 +29,8 @@ import { Route as CoachRouteImport } from './routes/coach'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CoachManagerIndexRouteImport } from './routes/coach-manager/index'
+import { Route as RecoveryBeforeDotsRouteImport } from './routes/recovery.before-dots'
+import { Route as IndexBeforeRegenerationRouteImport } from './routes/index.before-regeneration'
 import { Route as CoachManagerVideoRouteImport } from './routes/coach-manager/video'
 import { Route as CoachManagerTrainingRouteImport } from './routes/coach-manager/training'
 import { Route as CoachManagerNotesRouteImport } from './routes/coach-manager/notes'
@@ -138,6 +140,16 @@ const CoachManagerIndexRoute = CoachManagerIndexRouteImport.update({
   path: '/',
   getParentRoute: () => CoachManagerRoute,
 } as any)
+const RecoveryBeforeDotsRoute = RecoveryBeforeDotsRouteImport.update({
+  id: '/before-dots',
+  path: '/before-dots',
+  getParentRoute: () => RecoveryRoute,
+} as any)
+const IndexBeforeRegenerationRoute = IndexBeforeRegenerationRouteImport.update({
+  id: '/index/before-regeneration',
+  path: '/index/before-regeneration',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CoachManagerVideoRoute = CoachManagerVideoRouteImport.update({
   id: '/video',
   path: '/video',
@@ -195,7 +207,7 @@ export interface FileRoutesByFullPath {
   '/nutrition': typeof NutritionRoute
   '/onboarding': typeof OnboardingRoute
   '/profile': typeof ProfileRoute
-  '/recovery': typeof RecoveryRoute
+  '/recovery': typeof RecoveryRouteWithChildren
   '/reset-password': typeof ResetPasswordRoute
   '/settings': typeof SettingsRoute
   '/training': typeof TrainingRoute
@@ -208,6 +220,8 @@ export interface FileRoutesByFullPath {
   '/coach-manager/notes': typeof CoachManagerNotesRoute
   '/coach-manager/training': typeof CoachManagerTrainingRoute
   '/coach-manager/video': typeof CoachManagerVideoRoute
+  '/index/before-regeneration': typeof IndexBeforeRegenerationRoute
+  '/recovery/before-dots': typeof RecoveryBeforeDotsRoute
   '/coach-manager/': typeof CoachManagerIndexRoute
   '/coach-manager/athletes/$athleteId': typeof CoachManagerAthletesAthleteIdRoute
 }
@@ -224,7 +238,7 @@ export interface FileRoutesByTo {
   '/nutrition': typeof NutritionRoute
   '/onboarding': typeof OnboardingRoute
   '/profile': typeof ProfileRoute
-  '/recovery': typeof RecoveryRoute
+  '/recovery': typeof RecoveryRouteWithChildren
   '/reset-password': typeof ResetPasswordRoute
   '/settings': typeof SettingsRoute
   '/training': typeof TrainingRoute
@@ -237,6 +251,8 @@ export interface FileRoutesByTo {
   '/coach-manager/notes': typeof CoachManagerNotesRoute
   '/coach-manager/training': typeof CoachManagerTrainingRoute
   '/coach-manager/video': typeof CoachManagerVideoRoute
+  '/index/before-regeneration': typeof IndexBeforeRegenerationRoute
+  '/recovery/before-dots': typeof RecoveryBeforeDotsRoute
   '/coach-manager': typeof CoachManagerIndexRoute
   '/coach-manager/athletes/$athleteId': typeof CoachManagerAthletesAthleteIdRoute
 }
@@ -255,7 +271,7 @@ export interface FileRoutesById {
   '/nutrition': typeof NutritionRoute
   '/onboarding': typeof OnboardingRoute
   '/profile': typeof ProfileRoute
-  '/recovery': typeof RecoveryRoute
+  '/recovery': typeof RecoveryRouteWithChildren
   '/reset-password': typeof ResetPasswordRoute
   '/settings': typeof SettingsRoute
   '/training': typeof TrainingRoute
@@ -268,6 +284,8 @@ export interface FileRoutesById {
   '/coach-manager/notes': typeof CoachManagerNotesRoute
   '/coach-manager/training': typeof CoachManagerTrainingRoute
   '/coach-manager/video': typeof CoachManagerVideoRoute
+  '/index/before-regeneration': typeof IndexBeforeRegenerationRoute
+  '/recovery/before-dots': typeof RecoveryBeforeDotsRoute
   '/coach-manager/': typeof CoachManagerIndexRoute
   '/coach-manager/athletes/$athleteId': typeof CoachManagerAthletesAthleteIdRoute
 }
@@ -300,6 +318,8 @@ export interface FileRouteTypes {
     | '/coach-manager/notes'
     | '/coach-manager/training'
     | '/coach-manager/video'
+    | '/index/before-regeneration'
+    | '/recovery/before-dots'
     | '/coach-manager/'
     | '/coach-manager/athletes/$athleteId'
   fileRoutesByTo: FileRoutesByTo
@@ -329,6 +349,8 @@ export interface FileRouteTypes {
     | '/coach-manager/notes'
     | '/coach-manager/training'
     | '/coach-manager/video'
+    | '/index/before-regeneration'
+    | '/recovery/before-dots'
     | '/coach-manager'
     | '/coach-manager/athletes/$athleteId'
   id:
@@ -359,6 +381,8 @@ export interface FileRouteTypes {
     | '/coach-manager/notes'
     | '/coach-manager/training'
     | '/coach-manager/video'
+    | '/index/before-regeneration'
+    | '/recovery/before-dots'
     | '/coach-manager/'
     | '/coach-manager/athletes/$athleteId'
   fileRoutesById: FileRoutesById
@@ -377,13 +401,14 @@ export interface RootRouteChildren {
   NutritionRoute: typeof NutritionRoute
   OnboardingRoute: typeof OnboardingRoute
   ProfileRoute: typeof ProfileRoute
-  RecoveryRoute: typeof RecoveryRoute
+  RecoveryRoute: typeof RecoveryRouteWithChildren
   ResetPasswordRoute: typeof ResetPasswordRoute
   SettingsRoute: typeof SettingsRoute
   TrainingRoute: typeof TrainingRoute
   VideoRoute: typeof VideoRoute
   WorkoutAnalysisRoute: typeof WorkoutAnalysisRoute
   ApiChatRoute: typeof ApiChatRoute
+  IndexBeforeRegenerationRoute: typeof IndexBeforeRegenerationRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -528,6 +553,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CoachManagerIndexRouteImport
       parentRoute: typeof CoachManagerRoute
     }
+    '/recovery/before-dots': {
+      id: '/recovery/before-dots'
+      path: '/before-dots'
+      fullPath: '/recovery/before-dots'
+      preLoaderRoute: typeof RecoveryBeforeDotsRouteImport
+      parentRoute: typeof RecoveryRoute
+    }
+    '/index/before-regeneration': {
+      id: '/index/before-regeneration'
+      path: '/index/before-regeneration'
+      fullPath: '/index/before-regeneration'
+      preLoaderRoute: typeof IndexBeforeRegenerationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/coach-manager/video': {
       id: '/coach-manager/video'
       path: '/video'
@@ -622,6 +661,18 @@ const CoachManagerRouteWithChildren = CoachManagerRoute._addFileChildren(
   CoachManagerRouteChildren,
 )
 
+interface RecoveryRouteChildren {
+  RecoveryBeforeDotsRoute: typeof RecoveryBeforeDotsRoute
+}
+
+const RecoveryRouteChildren: RecoveryRouteChildren = {
+  RecoveryBeforeDotsRoute: RecoveryBeforeDotsRoute,
+}
+
+const RecoveryRouteWithChildren = RecoveryRoute._addFileChildren(
+  RecoveryRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRoute: AuthRoute,
@@ -636,13 +687,14 @@ const rootRouteChildren: RootRouteChildren = {
   NutritionRoute: NutritionRoute,
   OnboardingRoute: OnboardingRoute,
   ProfileRoute: ProfileRoute,
-  RecoveryRoute: RecoveryRoute,
+  RecoveryRoute: RecoveryRouteWithChildren,
   ResetPasswordRoute: ResetPasswordRoute,
   SettingsRoute: SettingsRoute,
   TrainingRoute: TrainingRoute,
   VideoRoute: VideoRoute,
   WorkoutAnalysisRoute: WorkoutAnalysisRoute,
   ApiChatRoute: ApiChatRoute,
+  IndexBeforeRegenerationRoute: IndexBeforeRegenerationRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

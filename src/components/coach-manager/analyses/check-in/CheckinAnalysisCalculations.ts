@@ -887,104 +887,62 @@ export type CheckinTrendMetric =
   | "Performance Quality"
   | "Goal Achievement";
 
+
 export type CheckinTrendPoint = {
   date: string;
   label: string;
-  value: number | null;
+  value: number;
 };
 
-function getCheckinTrendValue(
+function getTrendValue(
   checkin: CoachCheckin,
   metric: CheckinTrendMetric,
 ): number | null {
   if (metric === "RPE") {
-    return checkin.rpe;
+    return typeof checkin.rpe === "number"
+      ? checkin.rpe
+      : null;
   }
 
   if (metric === "Physical Feeling") {
-    return checkin.physical_feeling;
+    return typeof checkin.physical_feeling === "number"
+      ? checkin.physical_feeling
+      : null;
   }
 
   if (metric === "Performance Quality") {
-    const value =
-      checkin.performance_quality
-        ?.trim()
-        .toLowerCase();
+    switch (checkin.performance_quality) {
+      case "Besser geworden":
+        return 4;
 
-    if (!value) {
-      return null;
+      case "Stabil geblieben":
+        return 3;
+
+      case "Etwas abgefallen":
+        return 2;
+
+      case "Stark abgefallen":
+        return 1;
+
+      default:
+        return null;
     }
-
-    if (
-      value.includes("sehr gut") ||
-      value.includes("very good") ||
-      value.includes("excellent")
-    ) {
-      return 10;
-    }
-
-    if (
-      value === "gut" ||
-      value === "good"
-    ) {
-      return 8;
-    }
-
-    if (
-      value.includes("okay") ||
-      value.includes("ok") ||
-      value.includes("mittel") ||
-      value.includes("average")
-    ) {
-      return 6;
-    }
-
-    if (
-      value.includes("schlecht") ||
-      value.includes("poor")
-    ) {
-      return 4;
-    }
-
-    if (
-      value.includes("sehr schlecht") ||
-      value.includes("very poor")
-    ) {
-      return 2;
-    }
-
-    return null;
   }
 
-  const goal =
-    checkin.session_goal_achieved
-      ?.trim()
-      .toLowerCase();
+  if (metric === "Goal Achievement") {
+    switch (checkin.session_goal_achieved) {
+      case "Ja":
+        return 3;
 
-  if (!goal) {
-    return null;
-  }
+      case "Teilweise":
+        return 2;
 
-  if (
-    goal === "ja" ||
-    goal === "yes" ||
-    goal.includes("voll")
-  ) {
-    return 10;
-  }
+      case "Nein":
+        return 1;
 
-  if (
-    goal.includes("teil") ||
-    goal.includes("partial")
-  ) {
-    return 5;
-  }
-
-  if (
-    goal === "nein" ||
-    goal === "no"
-  ) {
-    return 0;
+      default:
+        return null;
+    }
   }
 
   return null;
@@ -999,7 +957,7 @@ export function calculateCheckinTrend(
 
   for (const checkin of checkins) {
     const value =
-      getCheckinTrendValue(
+      getTrendValue(
         checkin,
         metric,
       );
@@ -1009,13 +967,20 @@ export function calculateCheckinTrend(
     }
 
     const date =
-      checkin.checkin_date.slice(0, 10);
+      checkin.checkin_date.slice(
+        0,
+        10,
+      );
 
     const existing =
       grouped.get(date) ?? [];
 
     existing.push(value);
-    grouped.set(date, existing);
+
+    grouped.set(
+      date,
+      existing,
+    );
   }
 
   return [...grouped.entries()]
@@ -1025,33 +990,39 @@ export function calculateCheckinTrend(
         new Date(b).getTime(),
     )
     .slice(-5)
-    .map(([date, values]) => {
-      const average =
-        values.reduce(
-          (total, value) =>
-            total + value,
-          0,
-        ) / values.length;
+    .map(
+      ([date, values]) => {
+        const average =
+          values.reduce(
+            (total, value) =>
+              total + value,
+            0,
+          ) / values.length;
 
-      return {
-        date,
-        label:
-          new Intl.DateTimeFormat(
-            "en",
-            {
-              month: "short",
-              day: "numeric",
-            },
-          ).format(
-            new Date(
-              `${date}T12:00:00`,
+        return {
+          date,
+
+          label:
+            new Intl.DateTimeFormat(
+              "en",
+              {
+                month: "short",
+                day: "numeric",
+              },
+            ).format(
+              new Date(
+                `${date}T12:00:00`,
+              ),
             ),
-          ),
-        value:
-          Math.round(average * 10) /
-          10,
-      };
-    });
+
+          value:
+            Math.round(
+              average * 10,
+            ) / 10,
+        };
+      },
+    );
 }
+
 
 

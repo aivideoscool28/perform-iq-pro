@@ -1,107 +1,409 @@
-import { createFileRoute } from "@tanstack/react-router";
+﻿import { createFileRoute } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import {
+  BatteryCharging,
+  Loader2,
+  MoonStar,
+  Activity,
+} from "lucide-react";
+
 import { AppShell } from "@/components/athleticiq/AppShell";
-import { EditableShell } from "@/components/athleticiq/EditableShell";
-import { KpiCard } from "@/components/athleticiq/KpiCard";
-import { Sparkline } from "@/components/athleticiq/Sparkline";
-import { HrvChart } from "@/components/athleticiq/HrvChart";
-import { RecoveryRing } from "@/components/athleticiq/RecoveryRing";
-import { Badge } from "@/components/ui/badge";
-import { Moon, HeartPulse, Thermometer, Wind, Droplets, Brain, Bed } from "lucide-react";
+import { fetchRegenerationHistory } from "@/lib/features/regeneration.functions";
 
-export const Route = createFileRoute("/recovery")({ component: Page });
+export const Route = createFileRoute("/recovery")({
+  component: Page,
+});
 
-const sleepStages = [
-  { label: "Tiefschlaf", pct: 22, ideal: "20–25%", color: "bg-neon-violet" },
-  { label: "REM", pct: 24, ideal: "20–25%", color: "bg-neon-cyan" },
-  { label: "Leicht", pct: 48, ideal: "45–55%", color: "bg-neon-lime" },
-  { label: "Wach", pct: 6, ideal: "<10%", color: "bg-neon-amber" },
-];
+type RegenerationEntry = {
+  checkin_date: string;
+  sleep_quality: number;
+  muscle_soreness: number;
+  energy_level: number;
+};
+
+function formatDate(date: string) {
+  return new Date(`${date}T00:00:00`).toLocaleDateString(
+    "en-US",
+    {
+      month: "short",
+      day: "numeric",
+    },
+  );
+}
 
 function Page() {
+  const fetchHistory =
+    useServerFn(fetchRegenerationHistory);
+
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["regeneration-history"],
+    queryFn: () => fetchHistory(),
+  });
+
+  const history = [
+    ...((data?.regeneration ?? []) as RegenerationEntry[]),
+  ].sort((a, b) =>
+    a.checkin_date.localeCompare(b.checkin_date),
+  );
+
+  const latest =
+    history.length > 0
+      ? history[history.length - 1]
+      : null;
+
+  const metrics = [
+    {
+      label: "Sleep Quality",
+      value: latest?.sleep_quality ?? null,
+      icon: MoonStar,
+      style: "bg-violet-50 text-violet-600",
+    },
+    {
+      label: "Muscle Freshness",
+      value: latest?.muscle_soreness ?? null,
+      icon: Activity,
+      style: "bg-orange-50 text-orange-600",
+    },
+    {
+      label: "Energy Level",
+      value: latest?.energy_level ?? null,
+      icon: BatteryCharging,
+      style: "bg-green-50 text-green-600",
+    },
+  ];
+
+  const graphWidth = 700;
+  const graphHeight = 220;
+
+  function createPoints(
+    getValue: (entry: RegenerationEntry) => number,
+  ) {
+    return history.map((entry, index) => {
+      const x =
+        history.length <= 1
+          ? graphWidth / 2
+          : (index / (history.length - 1)) *
+            graphWidth;
+
+      const value = getValue(entry);
+
+      const y =
+        graphHeight -
+        ((value - 1) / 4) * graphHeight;
+
+      return {
+        x,
+        y,
+        value,
+        date: entry.checkin_date,
+      };
+    });
+  }
+
+  const sleepPoints = createPoints(
+    (entry) => entry.sleep_quality,
+  );
+
+  const freshnessPoints = createPoints(
+    (entry) => entry.muscle_soreness,
+  );
+
+  const energyPoints = createPoints(
+    (entry) => entry.energy_level,
+  );
+
+  function polyline(
+    points: ReturnType<typeof createPoints>,
+  ) {
+    return points
+      .map((point) => `${point.x},${point.y}`)
+      .join(" ");
+  }
+
+  const dateLabels =
+    history.length <= 5
+      ? history
+      : [
+          history[0],
+          history[
+            Math.floor(
+              (history.length - 1) * 0.25,
+            )
+          ],
+          history[
+            Math.floor(
+              (history.length - 1) * 0.5,
+            )
+          ],
+          history[
+            Math.floor(
+              (history.length - 1) * 0.75,
+            )
+          ],
+          history[history.length - 1],
+        ];
+
+  if (isLoading) {
+    return (
+      <AppShell
+        title="Regeneration"
+        subtitle="Track how your body feels over time"
+      >
+        <div className="grid place-items-center py-24">
+          <Loader2 className="h-6 w-6 animate-spin" />
+        </div>
+      </AppShell>
+    );
+  }
+
   return (
     <AppShell
       title="Regeneration"
-      subtitle="Schlaf · HRV · Belastung · Bereitschaft"
-      breadcrumbs={[{ label: "Dashboard", to: "/" }, { label: "Regeneration" }]}
+      subtitle="Track how your body feels over time"
+      breadcrumbs={[
+        {
+          label: "Dashboard",
+          to: "/",
+        },
+        {
+          label: "Regeneration",
+        },
+      ]}
     >
+      <div className="space-y-5">
 
-      <EditableShell storageKey="athleticiq.edit.recovery.v1">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <div className="glass-strong rounded-3xl p-6 flex flex-col items-center justify-center relative overflow-hidden">
-          <div className="absolute inset-0 grid-bg pointer-events-none" />
-          <RecoveryRing value={78} />
-          <div className="mt-4 text-center relative">
-            <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Recovery Score</div>
-            <div className="text-sm mt-1">Bereit für mittlere Belastung</div>
+        {error && (
+          <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+            Regeneration data could not be loaded.
           </div>
-        </div>
+        )}
 
-        <div className="lg:col-span-2 grid grid-cols-2 gap-4">
-          <KpiCard label="HRV (rMSSD)" value="68" unit="ms" icon={HeartPulse} accent="cyan" delta="+4 ms vs. Baseline" trend="up">
-            <Sparkline data={[58, 60, 62, 65, 64, 66, 68]} />
-          </KpiCard>
-          <KpiCard label="Ruhepuls" value="48" unit="bpm" icon={HeartPulse} accent="magenta" delta="−2 bpm" trend="up">
-            <Sparkline data={[54, 52, 51, 50, 49, 49, 48]} color="oklch(0.7 0.27 340)" />
-          </KpiCard>
-          <KpiCard label="Schlafdauer" value="7h 42m" icon={Bed} accent="violet" delta="+18 min" trend="up">
-            <Sparkline data={[6.2, 6.8, 7.1, 7.4, 7.0, 7.3, 7.7]} color="oklch(0.68 0.24 295)" />
-          </KpiCard>
-          <KpiCard label="Atemfrequenz" value="13.4" unit="/min" icon={Wind} accent="lime" delta="stabil" trend="flat">
-            <Sparkline data={[13, 13.2, 13.1, 13.4, 13.3, 13.5, 13.4]} color="oklch(0.88 0.22 145)" />
-          </KpiCard>
-        </div>
-      </div>
+        <section>
+          <div className="mb-3">
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+              Latest check-in
+            </p>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-4">
-        <div className="lg:col-span-2 glass-strong rounded-3xl p-6">
-          <div className="flex items-center justify-between mb-4">
+            <h2 className="mt-1 text-xl font-bold">
+              Your regeneration
+            </h2>
+          </div>
+
+          <div className="grid gap-3 md:grid-cols-3">
+            {metrics.map(
+              ({
+                label,
+                value,
+                icon: Icon,
+                style,
+              }) => (
+                <article
+                  key={label}
+                  className="rounded-2xl border border-border bg-white p-5 shadow-sm"
+                >
+                  <div className="flex items-center gap-4">
+                    <div
+                      className={`grid h-11 w-11 place-items-center rounded-full ${style}`}
+                    >
+                      <Icon className="h-5 w-5" />
+                    </div>
+
+                    <div>
+                      <p className="text-xs font-medium text-muted-foreground">
+                        {label}
+                      </p>
+
+                      <div className="mt-1 flex items-baseline gap-1">
+                        <span className="text-2xl font-bold">
+                          {value ?? "—"}
+                        </span>
+
+                        <span className="text-xs text-muted-foreground">
+                          /5
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+              ),
+            )}
+          </div>
+        </section>
+
+        <section className="rounded-3xl border border-border bg-white p-5 shadow-sm">
+          <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
-              <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">HRV Trend</div>
-              <h3 className="text-lg font-bold mt-1">Letzte 14 Tage</h3>
-            </div>
-            <Badge className="bg-neon-lime/15 text-neon-lime border-neon-lime/30">Aufwärtstrend</Badge>
-          </div>
-          <HrvChart />
-        </div>
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                Regeneration trend
+              </p>
 
-        <div className="glass-strong rounded-3xl p-6">
-          <div className="flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-muted-foreground">
-            <Moon className="h-3.5 w-3.5" /> Schlafphasen
+              <h2 className="mt-1 text-lg font-bold">
+                Last 30 check-ins
+              </h2>
+
+              <p className="mt-1 text-xs text-muted-foreground">
+                Higher values represent better reported regeneration.
+              </p>
+            </div>
+
+            <div className="flex flex-wrap gap-3 text-xs font-medium">
+              <span className="text-violet-600">
+                ● Sleep
+              </span>
+
+              <span className="text-orange-500">
+                ● Muscle Freshness
+              </span>
+
+              <span className="text-green-600">
+                ● Energy
+              </span>
+            </div>
           </div>
-          <h3 className="text-lg font-bold mt-1 mb-5">Heute Nacht</h3>
-          <div className="flex h-3 rounded-full overflow-hidden">
-            {sleepStages.map((s) => (
-              <div key={s.label} className={s.color} style={{ width: `${s.pct}%` }} />
-            ))}
-          </div>
-          <div className="mt-5 space-y-3">
-            {sleepStages.map((s) => (
-              <div key={s.label} className="flex items-center justify-between text-sm">
-                <div className="flex items-center gap-2">
-                  <span className={`h-2.5 w-2.5 rounded-full ${s.color}`} />
-                  <span>{s.label}</span>
+
+          {history.length === 0 ? (
+            <div className="grid min-h-[280px] place-items-center">
+              <div className="text-center">
+                <p className="font-semibold">
+                  No regeneration history yet
+                </p>
+
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Complete your first regeneration check-in
+                  to start building your trend.
+                </p>
+              </div>
+            </div>
+          ) : (
+            <div className="mt-7">
+              <div className="flex">
+                <div className="flex h-[220px] w-7 flex-col justify-between pb-0 text-[10px] text-muted-foreground">
+                  {[5, 4, 3, 2, 1].map(
+                    (value) => (
+                      <span key={value}>
+                        {value}
+                      </span>
+                    ),
+                  )}
                 </div>
-                <div className="text-right">
-                  <div className="font-semibold tabular-nums">{s.pct}%</div>
-                  <div className="text-[10px] text-muted-foreground">{s.ideal}</div>
+
+                <div className="relative h-[220px] flex-1">
+                  <div className="absolute inset-0 flex flex-col justify-between">
+                    {[5, 4, 3, 2, 1].map(
+                      (value) => (
+                        <div
+                          key={value}
+                          className="border-t border-border/60"
+                        />
+                      ),
+                    )}
+                  </div>
+
+                  <svg
+                    viewBox={`0 0 ${graphWidth} ${graphHeight}`}
+                    preserveAspectRatio="none"
+                    className="absolute inset-0 h-full w-full overflow-visible"
+                  >
+                    <polyline
+                      points={polyline(sleepPoints)}
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="3"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      vectorEffect="non-scaling-stroke"
+                      className="text-violet-600"
+                    />
+
+                    <polyline
+                      points={polyline(freshnessPoints)}
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="3"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      vectorEffect="non-scaling-stroke"
+                      className="text-orange-500"
+                    />
+
+                    <polyline
+                      points={polyline(energyPoints)}
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="3"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      vectorEffect="non-scaling-stroke"
+                      className="text-green-600"
+                    />
+
+                    {/* Individual regeneration check-in points */}
+                    {sleepPoints.map((point) => (
+                      <circle
+                        key={`sleep-${point.date}`}
+                        cx={point.x}
+                        cy={point.y}
+                        r="4"
+                        fill="currentColor"
+                        className="text-violet-600"
+                        vectorEffect="non-scaling-stroke"
+                      />
+                    ))}
+
+                    {freshnessPoints.map((point) => (
+                      <circle
+                        key={`freshness-${point.date}`}
+                        cx={point.x}
+                        cy={point.y}
+                        r="4"
+                        fill="currentColor"
+                        className="text-orange-500"
+                        vectorEffect="non-scaling-stroke"
+                      />
+                    ))}
+
+                    {energyPoints.map((point) => (
+                      <circle
+                        key={`energy-${point.date}`}
+                        cx={point.x}
+                        cy={point.y}
+                        r="4"
+                        fill="currentColor"
+                        className="text-green-600"
+                        vectorEffect="non-scaling-stroke"
+                      />
+                    ))}
+                  </svg>
                 </div>
               </div>
-            ))}
-          </div>
+
+              <div className="ml-7 mt-3 flex justify-between text-[10px] text-muted-foreground">
+                {dateLabels.map(
+                  (entry, index) => (
+                    <span
+                      key={`${entry.checkin_date}-${index}`}
+                    >
+                      {formatDate(
+                        entry.checkin_date,
+                      )}
+                    </span>
+                  ),
+                )}
+              </div>
+            </div>
+          )}
+        </section>
+
+        <div className="rounded-2xl border border-border bg-muted/20 px-4 py-3">
+          <p className="text-xs text-muted-foreground">
+            These values are based on your own daily
+            regeneration check-ins. They help you and your
+            coach understand changes over time.
+          </p>
         </div>
       </div>
-
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
-        {[
-          { icon: Thermometer, label: "Hauttemperatur", val: "+0.2 °C", note: "im Normbereich", accent: "amber" as const },
-          { icon: Droplets, label: "Hydration", val: "76%", note: "350 ml unter Ziel", accent: "cyan" as const },
-          { icon: Brain, label: "Stress (PSS)", val: "Niedrig", note: "12 / 40", accent: "lime" as const },
-          { icon: HeartPulse, label: "SpO₂", val: "97%", note: "stabil", accent: "violet" as const },
-        ].map((m) => (
-          <KpiCard key={m.label} label={m.label} value={m.val} icon={m.icon} accent={m.accent} delta={m.note} />
-        ))}
-      </div>
-    </EditableShell>
     </AppShell>
   );
 }
+
