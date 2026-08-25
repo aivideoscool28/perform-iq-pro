@@ -1,0 +1,10 @@
+﻿0401bc5 Build Athletic IQ athlete experience section
+39fc52f Add Athletic IQ public website foundation and hero
+961534f build coach manager dashboard athletes and training UI
+9ee5de4 Restore working AI Coach baseline
+6786853 Finish athlete Workout Analysis V1 with RPE trend and history context
+8e0921d finish daily check-in planned workout and rest day flow
+9c1e3e3 finish onboarding profile supabase updates
+37fb0c9 finish onboarding profile and athlete context integration
+49e8f01 Refactor Athletic IQ architecture and organize feature modules
+74eb723 Refactor training dashboard and daily checkin architecture

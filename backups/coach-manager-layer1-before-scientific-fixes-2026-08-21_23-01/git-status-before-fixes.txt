@@ -1,0 +1,39 @@
+﻿On branch week2-architecture-refactor
+Your branch is up to date with 'origin/week2-architecture-refactor'.
+
+Changes not staged for commit:
+  (use "git add/rm <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   package.json
+	deleted:    src/components/athleticiq/EmptyDashboard.backup.tsx
+	modified:   src/components/coach-manager/layout/CoachSideMenu.tsx
+	modified:   src/components/onboarding/OnboardingFlow.tsx
+	deleted:    src/lib/training-explanation.before-prompt-v2-1.ts
+	deleted:    src/lib/training-explanation.before-prompt-v2-2.ts
+	deleted:    src/lib/training-explanation.before-prompt-v2.ts
+	modified:   src/routeTree.gen.ts
+	modified:   src/routes/auth.tsx
+	modified:   src/routes/coach.tsx
+	deleted:    src/routes/training.before-final-ui.tsx
+	deleted:    src/routes/training.before-right-ai-panel.tsx
+	deleted:    src/routes/training.before-v1-redesign.tsx
+	modified:   src/start.ts
+	modified:   vite.config.ts
+	modified:   website/src/App.tsx
+	modified:   website/src/index.css
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	backups/ai-coach.prompt.current.ts
+	backups/ai-coach/
+	backups/coach-manager-layer1-before-scientific-fixes-2026-08-21_23-01/
+	backups/old-code/
+	src/components/coach-manager/analyses/
+	src/hooks/use-user-role.ts
+	src/lib/athletic.functions.ts
+	src/routes/coach-manager/analyses.tsx
+	supabase/generated-types.ts
+	website/src/components/sections/TrustStrip.tsx
+	website/src/styles/trust-strip.css
+
+no changes added to commit (use "git add" and/or "git commit -a")

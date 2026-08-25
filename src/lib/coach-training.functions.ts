@@ -499,3 +499,76 @@ export const publishCoachTrainingSession =
           athleteIds.length,
       };
     });
+
+/**
+ * Load athlete-facing planned workouts belonging to athletes
+ * connected to the logged-in coach.
+ *
+ * Used by Coach Manager analyses to connect athlete responses
+ * with recent training context.
+ */
+export const fetchCoachAthletePlannedWorkouts =
+  createServerFn({
+    method: "GET",
+  })
+    .middleware([requireCoachManagerAuth])
+    .inputValidator((input) =>
+      z
+        .object({
+          startDate: z.string().min(10).max(10),
+          endDate: z.string().min(10).max(10),
+        })
+        .parse(input),
+    )
+    .handler(async ({ data, context }) => {
+      const { supabase, userId } = context;
+
+      const {
+        data: workouts,
+        error,
+      } = await supabase
+        .from("planned_workouts")
+        .select(
+          `
+            id,
+            athlete_id,
+            coach_id,
+            training_session_id,
+            workout_date,
+            title,
+            discipline,
+            session_goal,
+            status,
+            is_published
+          `,
+        )
+        .eq("coach_id", userId)
+        .eq("is_published", true)
+        .in("status", [
+          "completed",
+          "changed",
+        ])
+        .gte(
+          "workout_date",
+          data.startDate,
+        )
+        .lte(
+          "workout_date",
+          data.endDate,
+        )
+        .order(
+          "workout_date",
+          {
+            ascending: true,
+          },
+        );
+
+      if (error) {
+        throw new Error(
+          error.message,
+        );
+      }
+
+      return workouts ?? [];
+    });
+

@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 
 import { useCoachAthletes } from "@/hooks/useCoachAthletes";
 import {
@@ -16,7 +16,7 @@ import {
 import { AnalysisOverviewPanels } from "@/components/coach-manager/analyses/overview/AnalysisOverviewPanels";
 import { CheckinAnalysis } from "@/components/coach-manager/analyses/check-in/CheckinAnalysis";
 import { RegenerationAnalysis } from "@/components/coach-manager/analyses/regeneration/RegenerationAnalysis";
-import { TrainingResponse } from "@/components/coach-manager/analyses/training-response/TrainingResponse";
+import { TrainingResponse } from "@/components/coach-manager/analyses/TrainingResponse";
 import { SessionComparison } from "@/components/coach-manager/analyses/session-comparison/SessionComparison";
 
 export function AnalysesPage() {
@@ -104,7 +104,11 @@ export function AnalysesPage() {
         onTabChange={setActiveTab}
       />
 
-      {isOverview && <AnalysisOverviewPanels />}
+      {isOverview && (
+        <AnalysisOverviewPanels
+          onOpenAnalysis={setActiveTab}
+        />
+      )}
 
       {isCheckin && <CheckinAnalysis />}
 
@@ -133,6 +137,8 @@ export function AnalysesPage() {
     </div>
   );
 }
+
+
 
 
 

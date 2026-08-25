@@ -1,7 +1,8 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 
 import type { CoachAthlete } from "@/hooks/useCoachAthletes";
 import { useCoachRegeneration } from "@/hooks/coach-manager/useCoachRegeneration";
+import { useCoachRegenerationTraining } from "@/hooks/coach-manager/useCoachRegenerationTraining";
 import {
   BatteryCharging,
   ChevronRight,
@@ -54,33 +55,6 @@ const createTopMetrics = (
 type RegenerationAnalysisProps = {
   athletes: CoachAthlete[];
 };
-const trainingTypes = [
-  {
-    label: "Speed Endurance",
-    athletes: 4,
-    width: 100,
-    style: "bg-orange-500",
-  },
-  {
-    label: "Hurdle Rhythm",
-    athletes: 3,
-    width: 75,
-    style: "bg-violet-500",
-  },
-  {
-    label: "Strength",
-    athletes: 2,
-    width: 50,
-    style: "bg-blue-500",
-  },
-  {
-    label: "Plyometrics",
-    athletes: 1,
-    width: 25,
-    style: "bg-green-500",
-  },
-];
-
 export function RegenerationAnalysis({
   athletes,
 }: RegenerationAnalysisProps) {
@@ -89,6 +63,10 @@ export function RegenerationAnalysis({
     loading: regenerationLoading,
     error: regenerationError,
   } = useCoachRegeneration(athletes);
+
+  const {
+    workouts: regenerationTrainingWorkouts,
+  } = useCoachRegenerationTraining();
 
   const todaysCheckins = regeneration
     .map((item) => item.today)
@@ -530,6 +508,207 @@ export function RegenerationAnalysis({
       style: "bg-green-50 text-green-600",
     },
   ];
+  /*
+  ---------------------------------------------------------
+  TRAINING ↔ REGENERATION ASSOCIATIONS
+  ---------------------------------------------------------
+
+  Regeneration is reported before today's training.
+
+  Therefore, for each regeneration check-in with a
+  meaningfully lower signal, we look at the athlete's
+  completed or changed training from the PREVIOUS day.
+
+  This is an association only. It does not establish that
+  the training caused the regeneration response.
+  ---------------------------------------------------------
+  */
+
+  function previousDate(date: string) {
+    const value = new Date(`${date}T00:00:00Z`);
+
+    value.setUTCDate(
+      value.getUTCDate() - 1,
+    );
+
+    return value
+      .toISOString()
+      .slice(0, 10);
+  }
+
+  const trainingAssociations = regeneration.flatMap(
+    (item) => {
+      const baselineItem = athleteBaselines.find(
+        (baseline) =>
+          baseline.athlete.id === item.athlete.id,
+      );
+
+      if (!baselineItem) {
+        return [];
+      }
+
+      return item.checkins.flatMap((checkin) => {
+        const lowSleep =
+          baselineItem.baseline.sleep !== null &&
+          checkin.sleep_quality <=
+            baselineItem.baseline.sleep -
+              notableThreshold;
+
+        const lowFreshness =
+          baselineItem.baseline.soreness !== null &&
+          checkin.muscle_soreness <=
+            baselineItem.baseline.soreness -
+              notableThreshold;
+
+        const lowEnergy =
+          baselineItem.baseline.energy !== null &&
+          checkin.energy_level <=
+            baselineItem.baseline.energy -
+              notableThreshold;
+
+        if (
+          !lowSleep &&
+          !lowFreshness &&
+          !lowEnergy
+        ) {
+          return [];
+        }
+
+        const trainingDate = previousDate(
+          checkin.checkin_date,
+        );
+
+        const matchingWorkouts =
+          regenerationTrainingWorkouts.filter(
+            (workout) =>
+              workout.athlete_id ===
+                item.athlete.id &&
+              workout.workout_date ===
+                trainingDate,
+          );
+
+        return matchingWorkouts.map(
+          (workout) => ({
+            athleteId:
+              item.athlete.id,
+
+            checkinDate:
+              checkin.checkin_date,
+
+            trainingDate,
+
+            label:
+              workout.title?.trim() ||
+              workout.discipline?.trim() ||
+              "Training",
+          }),
+        );
+      });
+    },
+  );
+
+  const groupedTrainingAssociations =
+    new Map<
+      string,
+      {
+        athleteIds: Set<string>;
+        occurrences: number;
+      }
+    >();
+
+  trainingAssociations.forEach((association) => {
+    const existing =
+      groupedTrainingAssociations.get(
+        association.label,
+      ) ?? {
+        athleteIds: new Set<string>(),
+        occurrences: 0,
+      };
+
+    existing.athleteIds.add(
+      association.athleteId,
+    );
+
+    existing.occurrences += 1;
+
+    groupedTrainingAssociations.set(
+      association.label,
+      existing,
+    );
+  });
+
+  const associationStyles = [
+    "bg-orange-500",
+    "bg-violet-500",
+    "bg-blue-500",
+    "bg-green-500",
+  ];
+
+  const groupedAssociationRows =
+    Array.from(
+      groupedTrainingAssociations.entries(),
+    )
+      .map(([label, values]) => ({
+        label,
+        athletes:
+          values.athleteIds.size,
+        occurrences:
+          values.occurrences,
+      }))
+      .sort(
+        (a, b) =>
+          b.occurrences -
+          a.occurrences,
+      )
+      .slice(0, 4);
+
+  const maxAssociationOccurrences =
+    Math.max(
+      ...groupedAssociationRows.map(
+        (item) => item.occurrences,
+      ),
+      1,
+    );
+
+  const trainingTypes =
+    groupedAssociationRows.map(
+      (item, index) => ({
+        ...item,
+
+        width:
+          (item.occurrences /
+            maxAssociationOccurrences) *
+          100,
+
+        style:
+          associationStyles[
+            index %
+              associationStyles.length
+          ],
+      }),
+    );
+
+  const strongestTrainingAssociation =
+    trainingTypes[0] ?? null;
+
+  const regenerationInterpretation =
+    notableChangesCount === 0
+      ? "No athlete with enough data differs meaningfully from their own recent regeneration pattern today."
+      : strongestTrainingAssociation
+        ? `${notableChangesCount} ${
+            notableChangesCount === 1
+              ? "athlete differs"
+              : "athletes differ"
+          } meaningfully from their own recent pattern today. Across recent check-ins, lower regeneration signals appeared ${strongestTrainingAssociation.occurrences} ${
+            strongestTrainingAssociation.occurrences === 1
+              ? "time"
+              : "times"
+          } following ${strongestTrainingAssociation.label}. This is an association for the coach to review, not evidence that the training caused the change.`
+        : `${notableChangesCount} ${
+            notableChangesCount === 1
+              ? "athlete differs"
+              : "athletes differ"
+          } meaningfully from their own recent regeneration pattern today. No matching completed previous-day training was found for the recent lower regeneration signals.`;
   const [metric, setMetric] =
     useState<"sleep" | "soreness" | "energy">("sleep");
 
@@ -1125,32 +1304,56 @@ export function RegenerationAnalysis({
           </p>
 
           <div className="mt-3 space-y-2.5">
-            {trainingTypes.map((item) => (
-              <div
-                key={item.label}
-                className="grid grid-cols-[110px_1fr_70px] items-center gap-3"
-              >
-                <span className="text-[8px] font-medium">
-                  {item.label}
-                </span>
+            {trainingTypes.length === 0 ? (
+              <div className="rounded-xl border border-dashed border-border px-3 py-4 text-center">
+                <p className="text-[8px] font-semibold">
+                  No matching training associations yet
+                </p>
 
-                <div className="h-1.5 overflow-hidden rounded-full bg-muted">
-                  <div
-                    style={{ width: `${item.width}%` }}
-                    className={`h-full rounded-full ${item.style}`}
-                  />
-                </div>
-
-                <span className="text-right text-[7px] text-muted-foreground">
-                  {item.athletes} athletes
-                </span>
+                <p className="mt-1 text-[7px] text-muted-foreground">
+                  Associations appear when athletes have both completed training
+                  and following regeneration history.
+                </p>
               </div>
-            ))}
+            ) : (
+              trainingTypes.map((item) => (
+                <div
+                  key={item.label}
+                  className="grid grid-cols-[110px_1fr_90px] items-center gap-3"
+                >
+                  <span className="truncate text-[8px] font-medium">
+                    {item.label}
+                  </span>
+
+                  <div className="h-1.5 overflow-hidden rounded-full bg-muted">
+                    <div
+                      style={{
+                        width: `${item.width}%`,
+                      }}
+                      className={`h-full rounded-full ${item.style}`}
+                    />
+                  </div>
+
+                  <div className="text-right">
+                    <p className="text-[7px] font-semibold">
+                      {item.occurrences}×
+                    </p>
+
+                    <p className="text-[6px] text-muted-foreground">
+                      {item.athletes}{" "}
+                      {item.athletes === 1
+                        ? "athlete"
+                        : "athletes"}
+                    </p>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
 
           <div className="mt-3 rounded-xl border border-slate-200 bg-slate-50/50 px-3 py-2">
             <p className="text-[7px] leading-relaxed text-muted-foreground">
-              These responses occurred after or around these training types.
+              These lower regeneration responses were reported the morning after these completed training sessions.
               Athletic IQ should not claim the training type caused the
               regeneration change.
             </p>
@@ -1169,9 +1372,7 @@ export function RegenerationAnalysis({
           </p>
 
           <p className="mt-1 text-[8px] leading-relaxed text-muted-foreground">
-            Five athletes show repeated low-energy responses. Some continue to
-            report stable training performance, so the regeneration change alone
-            should not be treated as evidence that their performance is poor.
+            {regenerationInterpretation}
           </p>
         </div>
 
@@ -1185,6 +1386,7 @@ export function RegenerationAnalysis({
     </div>
   );
 }
+
 
 
 

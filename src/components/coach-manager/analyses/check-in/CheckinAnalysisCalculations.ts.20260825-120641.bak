@@ -1,0 +1,419 @@
+import type {
+  CoachCheckin,
+} from "./CheckinAnalysisData";
+
+export type CheckinSummary = {
+  totalSessions: number;
+
+  averageRpe: number | null;
+
+  goalAchievedPercentage: number | null;
+
+  stableOrImprovedPercentage: number | null;
+
+  sessionsToReview: number;
+
+  difficulty: {
+    easier: number;
+    expected: number;
+    harder: number;
+    muchHarder: number;
+  };
+
+  performanceFactors: Array<{
+    label: string;
+    count: number;
+    percentage: number;
+  }>;
+
+  painReports: number;
+
+  stressReports: number;
+
+  mostReportedPainArea: {
+    area: string;
+    count: number;
+  } | null;
+};
+
+function percentage(
+  part: number,
+  total: number,
+) {
+  if (total === 0) {
+    return 0;
+  }
+
+  return Math.round(
+    (part / total) * 100,
+  );
+}
+
+function average(
+  values: number[],
+) {
+  if (values.length === 0) {
+    return null;
+  }
+
+  const total =
+    values.reduce(
+      (sum, value) =>
+        sum + value,
+      0,
+    );
+
+  return Math.round(
+    (total / values.length) * 10,
+  ) / 10;
+}
+
+export function calculateCheckinSummary(
+  checkins: CoachCheckin[],
+): CheckinSummary {
+  const sessions =
+    checkins.filter(
+      (checkin) =>
+        checkin.is_rest_day !== true,
+    );
+
+  /*
+  ---------------------------------------------------------------------------
+  RPE
+  ---------------------------------------------------------------------------
+  */
+  const rpeValues =
+    sessions
+      .map(
+        (checkin) =>
+          checkin.rpe,
+      )
+      .filter(
+        (value): value is number =>
+          typeof value === "number",
+      );
+
+  /*
+  ---------------------------------------------------------------------------
+  SESSION GOAL
+  ---------------------------------------------------------------------------
+  */
+  const goalAnswered =
+    sessions.filter(
+      (checkin) =>
+        checkin.session_goal_achieved ===
+          "Ja" ||
+        checkin.session_goal_achieved ===
+          "Teilweise" ||
+        checkin.session_goal_achieved ===
+          "Nein",
+    );
+
+  const goalsAchieved =
+    goalAnswered.filter(
+      (checkin) =>
+        checkin.session_goal_achieved ===
+        "Ja",
+    ).length;
+
+  /*
+  ---------------------------------------------------------------------------
+  PERFORMANCE QUALITY
+  ---------------------------------------------------------------------------
+  */
+  const performanceAnswered =
+    sessions.filter(
+      (checkin) =>
+        checkin.performance_quality ===
+          "Besser geworden" ||
+        checkin.performance_quality ===
+          "Stabil geblieben" ||
+        checkin.performance_quality ===
+          "Etwas abgefallen" ||
+        checkin.performance_quality ===
+          "Stark abgefallen",
+    );
+
+  const stableOrImproved =
+    performanceAnswered.filter(
+      (checkin) =>
+        checkin.performance_quality ===
+          "Besser geworden" ||
+        checkin.performance_quality ===
+          "Stabil geblieben",
+    ).length;
+
+  /*
+  ---------------------------------------------------------------------------
+  SESSIONS TO REVIEW
+
+  Important:
+  This is deliberately transparent/simple math.
+
+  Review when:
+  - goal = Nein
+  OR
+  - performance = Stark abgefallen
+
+  We do NOT automatically mark every high-RPE session as problematic.
+  ---------------------------------------------------------------------------
+  */
+  const sessionsToReview =
+    sessions.filter(
+      (checkin) =>
+        checkin.session_goal_achieved ===
+          "Nein" ||
+        checkin.performance_quality ===
+          "Stark abgefallen",
+    ).length;
+
+  /*
+  ---------------------------------------------------------------------------
+  EXPECTED DIFFICULTY
+  ---------------------------------------------------------------------------
+  */
+  const difficultyAnswered =
+    sessions.filter(
+      (checkin) =>
+        typeof checkin.expected_difficulty ===
+        "string",
+    );
+
+  const difficultyTotal =
+    difficultyAnswered.length;
+
+  const easier =
+    difficultyAnswered.filter(
+      (checkin) =>
+        checkin.expected_difficulty ===
+        "Leichter als erwartet",
+    ).length;
+
+  const expected =
+    difficultyAnswered.filter(
+      (checkin) =>
+        checkin.expected_difficulty ===
+        "Wie erwartet",
+    ).length;
+
+  const harder =
+    difficultyAnswered.filter(
+      (checkin) =>
+        checkin.expected_difficulty ===
+        "Schwerer als erwartet",
+    ).length;
+
+  const muchHarder =
+    difficultyAnswered.filter(
+      (checkin) =>
+        checkin.expected_difficulty ===
+        "Deutlich schwerer als erwartet",
+    ).length;
+
+  /*
+  ---------------------------------------------------------------------------
+  PERFORMANCE FACTORS
+
+  Question 9 allows multiple answers.
+
+  Therefore this percentage means:
+
+  sessions mentioning factor
+  ÷
+  all sessions with a factor answer
+
+  Multiple factor percentages are therefore NOT expected to add to 100%.
+  ---------------------------------------------------------------------------
+  */
+  const factorSessions =
+    sessions.filter(
+      (checkin) =>
+        Array.isArray(
+          checkin.performance_factors,
+        ) &&
+        checkin.performance_factors.length >
+          0,
+    );
+
+  const factorCounts =
+    new Map<string, number>();
+
+  for (
+    const checkin of factorSessions
+  ) {
+    if (
+      !Array.isArray(
+        checkin.performance_factors,
+      )
+    ) {
+      continue;
+    }
+
+    for (
+      const rawFactor of
+        checkin.performance_factors
+    ) {
+      if (
+        typeof rawFactor !==
+        "string"
+      ) {
+        continue;
+      }
+
+      if (
+        rawFactor ===
+        "Nichts Besonderes"
+      ) {
+        continue;
+      }
+
+      factorCounts.set(
+        rawFactor,
+        (
+          factorCounts.get(
+            rawFactor,
+          ) ?? 0
+        ) + 1,
+      );
+    }
+  }
+
+  const performanceFactors =
+    [...factorCounts.entries()]
+      .map(
+        ([label, count]) => ({
+          label,
+          count,
+
+          percentage:
+            percentage(
+              count,
+              factorSessions.length,
+            ),
+        }),
+      )
+      .sort(
+        (a, b) =>
+          b.count - a.count,
+      );
+
+  /*
+  ---------------------------------------------------------------------------
+  BODY + MENTAL SIGNALS
+  ---------------------------------------------------------------------------
+  */
+  const painReports =
+    sessions.filter(
+      (checkin) =>
+        checkin.has_pain === true,
+    ).length;
+
+  const stressReports =
+    sessions.filter(
+      (checkin) =>
+        checkin.mental_state ===
+          "Gestresst / unter Druck" ||
+        (
+          Array.isArray(
+            checkin.performance_factors,
+          ) &&
+          checkin.performance_factors.includes(
+            "Stress / Druck",
+          )
+        ),
+    ).length;
+
+  const painAreas =
+    new Map<string, number>();
+
+  for (const checkin of sessions) {
+    if (
+      checkin.has_pain !== true ||
+      !checkin.pain_area
+    ) {
+      continue;
+    }
+
+    painAreas.set(
+      checkin.pain_area,
+      (
+        painAreas.get(
+          checkin.pain_area,
+        ) ?? 0
+      ) + 1,
+    );
+  }
+
+  const mostReportedPainArea =
+    [...painAreas.entries()]
+      .sort(
+        (a, b) =>
+          b[1] - a[1],
+      )
+      .map(
+        ([area, count]) => ({
+          area,
+          count,
+        }),
+      )[0] ?? null;
+
+  return {
+    totalSessions:
+      sessions.length,
+
+    averageRpe:
+      average(rpeValues),
+
+    goalAchievedPercentage:
+      goalAnswered.length > 0
+        ? percentage(
+            goalsAchieved,
+            goalAnswered.length,
+          )
+        : null,
+
+    stableOrImprovedPercentage:
+      performanceAnswered.length > 0
+        ? percentage(
+            stableOrImproved,
+            performanceAnswered.length,
+          )
+        : null,
+
+    sessionsToReview,
+
+    difficulty: {
+      easier:
+        percentage(
+          easier,
+          difficultyTotal,
+        ),
+
+      expected:
+        percentage(
+          expected,
+          difficultyTotal,
+        ),
+
+      harder:
+        percentage(
+          harder,
+          difficultyTotal,
+        ),
+
+      muchHarder:
+        percentage(
+          muchHarder,
+          difficultyTotal,
+        ),
+    },
+
+    performanceFactors,
+
+    painReports,
+
+    stressReports,
+
+    mostReportedPainArea,
+  };
+}
