@@ -1,4 +1,20 @@
-import { useState } from "react";
+﻿import { useEffect, useMemo, useState } from "react";
+
+import {
+  getCoachCheckinData,
+  type CoachCheckinData,
+} from "./CheckinAnalysisData";
+
+import {
+  compareCheckinPeriods,
+} from "./CheckinAnalysisComparisons";
+
+import {
+  calculateCheckinTrend,
+  calculateGoalPerformanceMatrix,
+  calculateUnexpectedDifficulty,
+  calculateUnusualResponses,
+} from "./CheckinAnalysisCalculations";
 import {
   Activity,
   Brain,
@@ -14,101 +30,446 @@ import {
 } from "lucide-react";
 
 
-const metrics = [
-  {
-    label: "Avg RPE",
-    value: "6.4",
-    suffix: "/10",
-    detail: "↓ 0.4 vs previous 4 weeks",
-    icon: CircleUserRound,
-    style: "bg-orange-50 text-orange-600",
-  },
-  {
-    label: "Goal Achieved",
-    value: "78%",
-    detail: "↑ 4% vs previous 4 weeks",
-    icon: Target,
-    style: "bg-green-50 text-green-600",
-  },
-  {
-    label: "Stable / Improved",
-    value: "68%",
-    detail: "Athlete-reported performance quality",
-    icon: Activity,
-    style: "bg-blue-50 text-blue-600",
-  },
-  {
-    label: "Sessions to Review",
-    value: "7",
-    detail: "Goal missed or performance declined",
-    icon: TrendingDown,
-    style: "bg-red-50 text-red-600",
-  },
-];
+function getPerformanceFactorIcon(
+  label: string,
+) {
+  const normalized =
+    label.toLowerCase();
 
-const unexpectedDifficulty = [
-  { label: "Speed Endurance", percentage: 31, athletes: 5, sessions: 8 },
-  { label: "Hurdle Rhythm", percentage: 19, athletes: 3, sessions: 5 },
-  { label: "Acceleration", percentage: 12, athletes: 2, sessions: 3 },
-  { label: "Max Velocity", percentage: 9, athletes: 2, sessions: 2 },
-  { label: "Hurdles Technique", percentage: 7, athletes: 2, sessions: 2 },
-];
+  if (
+    normalized.includes("schlaf") ||
+    normalized.includes("sleep")
+  ) {
+    return MoonStar;
+  }
 
-const factors = [
-  { label: "Poor sleep", value: 28, icon: MoonStar },
-  { label: "Stress / pressure", value: 21, icon: Brain },
-  { label: "School / work", value: 17, icon: Activity },
-  { label: "Weather", value: 12, icon: Zap },
-  { label: "Training conditions", value: 9, icon: Target },
-  { label: "Competition nerves", value: 5, icon: Activity },
-];
+  if (
+    normalized.includes("stress") ||
+    normalized.includes("druck") ||
+    normalized.includes("pressure")
+  ) {
+    return Brain;
+  }
 
-const matrix = [
-  [
-    { value: "58%", count: 58, style: "bg-green-100 text-green-800" },
-    { value: "10%", count: 10, style: "bg-green-50 text-green-700" },
-    { value: "3%", count: 3, style: "bg-orange-50 text-orange-700" },
-    { value: "1%", count: 1, style: "bg-slate-50 text-slate-500" },
-  ],
-  [
-    { value: "7%", count: 7, style: "bg-blue-50 text-blue-700" },
-    { value: "12%", count: 12, style: "bg-blue-50 text-blue-700" },
-    { value: "4%", count: 4, style: "bg-orange-50 text-orange-700" },
-    { value: "—", count: 0, style: "bg-slate-50 text-slate-400" },
-  ],
-  [
-    { value: "2%", count: 2, style: "bg-orange-50 text-orange-700" },
-    { value: "2%", count: 2, style: "bg-red-50 text-red-600" },
-    { value: "5%", count: 5, style: "bg-red-100 text-red-700" },
-    { value: "1%", count: 1, style: "bg-slate-50 text-slate-500" },
-  ],
-];
+  if (
+    normalized.includes("schule") ||
+    normalized.includes("school") ||
+    normalized.includes("arbeit") ||
+    normalized.includes("work")
+  ) {
+    return Activity;
+  }
 
-const unusualResponses = [
-  {
-    athlete: "Jonas Richter",
-    signal: "RPE above recent normal",
-    detail: "2 comparable sessions",
-    style: "bg-orange-50 text-orange-700",
-  },
-  {
-    athlete: "Sarah Braun",
-    signal: "Performance quality declined",
-    detail: "2 recent sessions",
-    style: "bg-red-50 text-red-700",
-  },
-  {
-    athlete: "Tom Klein",
-    signal: "Training harder than expected",
-    detail: "Repeated twice",
-    style: "bg-orange-50 text-orange-700",
-  },
-];
+  if (
+    normalized.includes("wetter") ||
+    normalized.includes("weather")
+  ) {
+    return Zap;
+  }
+
+  if (
+    normalized.includes("training")
+  ) {
+    return Target;
+  }
+
+  if (
+    normalized.includes("wettkampf") ||
+    normalized.includes("competition")
+  ) {
+    return Activity;
+  }
+
+  return Activity;
+}
 
 export function CheckinAnalysis() {
   const [trendMetric, setTrendMetric] = useState("RPE");
   const [trendMode, setTrendMode] =
     useState<"average" | "unusual">("average");
+
+  const [data, setData] =
+    useState<CoachCheckinData | null>(null);
+
+  const [loading, setLoading] =
+    useState(true);
+
+  const [error, setError] =
+    useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadCheckins() {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const result =
+          await getCoachCheckinData();
+
+        if (!cancelled) {
+          setData(result);
+        }
+      } catch (loadError) {
+        console.error(
+          "Could not load Check-In Analysis:",
+          loadError,
+        );
+
+        if (!cancelled) {
+          setError(
+            loadError instanceof Error
+              ? loadError.message
+              : "Could not load check-in analysis.",
+          );
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    }
+
+    void loadCheckins();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const comparison = useMemo(
+    () =>
+      compareCheckinPeriods(
+        data?.checkins ?? [],
+      ),
+    [data],
+  );
+
+  const summary = comparison.current;
+
+  /*
+  ============================================================
+  CURRENT 4-WEEK RAW ROWS
+
+  These rows power sections that need session-level data rather
+  than only the summary totals.
+  ============================================================
+  */
+  const currentPeriodCheckins =
+    useMemo(
+      () => {
+        const today =
+          new Date();
+
+        today.setHours(
+          0,
+          0,
+          0,
+          0,
+        );
+
+        const start =
+          new Date(today);
+
+        start.setDate(
+          start.getDate() -
+            27,
+        );
+
+        return (
+          data?.checkins ?? []
+        ).filter(
+          (checkin) => {
+            const date =
+              new Date(
+                `${checkin.checkin_date}T00:00:00`,
+              );
+
+            return (
+              date >= start &&
+              date <= today &&
+              checkin.is_rest_day !== true
+            );
+          },
+        );
+      },
+      [data],
+    );
+
+  const unexpectedDifficulty =
+    useMemo(
+      () =>
+        calculateUnexpectedDifficulty(
+          currentPeriodCheckins,
+        ),
+      [currentPeriodCheckins],
+    );
+
+  const matrix =
+    useMemo(
+      () =>
+        calculateGoalPerformanceMatrix(
+          currentPeriodCheckins,
+        ),
+      [currentPeriodCheckins],
+    );
+
+  const athleteNameById =
+    useMemo(
+      () =>
+        new Map(
+          (data?.athletes ?? []).map(
+            (athlete) => [
+              athlete.id,
+              athlete.display_name ??
+                "Unnamed athlete",
+            ],
+          ),
+        ),
+      [data],
+    );
+
+  const unusualResponses =
+    useMemo(
+      () =>
+        calculateUnusualResponses(
+          currentPeriodCheckins,
+        ).map((item) => ({
+          ...item,
+          athlete:
+            athleteNameById.get(
+              item.athleteId,
+            ) ?? "Unknown athlete",
+        })),
+      [
+        currentPeriodCheckins,
+        athleteNameById,
+      ],
+    );
+
+  const trendData =
+    useMemo(
+      () =>
+        calculateCheckinTrend(
+          currentPeriodCheckins,
+        ),
+      [currentPeriodCheckins],
+    );
+
+  const checkinInsight =
+    useMemo(() => {
+      const topDifficulty =
+        unexpectedDifficulty[0];
+
+      const topUnusual =
+        unusualResponses[0];
+
+      if (
+        topDifficulty &&
+        topUnusual
+      ) {
+        return `${topDifficulty.label} was harder than expected in ${topDifficulty.percentage}% of recent sessions. ${topUnusual.athlete} currently shows the strongest review signal: ${topUnusual.signal.toLowerCase()}.`;
+      }
+
+      if (topDifficulty) {
+        return `${topDifficulty.label} was harder than expected in ${topDifficulty.percentage}% of recent sessions across ${topDifficulty.athletes} athlete${topDifficulty.athletes === 1 ? "" : "s"}.`;
+      }
+
+      if (topUnusual) {
+        return `${topUnusual.athlete} currently shows a check-in signal worth reviewing: ${topUnusual.signal.toLowerCase()} (${topUnusual.detail.toLowerCase()}).`;
+      }
+
+      if (currentPeriodCheckins.length > 0) {
+        return "Recent check-ins do not currently show a repeated difficulty or athlete-level review signal.";
+      }
+
+      return "No recent check-in data is available for this analysis period.";
+    }, [
+      unexpectedDifficulty,
+      unusualResponses,
+      currentPeriodCheckins,
+    ]);
+
+  const formatChange = (
+    value: number | null,
+    suffix = "",
+  ) => {
+    if (value === null) {
+      return "No previous-period comparison";
+    }
+
+    if (value === 0) {
+      return "No change vs previous 4 weeks";
+    }
+
+    const arrow = value > 0 ? "↑" : "↓";
+
+    return `${arrow} ${Math.abs(value)}${suffix} vs previous 4 weeks`;
+  };
+
+  const factors =
+    summary.performanceFactors
+      .slice(0, 6)
+      .map((factor) => ({
+        ...factor,
+        value: factor.percentage,
+        icon:
+          getPerformanceFactorIcon(
+            factor.label,
+          ),
+      }));
+
+  const difficultyEasierEnd =
+    summary.difficulty.easier * 3.6;
+
+  const difficultyExpectedEnd =
+    difficultyEasierEnd +
+    summary.difficulty.expected * 3.6;
+
+  const difficultyHarderEnd =
+    difficultyExpectedEnd +
+    summary.difficulty.harder * 3.6;
+
+  const difficultyMuchHarderEnd =
+    Math.min(
+      360,
+      difficultyHarderEnd +
+        summary.difficulty.muchHarder * 3.6,
+    );
+
+  const difficultyGradient =
+    summary.totalSessions === 0
+      ? "conic-gradient(#e2e8f0 0deg 360deg)"
+      : `conic-gradient(
+          #22c55e 0deg ${difficultyEasierEnd}deg,
+          #3b82f6 ${difficultyEasierEnd}deg ${difficultyExpectedEnd}deg,
+          #f97316 ${difficultyExpectedEnd}deg ${difficultyHarderEnd}deg,
+          #ef4444 ${difficultyHarderEnd}deg ${difficultyMuchHarderEnd}deg,
+          #e2e8f0 ${difficultyMuchHarderEnd}deg 360deg
+        )`;
+
+  const painChange =
+    summary.painReports -
+    comparison.previous.painReports;
+
+  const stressChange =
+    summary.stressReports -
+    comparison.previous.stressReports;
+
+  const formatCountChange = (
+    value: number,
+  ) => {
+    if (value === 0) {
+      return "No change vs previous period";
+    }
+
+    return `${
+      value > 0 ? "↑" : "↓"
+    } ${Math.abs(value)} vs previous period`;
+  };
+
+  const metrics = [
+    {
+      label: "Avg RPE",
+      value:
+        summary.averageRpe !== null
+          ? summary.averageRpe.toFixed(1)
+          : "—",
+      suffix: "/10",
+      detail: formatChange(
+        comparison.changes.averageRpe,
+      ),
+      icon: CircleUserRound,
+      style: "bg-orange-50 text-orange-600",
+    },
+    {
+      label: "Goal Achieved",
+      value:
+        summary.goalAchievedPercentage !== null
+          ? `${summary.goalAchievedPercentage}%`
+          : "—",
+      detail: formatChange(
+        comparison.changes.goalAchieved,
+        "%",
+      ),
+      icon: Target,
+      style: "bg-green-50 text-green-600",
+    },
+    {
+      label: "Stable / Improved",
+      value:
+        summary.stableOrImprovedPercentage !== null
+          ? `${summary.stableOrImprovedPercentage}%`
+          : "—",
+      detail: formatChange(
+        comparison.changes.stableOrImproved,
+        "%",
+      ),
+      icon: Activity,
+      style: "bg-blue-50 text-blue-600",
+    },
+    {
+      label: "Sessions to Review",
+      value: String(
+        summary.sessionsToReview,
+      ),
+      detail:
+        comparison.changes.sessionsToReview === 0
+          ? "No change vs previous 4 weeks"
+          : `${
+              comparison.changes.sessionsToReview > 0
+                ? "↑"
+                : "↓"
+            } ${Math.abs(
+              comparison.changes.sessionsToReview,
+            )} vs previous 4 weeks`,
+      icon: TrendingDown,
+      style: "bg-red-50 text-red-600",
+    },
+  ];
+
+  if (loading) {
+    return (
+      <div className="rounded-2xl border border-border bg-white p-6 text-center shadow-sm">
+        <p className="text-sm font-semibold">
+          Loading Check-In Analysis...
+        </p>
+
+        <p className="mt-1 text-xs text-muted-foreground">
+          Reading athlete check-ins from Supabase.
+        </p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="rounded-2xl border border-red-200 bg-red-50 p-4">
+        <p className="text-sm font-bold text-red-700">
+          Check-In Analysis could not be loaded
+        </p>
+
+        <p className="mt-1 text-xs text-red-600">
+          {error}
+        </p>
+      </div>
+    );
+  }
+
+  if (!data || data.athleteIds.length === 0) {
+    return (
+      <div className="rounded-2xl border border-border bg-white p-6 text-center shadow-sm">
+        <p className="text-sm font-bold">
+          No athletes connected
+        </p>
+
+        <p className="mt-1 text-xs text-muted-foreground">
+          Connect athletes to this coach before analysing check-ins.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-3">
@@ -232,60 +593,74 @@ export function CheckinAnalysis() {
                   className="absolute left-6 top-1 h-[105px] w-[calc(100%-24px)]"
                   preserveAspectRatio="none"
                 >
-                  <polyline
-                    points="0,71 45,52 90,77 136,45 181,42 227,31 272,54 318,58 363,47 409,58 454,65 500,55"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2.4"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="text-violet-600"
-                  />
+                  {trendData.length > 0 && (
+                    <>
+                      <polyline
+                        points={trendData
+                          .map((point, index) => {
+                            const x =
+                              trendData.length === 1
+                                ? 250
+                                : (index / (trendData.length - 1)) * 500;
 
-                  <polyline
-                    points="0,91 45,73 90,89 136,81 181,83 227,70 272,84 318,90 363,79 409,86 454,80 500,74"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeDasharray="4 5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="text-slate-300"
-                  />
+                            const rpe =
+                              point.value ?? 0;
 
-                  {[
-                    [0, 71],
-                    [45, 52],
-                    [90, 77],
-                    [136, 45],
-                    [181, 42],
-                    [227, 31],
-                    [272, 54],
-                    [318, 58],
-                    [363, 47],
-                    [409, 58],
-                    [454, 65],
-                    [500, 55],
-                  ].map(([x, y], index) => (
-                    <circle
-                      key={index}
-                      cx={x}
-                      cy={y}
-                      r="2.6"
-                      fill="white"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      className="text-violet-600"
-                    />
-                  ))}
+                            const y =
+                              110 -
+                              (Math.max(0, Math.min(10, rpe)) / 10) * 100;
+
+                            return `${x},${y}`;
+                          })
+                          .join(" ")}
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.4"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="text-violet-600"
+                      />
+
+                      {trendData.map((point, index) => {
+                        const x =
+                          trendData.length === 1
+                            ? 250
+                            : (index / (trendData.length - 1)) * 500;
+
+                        const rpe =
+                          point.value ?? 0;
+
+                        const y =
+                          110 -
+                          (Math.max(0, Math.min(10, rpe)) / 10) * 100;
+
+                        return (
+                          <circle
+                            key={point.date}
+                            cx={x}
+                            cy={y}
+                            r="2.6"
+                            fill="white"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            className="text-violet-600"
+                          />
+                        );
+                      })}
+                    </>
+                  )}
                 </svg>
 
                 <div className="absolute bottom-0 left-6 right-0 flex justify-between text-[7px] text-muted-foreground">
-                  <span>May 13</span>
-                  <span>May 20</span>
-                  <span>May 27</span>
-                  <span>Jun 3</span>
-                  <span>Jun 9</span>
+                  {trendData.length > 0 ? (
+                    trendData.map((point) => (
+                      <span key={point.date}>
+                        {point.label}
+                      </span>
+                    ))
+                  ) : (
+                    <span>No recent RPE data</span>
+                  )}
                 </div>
               </div>
 
@@ -309,7 +684,9 @@ export function CheckinAnalysis() {
             <div className="mt-3 space-y-2">
               <div className="rounded-lg border border-orange-100 bg-orange-50/40 px-2.5 py-2">
                 <p className="text-[8px] font-semibold text-orange-700">
-                  3 athletes differ from their recent response pattern
+                  {summary.mostReportedPainArea
+                  ? `${summary.mostReportedPainArea.count} reports`
+                  : "No reports"} differ from their recent response pattern
                 </p>
 
                 <p className="mt-0.5 text-[7px] text-muted-foreground">
@@ -365,10 +742,18 @@ export function CheckinAnalysis() {
           </p>
 
           <div className="mt-4 grid grid-cols-[110px_1fr] items-center gap-4">
-            <div className="relative grid h-24 w-24 place-items-center rounded-full bg-[conic-gradient(#22c55e_0deg_43deg,#3b82f6_43deg_263deg,#f97316_263deg_342deg,#ef4444_342deg_360deg)]">
+            <div
+              className="relative grid h-24 w-24 place-items-center rounded-full"
+              style={{
+                background:
+                  difficultyGradient,
+              }}
+            >
               <div className="grid h-14 w-14 place-items-center rounded-full bg-white text-center">
                 <div>
-                  <p className="text-base font-bold">100</p>
+                  <p className="text-base font-bold">
+                  {summary.totalSessions}
+                </p>
                   <p className="text-[7px] text-muted-foreground">
                     Sessions
                   </p>
@@ -378,10 +763,26 @@ export function CheckinAnalysis() {
 
             <div className="space-y-2">
               {[
-                ["Easier than expected", "12%", "text-green-600"],
-                ["As expected", "61%", "text-blue-600"],
-                ["Harder than expected", "22%", "text-orange-600"],
-                ["Much harder", "5%", "text-red-600"],
+                [
+                  "Easier than expected",
+                  `${summary.difficulty.easier}%`,
+                  "text-green-600",
+                ],
+                [
+                  "As expected",
+                  `${summary.difficulty.expected}%`,
+                  "text-blue-600",
+                ],
+                [
+                  "Harder than expected",
+                  `${summary.difficulty.harder}%`,
+                  "text-orange-600",
+                ],
+                [
+                  "Much harder",
+                  `${summary.difficulty.muchHarder}%`,
+                  "text-red-600",
+                ],
               ].map(([label, value, style]) => (
                 <div
                   key={label}
@@ -451,8 +852,8 @@ export function CheckinAnalysis() {
               <div />
 
               {[
-                "Improved / stable",
-                "Stayed similar",
+                "Improved",
+                "Stable",
                 "Declined",
                 "Can't judge",
               ].map((label) => (
@@ -495,7 +896,7 @@ export function CheckinAnalysis() {
           <div className="mt-2 flex items-center justify-between rounded-lg bg-red-50 px-2.5 py-1.5">
             <div>
               <p className="text-[8px] font-semibold text-red-700">
-                7 sessions worth reviewing
+                {summary.sessionsToReview} sessions worth reviewing
               </p>
 
               <p className="text-[7px] text-muted-foreground">
@@ -524,7 +925,19 @@ export function CheckinAnalysis() {
           </p>
 
           <div className="mt-2.5 space-y-1.5">
-            {factors.map(({ label, value, icon: Icon }) => (
+            {factors.length === 0 && (
+              <div className="rounded-lg border border-dashed border-border px-3 py-4 text-center">
+                <p className="text-[8px] font-semibold">
+                  No performance factors reported
+                </p>
+
+                <p className="mt-1 text-[7px] text-muted-foreground">
+                  Factors will appear here when athletes report them in check-ins.
+                </p>
+              </div>
+            )}
+
+            {factors.map(({ label, value, count, icon: Icon }) => (
               <div
                 key={label}
                 className="grid grid-cols-[20px_105px_1fr_32px] items-center gap-2"
@@ -537,12 +950,17 @@ export function CheckinAnalysis() {
 
                 <div className="h-1.5 rounded-full bg-violet-50">
                   <div
-                    style={{ width: `${value * 3}%` }}
+                    style={{
+                      width: `${Math.min(value, 100)}%`,
+                    }}
                     className="h-full rounded-full bg-violet-500"
                   />
                 </div>
 
-                <span className="text-right text-[8px] font-semibold">
+                <span
+                  className="text-right text-[8px] font-semibold"
+                  title={`${count} sessions`}
+                >
                   {value}%
                 </span>
               </div>
@@ -569,36 +987,55 @@ export function CheckinAnalysis() {
           <div className="mt-2.5 grid grid-cols-3 gap-2">
             <div className="rounded-xl border border-red-100 bg-red-50/40 p-2.5">
               <HeartPulse className="h-4 w-4 text-red-500" />
-              <p className="mt-2 text-lg font-bold">5</p>
+              <p className="mt-2 text-lg font-bold">
+                {summary.painReports}
+              </p>
               <p className="text-[8px] font-semibold">Pain reports</p>
               <p className="mt-1 text-[7px] text-muted-foreground">
-                ↑ 2 vs previous period
+                {formatCountChange(
+                  painChange,
+                )}
               </p>
             </div>
 
             <div className="rounded-xl border border-violet-100 bg-violet-50/40 p-2.5">
               <Brain className="h-4 w-4 text-violet-600" />
-              <p className="mt-2 text-lg font-bold">8</p>
+              <p className="mt-2 text-lg font-bold">
+                {summary.stressReports}
+              </p>
               <p className="text-[8px] font-semibold">Stress reports</p>
               <p className="mt-1 text-[7px] text-muted-foreground">
-                Especially U18
+                {formatCountChange(
+                  stressChange,
+                )}
               </p>
             </div>
 
             <div className="rounded-xl border border-orange-100 bg-orange-50/40 p-2.5">
               <Activity className="h-4 w-4 text-orange-600" />
-              <p className="mt-2 text-sm font-bold">Hamstring</p>
+              <p className="mt-2 text-sm font-bold">
+                {summary.mostReportedPainArea?.area ?? "—"}
+              </p>
               <p className="text-[8px] font-semibold">Most reported area</p>
               <p className="mt-1 text-[7px] text-muted-foreground">
-                3 athletes
+                {summary.mostReportedPainArea
+                  ? `${summary.mostReportedPainArea.count} reports`
+                  : "No reports"}
               </p>
             </div>
           </div>
 
-          <div className="mt-1.5 rounded-lg border border-orange-100 bg-orange-50/50 p-1.5 text-[7px] text-orange-800">
-            Multiple athletes reported fatigue or stress. Review before the
-            next high-intensity session.
-          </div>
+          {(summary.painReports > 0 ||
+            summary.stressReports > 0) && (
+            <div className="mt-1.5 rounded-lg border border-orange-100 bg-orange-50/50 p-1.5 text-[7px] text-orange-800">
+              {summary.painReports > 0 &&
+              summary.stressReports > 0
+                ? `${summary.painReports} pain reports and ${summary.stressReports} stress-related reports were recorded during the current period.`
+                : summary.painReports > 0
+                  ? `${summary.painReports} pain reports were recorded during the current period.`
+                  : `${summary.stressReports} stress-related reports were recorded during the current period.`}
+            </div>
+          )}
         </section>
 
 
@@ -616,10 +1053,7 @@ export function CheckinAnalysis() {
           </p>
 
           <p className="mt-1 text-[8px] leading-relaxed text-muted-foreground">
-            Speed Endurance was rated harder than expected in 31% of recent
-            sessions. Tom Klein, Sarah Braun and Jonas Richter account for
-            several of these responses, while goal achievement for this session
-            type is also lower than during the previous period.
+            {checkinInsight}
           </p>
         </div>
 
@@ -633,6 +1067,13 @@ export function CheckinAnalysis() {
     </div>
   );
 }
+
+
+
+
+
+
+
 
 
 

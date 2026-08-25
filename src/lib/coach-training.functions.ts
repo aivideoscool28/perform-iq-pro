@@ -1,4 +1,4 @@
-﻿import { createServerFn } from "@tanstack/react-start";
+import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
 import { requireCoachManagerAuth } from "@/integrations/supabase/coach-manager-auth-middleware";
@@ -281,3 +281,221 @@ export const deleteCoachTrainingSession = createServerFn({
     };
   });
 
+
+/**
+ * Publish one coach training session to all athletes
+ * connected to the logged-in coach.
+ *
+ * Existing athlete workout copies are updated instead
+ * of duplicated by using training_session_id.
+ */
+export const publishCoachTrainingSession =
+  createServerFn({
+    method: "POST",
+  })
+    .middleware([requireCoachManagerAuth])
+    .inputValidator((input) =>
+      z
+        .object({
+          sessionId: z.string().uuid(),
+        })
+        .parse(input),
+    )
+    .handler(async ({ data, context }) => {
+      const { supabase, userId } =
+        context;
+
+      // 1. Verify that this training belongs to the coach.
+      const {
+        data: session,
+        error: sessionError,
+      } = await supabase
+        .from("training_sessions")
+        .select("*")
+        .eq("id", data.sessionId)
+        .eq("coach_id", userId)
+        .single();
+
+      if (sessionError) {
+        throw new Error(
+          sessionError.message,
+        );
+      }
+
+      // 2. Load athletes connected to this coach.
+      const {
+        data: connections,
+        error: connectionError,
+      } = await supabase
+        .from("coach_athletes")
+        .select("athlete_id")
+        .eq("coach_id", userId);
+
+      if (connectionError) {
+        throw new Error(
+          connectionError.message,
+        );
+      }
+
+      const athleteIds =
+        (connections ?? []).map(
+          (connection) =>
+            connection.athlete_id,
+        );
+
+      if (athleteIds.length === 0) {
+        throw new Error(
+          "No athletes are connected to this coach.",
+        );
+      }
+
+      // 3. Create or update one athlete-facing workout
+      // for every connected athlete.
+      for (const athleteId of athleteIds) {
+        const {
+          data: existingWorkout,
+          error: existingError,
+        } = await supabase
+          .from("planned_workouts")
+          .select("id")
+          .eq(
+            "training_session_id",
+            session.id,
+          )
+          .eq(
+            "athlete_id",
+            athleteId,
+          )
+          .eq(
+            "coach_id",
+            userId,
+          )
+          .maybeSingle();
+
+        if (existingError) {
+          throw new Error(
+            existingError.message,
+          );
+        }
+
+        const workoutData = {
+          athlete_id:
+            athleteId,
+
+          coach_id:
+            userId,
+
+          training_session_id:
+            session.id,
+
+          workout_date:
+            session.session_date,
+
+          title:
+            session.title,
+
+          discipline:
+            session.discipline ?? null,
+
+          duration_minutes:
+            session.duration_minutes ?? null,
+
+          session_goal:
+            session.session_goal ?? null,
+
+          coach_note:
+            session.coach_note ?? null,
+
+          exercises:
+            session.exercises,
+
+          status:
+            "planned",
+
+          source:
+            "coach",
+
+          is_published:
+            true,
+
+          updated_at:
+            new Date().toISOString(),
+        };
+
+        if (existingWorkout) {
+          const { error } =
+            await supabase
+              .from("planned_workouts")
+              .update(workoutData)
+              .eq(
+                "id",
+                existingWorkout.id,
+              )
+              .eq(
+                "athlete_id",
+                athleteId,
+              )
+              .eq(
+                "coach_id",
+                userId,
+              );
+
+          if (error) {
+            throw new Error(
+              error.message,
+            );
+          }
+        } else {
+          const { error } =
+            await supabase
+              .from("planned_workouts")
+              .insert(workoutData);
+
+          if (error) {
+            throw new Error(
+              error.message,
+            );
+          }
+        }
+      }
+
+      // 4. Mark the coach's master session as published.
+      const {
+        data: publishedSession,
+        error: publishError,
+      } = await supabase
+        .from("training_sessions")
+        .update({
+          status:
+            "published",
+
+          updated_at:
+            new Date().toISOString(),
+        })
+        .eq(
+          "id",
+          session.id,
+        )
+        .eq(
+          "coach_id",
+          userId,
+        )
+        .select("*")
+        .single();
+
+      if (publishError) {
+        throw new Error(
+          publishError.message,
+        );
+      }
+
+      return {
+        session:
+          normalizeSession(
+            publishedSession,
+          ),
+
+        publishedAthleteCount:
+          athleteIds.length,
+      };
+    });

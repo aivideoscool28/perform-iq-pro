@@ -9,6 +9,7 @@ import { MotivationCard } from "@/components/dashboard/MotivationCard";
 import { WeeklyProgressCards } from "@/components/dashboard/WeeklyProgressCards";
 import { KIInsightCard } from "@/components/dashboard/KIInsightCard";
 import { fetchDashboard } from "@/lib/features/dashboard.functions";
+import { fetchTodayPlannedWorkout } from "@/lib/planned-workouts.functions";
 import { fetchTodayCheckin, deleteTodayCheckin } from "@/lib/features/daily-checkin.functions";
 import { DailyCheckin } from "@/components/athleticiq/DailyCheckin";
 import { FeatureTour } from "@/components/athleticiq/FeatureTour";
@@ -49,6 +50,7 @@ function Dashboard() {
   const navigate = useNavigate();
   const fetchFn = useServerFn(fetchDashboard);
   const fetchCheckin = useServerFn(fetchTodayCheckin);
+  const fetchTodayTraining = useServerFn(fetchTodayPlannedWorkout);
   const resetCheckinFn = useServerFn(deleteTodayCheckin);
   const qc = useQueryClient();
   const [checkinOpen, setCheckinOpen] = useState(false);
@@ -69,6 +71,12 @@ function Dashboard() {
     queryFn: () => fetchCheckin(),
     enabled: !!session,
   });
+  const { data: todayTraining, isLoading: todayTrainingLoading } = useQuery({
+    queryKey: ["today-planned-workout"],
+    queryFn: () => fetchTodayTraining(),
+    enabled: !!session,
+  });
+
   const doneToday = !!checkinData?.checkin;
 
   const resetCheckin = useMutation({
@@ -191,7 +199,13 @@ function Dashboard() {
         </div>
       ) : (
         <>
-          <TodaysTrainingCard />
+          <TodaysTrainingCard
+            workout={todayTraining}
+            loading={todayTrainingLoading}
+            onViewTraining={() =>
+              navigate({ to: "/training" })
+            }
+          />
 
           {/* CHECK-IN + MOTIVATION */}
           <section className="mb-6 grid gap-6 lg:grid-cols-2">

@@ -1,4 +1,4 @@
-﻿import {
+import {
   useEffect,
   useMemo,
   useState,
@@ -378,7 +378,9 @@ export function TrainingEditor({
         })),
 
       status:
-        session?.status ?? "draft",
+        session?.status === "published"
+          ? "draft"
+          : session?.status ?? "draft",
     });
 
     onClose();

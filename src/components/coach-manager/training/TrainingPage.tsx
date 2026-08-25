@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 
@@ -22,6 +22,7 @@ import type {
 
 import {
   createCoachTrainingSession,
+  publishCoachTrainingSession,
   type CoachTrainingSessionInput,
 } from "@/lib/coach-training.functions";
 
@@ -37,6 +38,11 @@ export function TrainingPage() {
   const createTrainingSession =
     useServerFn(
       createCoachTrainingSession,
+    );
+
+  const publishTrainingSession =
+    useServerFn(
+      publishCoachTrainingSession,
     );
 
   const { athletes } = useCoachAthletes();
@@ -69,6 +75,54 @@ export function TrainingPage() {
     "edit-today" | "create-new"
   >("edit-today");
 
+  const [
+    publishedAthleteCount,
+    setPublishedAthleteCount,
+  ] = useState<number | null>(null);
+
+  const publishTrainingMutation =
+    useMutation({
+      mutationFn: (
+        sessionId: string,
+      ) =>
+        publishTrainingSession({
+          data: {
+            sessionId,
+          },
+        }),
+
+      onSuccess: async (result) => {
+        setPublishedAthleteCount(
+          result.publishedAthleteCount,
+        );
+
+        await Promise.all([
+          queryClient.invalidateQueries({
+            queryKey: [
+              "coach-training-today",
+            ],
+          }),
+
+          queryClient.invalidateQueries({
+            queryKey: [
+              "coach-training-calendar",
+            ],
+          }),
+
+          queryClient.invalidateQueries({
+            queryKey: [
+              "coach-upcoming-training",
+            ],
+          }),
+
+          queryClient.invalidateQueries({
+            queryKey: [
+              "coach-training-history",
+            ],
+          }),
+        ]);
+      },
+    });
   const createTrainingMutation =
     useMutation({
       mutationFn: (
@@ -208,9 +262,31 @@ export function TrainingPage() {
             <TrainingOverview
               session={session}
               loading={trainingLoading}
+              publishing={
+                publishTrainingMutation.isPending
+              }
+              publishError={
+                publishTrainingMutation.error instanceof Error
+                  ? publishTrainingMutation.error.message
+                  : null
+              }
+              publishedAthleteCount={
+                publishedAthleteCount
+              }
               onEdit={() => {
                 setEditorMode("edit-today");
                 setEditorOpen(true);
+              }}
+              onPublish={() => {
+                if (!session) {
+                  return;
+                }
+
+                setPublishedAthleteCount(null);
+
+                publishTrainingMutation.mutate(
+                  session.id,
+                );
               }}
             />
             <TrainingIntelligence athletes={athletes} />
@@ -301,7 +377,12 @@ export function TrainingPage() {
         session={
           editorMode === "edit-today"
             ? session
-            : reusedTraining
+            : null
+        }
+        presetSession={
+          editorMode === "create-new"
+            ? reusedTraining
+            : null
         }
         saving={
           editorMode === "edit-today"

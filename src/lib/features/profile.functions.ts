@@ -1,4 +1,4 @@
-﻿import { createServerFn } from "@tanstack/react-start";
+import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { callAi } from "@/lib/ai-gateway.server";
@@ -26,7 +26,8 @@ export const saveOnboarding = createServerFn({ method: "POST" })
     const { supabase, userId } = context;
     const { error } = await supabase
       .from("profiles")
-      .update({
+      .upsert({
+        id: userId,
         display_name: data.display_name,
         age: data.age,
         disciplines: data.disciplines,
@@ -43,8 +44,7 @@ export const saveOnboarding = createServerFn({ method: "POST" })
           : null,
         onboarded_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
-      })
-      .eq("id", userId);
+      }, { onConflict: "id" });
     if (error) throw new Error(error.message);
     return { ok: true };
   });
