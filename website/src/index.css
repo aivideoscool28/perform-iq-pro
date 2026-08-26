@@ -117,3 +117,44 @@ html {
   scroll-behavior: smooth;
 }
 
+
+/* =========================================================
+   HERO FREE TRIAL
+   ========================================================= */
+
+.hero__trial {
+  min-height: 50px;
+  padding: 0 15px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  border-left: 2px solid #ff5722;
+
+  line-height: 1.15;
+}
+
+.hero__trial strong {
+  color: #ff5722;
+
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.hero__trial span {
+  margin-top: 3px;
+
+  color: #7b787d;
+
+  font-size: 9px;
+  font-weight: 650;
+}
+
+@media (max-width: 720px) {
+  .hero__trial {
+    width: 100%;
+    box-sizing: border-box;
+  }
+}
+

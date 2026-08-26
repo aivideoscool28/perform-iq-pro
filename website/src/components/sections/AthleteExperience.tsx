@@ -334,13 +334,14 @@ export function AthleteExperience() {
           <p>Daily check-ins, regeneration, friends, streaks and more.</p>
         </div>
 
-        <a href="#" className="athlete-more__button">
-          Explore Athletic IQ →
+        <a href="https://aether-athlete-iq.netlify.app" className="athlete-more__button">
+          Explore Aether Athlete IQ →
         </a>
       </div>
     </section>
   );
 }
+
 
 
 

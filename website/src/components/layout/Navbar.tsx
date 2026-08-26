@@ -36,7 +36,7 @@ export function Navbar({
         />
 
         <div className="navbar__cta">
-          <PrimaryButton href="#try">
+          <PrimaryButton href="https://aether-athlete-iq.netlify.app">
             Try Aether IQ →
           </PrimaryButton>
         </div>
@@ -44,3 +44,5 @@ export function Navbar({
     </header>
   );
 }
+
+

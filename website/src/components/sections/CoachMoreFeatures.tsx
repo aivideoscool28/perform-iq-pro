@@ -34,7 +34,7 @@ export function CoachMoreFeatures() {
           </h2>
         </div>
 
-        <a className="coach-more__cta" href="#product">
+        <a className="coach-more__cta" href="https://aether-athlete-iq.netlify.app">
           Explore Aether Athlete IQ
           <ArrowRight size={16} />
         </a>
@@ -51,3 +51,5 @@ export function CoachMoreFeatures() {
     </section>
   );
 }
+
+

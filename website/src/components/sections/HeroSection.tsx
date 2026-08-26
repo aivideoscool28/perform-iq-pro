@@ -23,13 +23,18 @@ export function HeroSection() {
         </p>
 
         <div className="hero__actions">
-          <PrimaryButton href="#try">
-            Experience Athletic IQ →
+          <PrimaryButton href="https://aether-athlete-iq.netlify.app">
+            Try Aether Athlete IQ →
           </PrimaryButton>
 
           <PrimaryButton href="#product" variant="secondary">
             See how it works ↓
           </PrimaryButton>
+
+          <div className="hero__trial">
+            <strong>2 weeks free</strong>
+            <span>for coaches & clubs</span>
+          </div>
         </div>
 
         <div className="hero__specialization">
@@ -78,3 +83,6 @@ export function HeroSection() {
     </main>
   );
 }
+
+
+
