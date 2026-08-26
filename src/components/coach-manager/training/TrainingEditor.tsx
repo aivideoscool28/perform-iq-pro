@@ -462,6 +462,11 @@ export function TrainingEditor({
             <input
               type="date"
               value={date}
+              min={
+                session
+                  ? undefined
+                  : new Date().toISOString().slice(0, 10)
+              }
               onChange={(event) =>
                 setDate(event.target.value)
               }

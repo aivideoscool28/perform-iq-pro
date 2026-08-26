@@ -24,9 +24,9 @@ export function Navbar({
       </a>
 
       <nav className="navbar__links" aria-label="Main navigation">
-        <a href="#product">Product</a>
-        <a href="#why">Why Aether</a>
-        <a href="#about">About</a>
+        <a href="#why-aether">Why Aether</a>
+        <a href="#faq">FAQs</a>
+        <a href="#contact">Contact</a>
       </nav>
 
       <div className="navbar__actions">

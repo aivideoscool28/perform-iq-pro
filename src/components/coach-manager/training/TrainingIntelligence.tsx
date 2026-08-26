@@ -1,4 +1,4 @@
-﻿import type { CoachAthlete } from "@/hooks/useCoachAthletes";
+import type { CoachAthlete } from "@/hooks/useCoachAthletes";
 import { Link } from "@tanstack/react-router";
 
 import {
@@ -16,9 +16,11 @@ import {
 
 type TrainingIntelligenceProps = {
   athletes: CoachAthlete[];
+  onOpenIndividualPlans?: () => void;
 };
 export function TrainingIntelligence({
   athletes,
+  onOpenIndividualPlans,
 }: TrainingIntelligenceProps) {
   const changes = athletes.map((athlete) => ({
     id: athlete.id,
@@ -86,9 +88,8 @@ export function TrainingIntelligence({
             </div>
           </div>
 
-          <button
-            type="button"
-            className="flex w-full items-center gap-3 border-t border-orange-100 bg-orange-50/40 px-3 py-2 text-left transition hover:bg-orange-50/70"
+          <div
+            className="flex w-full items-center gap-3 border-t border-orange-100 bg-orange-50/40 px-3 py-2 text-left"
           >
             <div className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-orange-100">
               <AlertCircle className="h-3.5 w-3.5 text-orange-500" />
@@ -104,10 +105,7 @@ export function TrainingIntelligence({
               </p>
             </div>
 
-            <span className="text-[8px] font-semibold text-orange-600">
-              View details →
-            </span>
-          </button>
+          </div>
 
           <div className="flex items-center gap-3 border-t border-border bg-slate-50/60 px-3 py-2">
             <div className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-slate-100">
@@ -228,6 +226,7 @@ export function TrainingIntelligence({
 
         <button
           type="button"
+          onClick={onOpenIndividualPlans}
           className="mt-2.5 w-full rounded-lg border border-border py-2 text-[9px] font-semibold"
         >
           Manage all adjustments →
@@ -303,6 +302,8 @@ export function TrainingIntelligence({
     </div>
   );
 }
+
+
 
 
 

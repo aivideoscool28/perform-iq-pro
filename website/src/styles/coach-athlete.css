@@ -365,3 +365,236 @@
 }
 
 
+
+/* =========================================================
+   FEATURE 02 — TRAINING PLANS
+   ========================================================= */
+
+.coach-feature-card--training {
+  background:
+    radial-gradient(
+      circle at 100% 0%,
+      rgba(52, 102, 217, 0.065),
+      transparent 34%
+    ),
+    #fff;
+}
+
+.coach-feature-card__number--training {
+  background: #3466d9;
+}
+
+.coach-feature-card__eyebrow--training {
+  color: #3466d9;
+}
+
+.coach-feature-card__accent--training {
+  color: #3466d9 !important;
+}
+
+.coach-feature-card__placeholder--training {
+  background:
+    linear-gradient(
+      145deg,
+      rgba(52, 102, 217, 0.035),
+      rgba(255,255,255,0)
+    );
+}
+
+.coach-feature-card__placeholder-icon--training {
+  background: #edf3ff;
+  color: #3466d9;
+}
+
+.coach-feature-card--training .coach-feature-card__points svg {
+  color: #3466d9;
+}
+
+.coach-feature-card--training .coach-feature-card__ending svg {
+  color: #3466d9;
+}
+
+
+/* =========================================================
+   FEATURE 03 — NOTES & FOLLOW-UPS
+   ========================================================= */
+
+.coach-feature-card--notes {
+  background:
+    radial-gradient(
+      circle at 0% 0%,
+      rgba(217, 148, 36, 0.07),
+      transparent 34%
+    ),
+    #fff;
+}
+
+.coach-feature-card__number--notes {
+  background: #d99424;
+}
+
+.coach-feature-card__eyebrow--notes,
+.coach-feature-card__accent--notes {
+  color: #c78318 !important;
+}
+
+.coach-feature-card__placeholder--notes {
+  background:
+    linear-gradient(
+      145deg,
+      rgba(217, 148, 36, 0.04),
+      rgba(255, 255, 255, 0)
+    );
+}
+
+.coach-feature-card__placeholder-icon--notes {
+  background: #fff5df;
+  color: #c78318;
+}
+
+.coach-feature-card--notes .coach-feature-card__points svg,
+.coach-feature-card--notes .coach-feature-card__ending svg {
+  color: #c78318;
+}
+
+
+/* =========================================================
+   FEATURE 04 — VIDEO ANALYSIS + COACH VALIDATION
+   ========================================================= */
+
+.coach-feature-card--video {
+  background:
+    radial-gradient(
+      circle at 100% 0%,
+      rgba(55, 128, 74, 0.07),
+      transparent 34%
+    ),
+    #fff;
+}
+
+.coach-feature-card__number--video {
+  background: #37804a;
+}
+
+.coach-feature-card__eyebrow--video,
+.coach-feature-card__accent--video {
+  color: #37804a !important;
+}
+
+.coach-feature-card__placeholder--video {
+  background:
+    linear-gradient(
+      145deg,
+      rgba(55, 128, 74, 0.04),
+      rgba(255,255,255,0)
+    );
+}
+
+.coach-feature-card__placeholder-icon--video {
+  background: #edf8ef;
+  color: #37804a;
+}
+
+.coach-feature-card--video .coach-feature-card__ending svg {
+  color: #37804a;
+}
+
+
+/* =========================================================
+   COACH VALIDATION
+   ========================================================= */
+
+.coach-validation {
+  margin-top: 18px;
+
+  padding: 16px;
+
+  border: 1px solid #e7e4e1;
+  border-radius: 15px;
+
+  background: #faf9f8;
+}
+
+.coach-validation__heading {
+  display: flex;
+  align-items: center;
+
+  gap: 7px;
+
+  color: #59575c;
+
+  font-size: 10px;
+  font-weight: 850;
+
+  letter-spacing: 0.08em;
+}
+
+.coach-validation__heading svg {
+  color: #37804a;
+}
+
+.coach-validation__options {
+  margin-top: 12px;
+
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+
+  gap: 8px;
+}
+
+.coach-validation__option {
+  min-width: 0;
+
+  padding: 10px 8px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 6px;
+
+  border: 1px solid #e5e2df;
+  border-radius: 11px;
+
+  background: #fff;
+
+  color: #4e4c51;
+
+  font-size: 9px;
+}
+
+.coach-validation__icon {
+  width: 24px;
+  height: 24px;
+
+  flex: 0 0 auto;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 50%;
+}
+
+.coach-validation__option--correct .coach-validation__icon {
+  background: #edf8ef;
+  color: #37804a;
+}
+
+.coach-validation__option--partial .coach-validation__icon {
+  background: #fff4dc;
+  color: #c78318;
+}
+
+.coach-validation__option--wrong .coach-validation__icon {
+  background: #fff0ee;
+  color: #d34d3f;
+}
+
+@media (max-width: 650px) {
+  .coach-validation__options {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+

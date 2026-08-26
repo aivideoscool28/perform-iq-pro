@@ -1,8 +1,8 @@
-﻿import { useNavigate } from "@tanstack/react-router";
+import { useState } from "react";
+import { useNavigate } from "@tanstack/react-router";
 import {
   CircleHelp,
   Search,
-  SlidersHorizontal,
   Users,
 } from "lucide-react";
 
@@ -29,6 +29,13 @@ export function AthletesTable({
   error,
 }: AthletesTableProps) {
   const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const filteredAthletes = athletes.filter((athlete) =>
+    athlete.display_name
+      .toLowerCase()
+      .includes(searchQuery.trim().toLowerCase()),
+  );
 
   return (
     <section className="overflow-hidden rounded-2xl border border-border bg-background shadow-sm">
@@ -37,23 +44,12 @@ export function AthletesTable({
           <Search className="h-4 w-4 text-muted-foreground" />
 
           <input
+            value={searchQuery}
+            onChange={(event) => setSearchQuery(event.target.value)}
             placeholder="Search athlete..."
             className="w-full bg-transparent text-xs outline-none"
           />
         </div>
-
-        <button className="rounded-xl border border-border px-3 py-2 text-xs font-medium">
-          All Groups
-        </button>
-
-        <button className="rounded-xl border border-border px-3 py-2 text-xs font-medium">
-          All Disciplines
-        </button>
-
-        <button className="flex items-center gap-2 rounded-xl border border-border px-3 py-2 text-xs font-medium">
-          <SlidersHorizontal className="h-3.5 w-3.5" />
-          Smart Filters
-        </button>
       </div>
 
       <div className="grid grid-cols-[1.2fr_1fr_1fr_1.2fr_auto] gap-3 bg-muted/20 px-3 py-2 text-[10px] font-semibold text-muted-foreground">
@@ -96,7 +92,7 @@ export function AthletesTable({
 
       {!loading &&
         !error &&
-        athletes.map((athlete) => {
+        filteredAthletes.map((athlete) => {
           const disciplines =
             athlete.disciplines?.length
               ? athlete.disciplines.join(" / ")
@@ -158,6 +154,7 @@ export function AthletesTable({
     </section>
   );
 }
+
 
 
 

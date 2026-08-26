@@ -21,19 +21,30 @@ export function useCoachAthletes() {
       setLoading(true);
       setError(null);
 
-      let coachId: string | null = null;
-
       const {
-        data: { user },
-      } = await supabase.auth.getUser();
+        data: {
+          user,
+        },
+        error: userError,
+      } =
+        await supabase.auth
+          .getUser();
 
-      if (user) {
-        coachId = user.id;
-      } else {
-        // TEMPORARY development fallback.
-        // Remove once Coach Manager authentication is connected.
-        coachId = "8702a6f0-8e4b-45cb-88ef-51208375a28f";
+      if (
+        userError ||
+        !user
+      ) {
+        setAthletes([]);
+        setError(
+          userError?.message ??
+            "No authenticated coach.",
+        );
+        setLoading(false);
+        return;
       }
+
+      const coachId =
+        user.id;
 
       const { data: links, error: linksError } = await supabase
         .from("coach_athletes")

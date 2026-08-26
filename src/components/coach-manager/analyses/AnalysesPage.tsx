@@ -1,11 +1,9 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 
 import { useCoachAthletes } from "@/hooks/useCoachAthletes";
 import {
   CalendarDays,
-  SlidersHorizontal,
   Sparkles,
-  Users,
 } from "lucide-react";
 
 import {
@@ -55,39 +53,11 @@ export function AnalysesPage() {
         </div>
 
         <div className="flex items-center gap-2">
-          <button
-            type="button"
-            className="flex items-center gap-2 rounded-xl border border-border bg-white px-3 py-2 text-[10px] font-semibold"
-          >
-            <Users className="h-3.5 w-3.5 text-violet-600" />
-            Sprint / Hurdles U20
-            <span className="text-muted-foreground">⌄</span>
-          </button>
 
-          <button
-            type="button"
-            className="flex items-center gap-2 rounded-xl border border-border bg-white px-3 py-2 text-[10px] font-semibold"
-          >
+          <div className="flex items-center gap-2 rounded-xl border border-border bg-white px-3 py-2 text-[10px] font-semibold">
             <CalendarDays className="h-3.5 w-3.5 text-blue-600" />
             Last 4 weeks
-            <span className="text-muted-foreground">⌄</span>
-          </button>
-
-          {isCheckin && (
-            <button
-              type="button"
-              className="rounded-xl border border-violet-200 bg-violet-50 px-3 py-2 text-[9px] font-semibold text-violet-700"
-            >
-              Compare previous 4 weeks
-            </button>
-          )}
-
-          <button
-            type="button"
-            className="grid h-9 w-9 place-items-center rounded-xl border border-border bg-white"
-          >
-            <SlidersHorizontal className="h-3.5 w-3.5" />
-          </button>
+          </div>
 
           <button
             type="button"
@@ -137,6 +107,7 @@ export function AnalysesPage() {
     </div>
   );
 }
+
 
 
 

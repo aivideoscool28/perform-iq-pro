@@ -1,4 +1,5 @@
-﻿import { useState } from "react";
+import { useNavigate } from "@tanstack/react-router";
+import { useState } from "react";
 
 import type { CoachAthlete } from "@/hooks/useCoachAthletes";
 import { useCoachRegeneration } from "@/hooks/coach-manager/useCoachRegeneration";
@@ -58,6 +59,7 @@ type RegenerationAnalysisProps = {
 export function RegenerationAnalysis({
   athletes,
 }: RegenerationAnalysisProps) {
+  const navigate = useNavigate();
   const {
     regeneration,
     loading: regenerationLoading,
@@ -310,6 +312,8 @@ export function RegenerationAnalysis({
     ].filter((change): change is string => change !== null);
 
     return {
+      athleteId: item.athlete.id,
+
       initials: item.athlete.display_name
         .split(" ")
         .filter(Boolean)
@@ -956,6 +960,17 @@ export function RegenerationAnalysis({
               <button
                 key={athlete.name}
                 type="button"
+                onClick={() =>
+                  navigate({
+                    to: "/coach-manager/athletes/$athleteId",
+                    params: {
+                      athleteId: athlete.athleteId,
+                    },
+                    search: {
+                      from: "athletes",
+                    },
+                  })
+                }
                 className="flex w-full items-center gap-2 py-2 text-left transition hover:bg-muted/20"
               >
                 <div className="relative grid h-8 w-8 shrink-0 place-items-center rounded-full bg-orange-50 text-[8px] font-bold text-orange-600">
@@ -1166,6 +1181,17 @@ export function RegenerationAnalysis({
                 <button
                   key={athlete.name}
                   type="button"
+                  onClick={() =>
+                    navigate({
+                      to: "/coach-manager/athletes/$athleteId",
+                      params: {
+                        athleteId: athlete.athleteId,
+                      },
+                      search: {
+                        from: "athletes",
+                      },
+                    })
+                  }
                   className="flex w-full items-center justify-between rounded-xl border border-border px-3 py-2 text-left"
                 >
                   <div>
@@ -1214,9 +1240,8 @@ export function RegenerationAnalysis({
                 icon: Icon,
                 style,
               }) => (
-                <button
+                <div
                   key={label}
-                  type="button"
                   className="flex w-full items-center gap-2 rounded-xl border border-border/70 p-2.5 text-left"
                 >
                   <div
@@ -1245,8 +1270,7 @@ export function RegenerationAnalysis({
                     </p>
                   </div>
 
-                  <ChevronRight className="h-3 w-3 text-muted-foreground" />
-                </button>
+                </div>
               ),
             )}
           </div>
@@ -1265,9 +1289,8 @@ export function RegenerationAnalysis({
 
           <div className="mt-3 space-y-2">
             {combinations.map((item) => (
-              <button
+              <div
                 key={item.label}
-                type="button"
                 className="flex w-full items-center justify-between rounded-xl border border-border/70 px-3 py-2 text-left"
               >
                 <div>
@@ -1287,9 +1310,8 @@ export function RegenerationAnalysis({
                     {item.athletes} athletes
                   </span>
 
-                  <ChevronRight className="h-3 w-3 text-muted-foreground" />
                 </div>
-              </button>
+              </div>
             ))}
           </div>
         </section>
@@ -1386,6 +1408,10 @@ export function RegenerationAnalysis({
     </div>
   );
 }
+
+
+
+
 
 
 

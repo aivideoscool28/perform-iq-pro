@@ -61,7 +61,7 @@
   color: #777;
   font-weight: 700;
 }
-@import "./styles/coach-connection.css";
+
 
 /* Coach page hero refinement */
 
@@ -109,5 +109,11 @@
 
 .coach-coming-soon__eyebrow {
   margin-top: 0;
+}
+
+
+
+html {
+  scroll-behavior: smooth;
 }
 

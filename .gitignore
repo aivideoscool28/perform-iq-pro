@@ -30,3 +30,13 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Coach Manager automated testing
+.env.test.local
+playwright-report/
+test-results/
+test-reports/
+
+tests/coach-manager/.auth/
+
+.env.e2e

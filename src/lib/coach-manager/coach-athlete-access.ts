@@ -1,56 +1,104 @@
-﻿import { supabase } from "@/integrations/supabase/client";
+﻿import {
+  supabase,
+} from "@/integrations/supabase/client";
 
-const DEV_COACH_ID =
-  "8702a6f0-8e4b-45cb-88ef-51208375a28f";
 
-/*
-=============================================================================
-CURRENT COACH
-=============================================================================
-
-DEVELOPMENT MODE:
-
-Coach Manager currently uses the dedicated coach.demo profile.
-
-This is intentional while Coach Manager authentication is still being
-connected.
-
-Later, when production coach authentication is complete, replace this with
-the authenticated coach's user.id.
-=============================================================================
-*/
 export async function getCurrentCoachId() {
-  return DEV_COACH_ID;
+  const {
+    data: {
+      user,
+    },
+    error,
+  } =
+    await supabase.auth
+      .getUser();
+
+  if (
+    error ||
+    !user
+  ) {
+    throw new Error(
+      error?.message ??
+        "No authenticated coach.",
+    );
+  }
+
+  return user.id;
 }
+
 
 export async function canCoachAccessAthlete(
   athleteId: string,
 ) {
-  const coachId =
-    await getCurrentCoachId();
+  try {
+    const coachId =
+      await getCurrentCoachId();
 
-  const { data, error } =
-    await supabase
-      .from("coach_athletes")
-      .select("id")
-      .eq("coach_id", coachId)
-      .eq("athlete_id", athleteId)
-      .maybeSingle();
+    const {
+      data,
+      error,
+    } =
+      await supabase
+        .from(
+          "coach_athletes",
+        )
+        .select(
+          "id",
+        )
+        .eq(
+          "coach_id",
+          coachId,
+        )
+        .eq(
+          "athlete_id",
+          athleteId,
+        )
+        .maybeSingle();
 
-  if (error) {
+    if (
+      error
+    ) {
+      console.error(
+        "Could not verify coach-athlete access:",
+        error,
+      );
+
+      return {
+        allowed:
+          false,
+
+        error:
+          error.message,
+      };
+    }
+
+    return {
+      allowed:
+        Boolean(
+          data,
+        ),
+
+      error:
+        data
+          ? null
+          : "This athlete is not linked to the current coach.",
+    };
+  } catch (
+    error
+  ) {
     console.error(
-      "Could not verify coach-athlete access:",
+      "Could not determine current coach:",
       error,
     );
 
     return {
-      allowed: false,
-      error: error.message,
+      allowed:
+        false,
+
+      error:
+        error instanceof Error
+          ? error.message
+          : "Could not verify coach access.",
     };
   }
-
-  return {
-    allowed: Boolean(data),
-    error: null,
-  };
 }

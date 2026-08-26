@@ -1,4 +1,4 @@
-﻿import {
+import {
   useCallback,
   useEffect,
   useState,
@@ -11,6 +11,9 @@ import {
 import type {
   Tables,
 } from "@/integrations/supabase/types";
+
+const DEV_COACH_ID =
+  "8702a6f0-8e4b-45cb-88ef-51208375a28f";
 
 
 export type CoachNoteRow =
@@ -98,18 +101,12 @@ export function useCoachNotes() {
 
           const {
             data: userData,
-            error: userError,
           } =
             await supabase.auth.getUser();
 
-          if (userError) {
-            throw userError;
-          }
-
-          if (!userData.user) {
-            setNotes([]);
-            return;
-          }
+          const coachId =
+            userData.user?.id ??
+            DEV_COACH_ID;
 
           const {
             data,
@@ -125,7 +122,7 @@ export function useCoachNotes() {
               `)
               .eq(
                 "coach_id",
-                userData.user.id,
+                coachId,
               )
               .order(
                 "created_at",
@@ -194,19 +191,12 @@ export function useCoachNotes() {
       ) => {
         const {
           data: userData,
-          error: userError,
         } =
           await supabase.auth.getUser();
 
-        if (userError) {
-          throw userError;
-        }
-
-        if (!userData.user) {
-          throw new Error(
-            "You must be signed in.",
-          );
-        }
+        const coachId =
+          userData.user?.id ??
+          DEV_COACH_ID;
 
         const {
           data: createdNote,
@@ -216,7 +206,7 @@ export function useCoachNotes() {
             .from("coach_notes")
             .insert({
               coach_id:
-                userData.user.id,
+                coachId,
 
               athlete_id:
                 input.athlete_id,

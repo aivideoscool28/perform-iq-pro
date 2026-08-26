@@ -1,4 +1,4 @@
-﻿import {
+import {
   useEffect,
   useMemo,
   useState,
@@ -43,8 +43,7 @@ function AthleteDistribution({
   }
 
   return (
-    <button
-      type="button"
+    <div
       className="flex items-center gap-2 text-[8px] font-semibold"
     >
       <span className="text-green-600">
@@ -74,7 +73,7 @@ function AthleteDistribution({
       </span>
 
       <ChevronRight className="h-3 w-3 text-muted-foreground" />
-    </button>
+    </div>
   );
 }
 
@@ -518,12 +517,11 @@ export function SessionComparison() {
                     (
                       row,
                     ) => (
-                      <button
+                      <div
                         key={
                           row.metric
                         }
-                        type="button"
-                        className="grid w-full grid-cols-[1.35fr_0.8fr_0.8fr_0.62fr_0.82fr] items-center gap-3 border-b border-border/60 px-4 py-3 text-left transition last:border-b-0 hover:bg-muted/15"
+                        className="grid w-full grid-cols-[1.35fr_0.8fr_0.8fr_0.62fr_0.82fr] items-center gap-3 border-b border-border/60 px-4 py-3 text-left last:border-b-0"
                       >
                         <div className="flex items-center gap-1.5">
                           <span className="text-[9px] font-semibold">
@@ -580,7 +578,7 @@ export function SessionComparison() {
                             row.distribution
                           }
                         />
-                      </button>
+                      </div>
                     ),
                   )}
                 </div>
@@ -617,12 +615,7 @@ export function SessionComparison() {
               </p>
             </div>
 
-            <button
-              type="button"
-              className="shrink-0 rounded-xl border border-violet-200 bg-white px-3 py-2 text-[8px] font-semibold text-violet-700"
-            >
-              View evidence →
-            </button>
+            <span className="shrink-0 rounded-xl border border-violet-200 bg-white px-3 py-2 text-[8px] font-semibold text-violet-700">Evidence shown above</span>
           </section>
         </main>
 

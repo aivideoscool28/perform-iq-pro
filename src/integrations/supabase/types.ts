@@ -1047,6 +1047,18 @@ export type Database = {
     }
     Functions: {
       accept_invite: { Args: { invite_code: string }; Returns: string }
+      current_coach_can_assign_note_recipient: {
+        Args: { p_athlete_id: string; p_note_id: string }
+        Returns: boolean
+      }
+      current_user_is_coach_note_recipient: {
+        Args: { p_note_id: string }
+        Returns: boolean
+      }
+      current_user_owns_coach_note: {
+        Args: { p_note_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never

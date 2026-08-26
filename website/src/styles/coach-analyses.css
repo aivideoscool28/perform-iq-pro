@@ -1,0 +1,443 @@
+.coach-analyses {
+  width: min(1380px, calc(100% - 72px));
+
+  margin: 24px auto 0;
+  padding: 44px 48px 30px;
+
+  box-sizing: border-box;
+
+  border: 1px solid #e9e6e3;
+  border-radius: 26px;
+
+  background:
+    radial-gradient(
+      circle at 100% 0%,
+      rgba(255, 87, 34, 0.055),
+      transparent 28%
+    ),
+    linear-gradient(
+      180deg,
+      #ffffff,
+      #fffdfc
+    );
+
+  box-shadow:
+    0 14px 38px rgba(25, 25, 25, 0.045);
+
+  overflow: hidden;
+}
+
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+.coach-analyses__header {
+  display: grid;
+
+  grid-template-columns:
+    58px
+    minmax(0, 1fr)
+    minmax(260px, 340px);
+
+  gap: 18px;
+
+  align-items: end;
+}
+
+
+.coach-analyses__number {
+  width: 52px;
+  height: 52px;
+
+  align-self: start;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 15px;
+
+  background: #ff5722;
+
+  color: #fff;
+
+  font-size: 18px;
+  font-weight: 900;
+}
+
+
+.coach-analyses__eyebrow {
+  margin: 2px 0 8px;
+
+  color: #ff5722;
+
+  font-size: 13px;
+  font-weight: 900;
+
+  letter-spacing: 0.1em;
+}
+
+
+.coach-analyses__copy h2 {
+  margin: 0;
+
+  color: #171717;
+
+  font-size: clamp(38px, 4vw, 58px);
+
+  line-height: 0.97;
+
+  letter-spacing: -0.05em;
+}
+
+
+.coach-analyses__copy h2 span {
+  color: #ff5722;
+}
+
+
+.coach-analyses__copy > p:last-child {
+  max-width: 670px;
+
+  margin: 18px 0 0;
+
+  color: #67666b;
+
+  font-size: 15px;
+
+  line-height: 1.5;
+}
+
+
+.coach-analyses__message {
+  padding: 17px 18px;
+
+  display: flex;
+  align-items: flex-start;
+
+  gap: 10px;
+
+  border: 1px solid rgba(255, 87, 34, 0.13);
+  border-radius: 15px;
+
+  background: rgba(255, 87, 34, 0.04);
+}
+
+
+.coach-analyses__message svg {
+  flex: 0 0 auto;
+
+  color: #ff5722;
+}
+
+
+.coach-analyses__message div {
+  display: grid;
+
+  gap: 3px;
+}
+
+
+.coach-analyses__message strong {
+  color: #2d2b2f;
+
+  font-size: 12px;
+}
+
+
+.coach-analyses__message span {
+  color: #767379;
+
+  font-size: 10px;
+
+  line-height: 1.4;
+}
+
+
+/* =========================================================
+   SCREENSHOT
+   ========================================================= */
+
+.coach-analyses__visual {
+  margin-top: 32px;
+}
+
+
+.coach-analyses__browser {
+  overflow: hidden;
+
+  border: 1px solid #e4e1de;
+  border-radius: 19px;
+
+  background: #fff;
+
+  box-shadow:
+    0 22px 48px rgba(30, 27, 25, 0.085);
+}
+
+
+.coach-analyses__browserbar {
+  height: 42px;
+
+  padding: 0 15px;
+
+  display: grid;
+
+  grid-template-columns:
+    1fr
+    auto
+    1fr;
+
+  align-items: center;
+
+  border-bottom: 1px solid #ebe8e5;
+
+  background: #faf9f8;
+}
+
+
+.coach-analyses__dots {
+  display: flex;
+
+  gap: 5px;
+}
+
+
+.coach-analyses__dots span {
+  width: 7px;
+  height: 7px;
+
+  border-radius: 50%;
+
+  background: #d5d1cd;
+}
+
+
+.coach-analyses__browserbar small {
+  color: #89868b;
+
+  font-size: 9px;
+
+  font-weight: 750;
+}
+
+
+.coach-analyses__placeholder {
+  min-height: 340px;
+
+  padding: 36px;
+
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  text-align: center;
+
+  box-sizing: border-box;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255, 87, 34, 0.025),
+      rgba(255,255,255,0)
+    );
+}
+
+
+.coach-analyses__placeholder-icon {
+  width: 62px;
+  height: 62px;
+
+  margin-bottom: 14px;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 18px;
+
+  background: #fff0ea;
+
+  color: #ff5722;
+}
+
+
+.coach-analyses__placeholder strong {
+  color: #242327;
+
+  font-size: 19px;
+}
+
+
+.coach-analyses__placeholder p {
+  margin: 7px 0 0;
+
+  color: #858288;
+
+  font-size: 12px;
+
+  line-height: 1.4;
+}
+
+
+/* =========================================================
+   ANALYSIS AREAS
+   ========================================================= */
+
+.coach-analyses__areas {
+  margin-top: 22px;
+
+  display: grid;
+
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+
+  gap: 10px;
+}
+
+
+.coach-analyses__area {
+  min-width: 0;
+
+  padding: 14px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  border: 1px solid #e9e6e3;
+  border-radius: 14px;
+
+  background: #fff;
+}
+
+
+.coach-analyses__area-icon {
+  width: 38px;
+  height: 38px;
+
+  flex: 0 0 auto;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 11px;
+}
+
+
+.coach-analyses__area-icon--blue {
+  background: #edf3ff;
+  color: #3466d9;
+}
+
+
+.coach-analyses__area-icon--green {
+  background: #edf8ef;
+  color: #37804a;
+}
+
+
+.coach-analyses__area-icon--orange {
+  background: #fff0ea;
+  color: #ff5722;
+}
+
+
+.coach-analyses__area-icon--purple {
+  background: #f2edff;
+  color: #7051cf;
+}
+
+
+.coach-analyses__area div {
+  display: grid;
+
+  gap: 3px;
+}
+
+
+.coach-analyses__area strong {
+  color: #2c2a2f;
+
+  font-size: 11px;
+}
+
+
+.coach-analyses__area span:not(.coach-analyses__area-icon) {
+  color: #7d7a80;
+
+  font-size: 9px;
+
+  line-height: 1.3;
+}
+
+
+/* =========================================================
+   ENDING
+   ========================================================= */
+
+.coach-analyses__ending {
+  margin-top: 20px;
+  padding-top: 18px;
+
+  display: flex;
+  justify-content: center;
+
+  gap: 6px;
+
+  border-top: 1px solid #ebe8e5;
+
+  color: #89868c;
+
+  font-size: 12px;
+}
+
+
+.coach-analyses__ending strong {
+  color: #29272c;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 1000px) {
+  .coach-analyses {
+    width: calc(100% - 32px);
+
+    padding: 36px 26px 28px;
+  }
+
+  .coach-analyses__header {
+    grid-template-columns: 56px 1fr;
+  }
+
+  .coach-analyses__message {
+    grid-column: 2;
+  }
+
+  .coach-analyses__areas {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+
+@media (max-width: 650px) {
+  .coach-analyses__header {
+    grid-template-columns: 1fr;
+  }
+
+  .coach-analyses__message {
+    grid-column: auto;
+  }
+
+  .coach-analyses__areas {
+    grid-template-columns: 1fr;
+  }
+
+  .coach-analyses__placeholder {
+    min-height: 260px;
+  }
+}

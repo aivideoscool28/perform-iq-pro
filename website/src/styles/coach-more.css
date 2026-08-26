@@ -1,0 +1,176 @@
+.coach-more {
+  width: min(1280px, calc(100% - 90px));
+
+  margin: 26px auto 70px;
+  padding: 24px 6px 0;
+
+  box-sizing: border-box;
+
+  border-top: 1px solid #e9e6e3;
+
+  background: transparent;
+
+  box-shadow: none;
+}
+
+
+.coach-more__top {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+
+  gap: 30px;
+}
+
+
+.coach-more__top > div {
+  min-width: 0;
+}
+
+
+.coach-more__top p {
+  margin: 0 0 7px;
+
+  color: #ff5722;
+
+  font-size: 10px;
+  font-weight: 900;
+
+  letter-spacing: 0.12em;
+}
+
+
+.coach-more__top h2 {
+  max-width: 620px;
+
+  margin: 0;
+
+  color: #1c1b1f;
+
+  font-size: clamp(25px, 2.4vw, 34px);
+
+  line-height: 1.04;
+
+  letter-spacing: -0.04em;
+}
+
+
+.coach-more__top h2 span {
+  color: #ff5722;
+}
+
+
+/* CTA */
+
+.coach-more__cta {
+  flex: 0 0 auto;
+
+  min-height: 42px;
+
+  padding: 0 17px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 8px;
+
+  border-radius: 11px;
+
+  background: #ff5722;
+
+  color: #fff;
+
+  text-decoration: none;
+
+  font-size: 11px;
+  font-weight: 800;
+
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease;
+}
+
+
+.coach-more__cta:hover {
+  transform: translateY(-1px);
+
+  box-shadow:
+    0 8px 20px rgba(255, 87, 34, 0.18);
+}
+
+
+/* Small feature strip */
+
+.coach-more__features {
+  margin-top: 20px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+
+  flex-wrap: wrap;
+}
+
+
+.coach-more__feature {
+  padding: 8px 11px;
+
+  display: inline-flex;
+  align-items: center;
+
+  gap: 6px;
+
+  border: 1px solid #ebe8e5;
+  border-radius: 999px;
+
+  background: #fff;
+
+  color: #66636a;
+
+  font-size: 9px;
+  font-weight: 700;
+}
+
+
+.coach-more__feature svg {
+  color: #ff5722;
+}
+
+
+/* Responsive */
+
+@media (max-width: 900px) {
+  .coach-more {
+    width: calc(100% - 36px);
+  }
+
+  .coach-more__top {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+
+@media (max-width: 600px) {
+  .coach-more {
+    margin-bottom: 50px;
+  }
+
+  .coach-more__cta {
+    width: 100%;
+
+    box-sizing: border-box;
+  }
+}
+
+/* =========================================================
+   REMOVE EXCESS SPACE BEFORE WHY AETHER
+   ========================================================= */
+
+.coach-more {
+  margin-bottom: 45px !important;
+  padding-bottom: 25px !important;
+}
+

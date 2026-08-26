@@ -1,8 +1,10 @@
-﻿import {
+import {
   useEffect,
   useMemo,
   useState,
 } from "react";
+
+import { useNavigate } from "@tanstack/react-router";
 
 import {
   Activity,
@@ -198,12 +200,9 @@ function TrainingTypeResponseTable({
           </p>
         </div>
 
-        <button
-          type="button"
-          className="text-[8px] font-semibold text-violet-600"
-        >
-          View detailed comparison →
-        </button>
+        <span className="text-[8px] font-semibold text-violet-600">
+          Comparison shown below
+        </span>
       </div>
 
       <div className="mt-3 grid grid-cols-[160px_130px_165px_85px_1fr] gap-3 border-b border-border pb-2 text-[7px] font-semibold text-muted-foreground">
@@ -230,12 +229,11 @@ function TrainingTypeResponseTable({
         <div className="divide-y divide-border/60">
           {comparisons.map(
             (item) => (
-              <button
+              <div
                 key={
                   item.label
                 }
-                type="button"
-                className="grid w-full grid-cols-[160px_130px_165px_85px_1fr] items-center gap-3 py-3 text-left transition hover:bg-muted/15"
+                className="grid w-full grid-cols-[160px_130px_165px_85px_1fr] items-center gap-3 py-3 text-left"
               >
                 <div className="flex items-center gap-2">
                   <div className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-violet-50">
@@ -330,7 +328,7 @@ function TrainingTypeResponseTable({
 
                   <ChevronRight className="h-3 w-3 text-muted-foreground" />
                 </div>
-              </button>
+              </div>
             ),
           )}
         </div>
@@ -350,12 +348,9 @@ function TrainingTypeResponseTable({
             </p>
           </div>
 
-          <button
-            type="button"
-            className="text-[8px] font-semibold text-orange-700"
-          >
-            Review sessions →
-          </button>
+          <span className="text-[8px] font-semibold text-orange-700">
+            Review sessions below
+          </span>
         </div>
       )}
     </section>
@@ -364,6 +359,7 @@ function TrainingTypeResponseTable({
 
 
 export function TrainingResponse() {
+  const navigate = useNavigate();
   const [
     metric,
     setMetric,
@@ -1331,12 +1327,9 @@ export function TrainingResponse() {
           </div>
 
           <div className="mt-2 flex items-center justify-between rounded-lg border border-violet-100 bg-violet-50/50 px-2.5 py-2">
-            <button
-              type="button"
-              className="text-[8px] font-semibold text-violet-700"
-            >
-              View response distribution →
-            </button>
+            <span className="text-[8px] font-semibold text-violet-700">
+              Response distribution
+            </span>
 
             <div className="flex gap-2 text-[7px]">
               <span className="text-green-600">
@@ -1388,7 +1381,18 @@ export function TrainingResponse() {
                   <button
                     key={`${session.athleteId}-${session.workoutType}-${session.date}`}
                     type="button"
-                    className="flex w-full items-center gap-2 py-2 text-left"
+                    onClick={() =>
+                      navigate({
+                        to: "/coach-manager/athletes/$athleteId",
+                        params: {
+                          athleteId: session.athleteId,
+                        },
+                        search: {
+                          from: "athletes",
+                        },
+                      })
+                    }
+                    className="flex w-full items-center gap-2 py-2 text-left transition hover:bg-muted/20"
                   >
                     <div className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-violet-50">
                       <Activity className="h-4 w-4 text-violet-600" />
@@ -1450,16 +1454,7 @@ export function TrainingResponse() {
 
           {sessionsToReview.length >
             5 && (
-            <button
-              type="button"
-              className="mt-2 text-[8px] font-semibold text-violet-600"
-            >
-              View all{" "}
-              {
-                sessionsToReview.length
-              }{" "}
-              sessions →
-            </button>
+            <p className="mt-2 text-[8px] font-semibold text-violet-600">Showing the 5 most recent sessions requiring review</p>
           )}
         </section>
 
@@ -1569,12 +1564,9 @@ export function TrainingResponse() {
           </p>
         </div>
 
-        <button
-          type="button"
-          className="rounded-xl border border-violet-200 bg-white px-3 py-2 text-[8px] font-semibold text-violet-700"
-        >
-          View evidence →
-        </button>
+        <span className="rounded-xl border border-violet-200 bg-white px-3 py-2 text-[8px] font-semibold text-violet-700">
+          Evidence shown above
+        </span>
       </section>
 
       <p className="text-center text-[7px] text-muted-foreground">
@@ -1584,3 +1576,5 @@ export function TrainingResponse() {
     </div>
   );
 }
+
+

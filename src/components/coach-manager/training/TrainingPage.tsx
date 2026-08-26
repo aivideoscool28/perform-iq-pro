@@ -289,7 +289,10 @@ export function TrainingPage() {
                 );
               }}
             />
-            <TrainingIntelligence athletes={athletes} />
+            <TrainingIntelligence
+              athletes={athletes}
+              onOpenIndividualPlans={() => openIndividualPlans()}
+            />
           </main>
 
           <TrainingSidebar
@@ -401,6 +404,7 @@ export function TrainingPage() {
     </div>
   );
 }
+
 
 
 

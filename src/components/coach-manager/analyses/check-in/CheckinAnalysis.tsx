@@ -1,4 +1,5 @@
-﻿import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "@tanstack/react-router";
+import { useEffect, useMemo, useState } from "react";
 
 import {
   getCoachCheckinData,
@@ -84,6 +85,7 @@ function getPerformanceFactorIcon(
 }
 
 export function CheckinAnalysis() {
+  const navigate = useNavigate();
   const [trendMetric, setTrendMetric] = useState<"RPE" | "Physical Feeling" | "Performance Quality" | "Goal Achievement">("RPE");
   const [trendMode, setTrendMode] =
     useState<"average" | "unusual">("average");
@@ -931,6 +933,17 @@ export function CheckinAnalysis() {
                 <button
                   key={item.athlete}
                   type="button"
+                  onClick={() =>
+                    navigate({
+                      to: "/coach-manager/athletes/$athleteId",
+                      params: {
+                        athleteId: item.athleteId,
+                      },
+                      search: {
+                        from: "athletes",
+                      },
+                    })
+                  }
                   className="flex w-full items-center justify-between rounded-xl border border-border px-3 py-2 text-left transition hover:bg-muted/20"
                 >
                   <div>
@@ -955,12 +968,9 @@ export function CheckinAnalysis() {
                 </button>
               ))}
 
-              <button
-                type="button"
-                className="text-[8px] font-semibold text-violet-600"
-              >
-                View all unusual responses →
-              </button>
+              <p className="text-[8px] font-semibold text-violet-600">
+                Showing unusual responses above
+              </p>
             </div>
           )}
         </section>
@@ -1063,12 +1073,9 @@ export function CheckinAnalysis() {
             ))}
           </div>
 
-          <button
-            type="button"
-            className="mt-3 rounded-lg border border-violet-100 bg-violet-50 px-2 py-1.5 text-[8px] font-semibold text-violet-700"
-          >
-            View 8 sessions →
-          </button>
+          <p className="mt-3 rounded-lg border border-violet-100 bg-violet-50 px-2 py-1.5 text-[8px] font-semibold text-violet-700">
+            Session evidence shown above
+          </p>
         </section>
 
         <section className="rounded-2xl border border-border bg-white p-2.5 shadow-sm">
@@ -1137,12 +1144,9 @@ export function CheckinAnalysis() {
               </p>
             </div>
 
-            <button
-              type="button"
-              className="text-[8px] font-semibold text-red-600"
-            >
-              View →
-            </button>
+            <span className="text-[8px] font-semibold text-red-600">
+              Review signal
+            </span>
           </div>
         </section>
       </div>
@@ -1200,12 +1204,9 @@ export function CheckinAnalysis() {
             ))}
           </div>
 
-          <button
-            type="button"
-            className="mt-3 text-[8px] font-semibold text-violet-600"
-          >
-            View factors in detail →
-          </button>
+          <p className="mt-3 text-[8px] font-semibold text-violet-600">
+            Factor summary shown above
+          </p>
         </section>
 
         <section className="rounded-2xl border border-border bg-white p-2.5 shadow-sm">
@@ -1290,12 +1291,9 @@ export function CheckinAnalysis() {
           </p>
         </div>
 
-        <button
-          type="button"
-          className="rounded-xl border border-violet-200 bg-white px-3 py-2 text-[8px] font-semibold text-violet-700"
-        >
-          View detailed AI report →
-        </button>
+        <span className="rounded-xl border border-violet-200 bg-white px-3 py-2 text-[8px] font-semibold text-violet-700">
+          AI insight shown here
+        </span>
       </section>
     </div>
   );

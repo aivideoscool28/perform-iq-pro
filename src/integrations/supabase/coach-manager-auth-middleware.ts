@@ -1,11 +1,8 @@
-import { createMiddleware } from "@tanstack/react-start";
+﻿import { createMiddleware } from "@tanstack/react-start";
 import { getRequest } from "@tanstack/react-start/server";
 import { createClient } from "@supabase/supabase-js";
 
 import type { Database } from "./types";
-
-const DEVELOPMENT_COACH_ID =
-  "8702a6f0-8e4b-45cb-88ef-51208375a28f";
 
 export const requireCoachManagerAuth =
   createMiddleware({ type: "function" }).server(
@@ -25,48 +22,28 @@ export const requireCoachManagerAuth =
         );
       }
 
-      /*
-       * DEVELOPMENT MODE
-       *
-       * Coach Manager always uses the fixed demo coach.
-       * This prevents an athlete login in the same browser
-       * from accidentally becoming the Coach Manager identity.
-       */
-      if (
-        process.env.NODE_ENV !== "production"
-      ) {
-        const {
-          supabaseAdmin,
-        } = await import(
-          "./client.server"
-        );
-
-        return next({
-          context: {
-            supabase: supabaseAdmin,
-            userId: DEVELOPMENT_COACH_ID,
-            isDevelopmentCoach: true,
-          },
-        });
-      }
-
-      /*
-       * PRODUCTION: REAL AUTHENTICATED COACH
-       */
-      const request = getRequest();
+      const request =
+        getRequest();
 
       const authHeader =
-        request?.headers?.get("authorization");
+        request?.headers?.get(
+          "authorization",
+        );
 
-      if (!authHeader?.startsWith("Bearer ")) {
+      if (
+        !authHeader?.startsWith(
+          "Bearer ",
+        )
+      ) {
         throw new Error(
           "Unauthorized: Coach login required.",
         );
       }
 
-      const token = authHeader.slice(
-        "Bearer ".length,
-      );
+      const token =
+        authHeader.slice(
+          "Bearer ".length,
+        );
 
       const supabase =
         createClient<Database>(
@@ -81,17 +58,28 @@ export const requireCoachManagerAuth =
             },
 
             auth: {
-              storage: undefined,
-              persistSession: false,
-              autoRefreshToken: false,
+              storage:
+                undefined,
+
+              persistSession:
+                false,
+
+              autoRefreshToken:
+                false,
             },
           },
         );
 
       const {
-        data: claimsData,
-        error: claimsError,
-      } = await supabase.auth.getClaims(token);
+        data:
+          claimsData,
+
+        error:
+          claimsError,
+      } =
+        await supabase.auth.getClaims(
+          token,
+        );
 
       const userId =
         claimsData?.claims?.sub;
@@ -105,11 +93,49 @@ export const requireCoachManagerAuth =
         );
       }
 
+      const {
+        data:
+          profile,
+
+        error:
+          profileError,
+      } =
+        await supabase
+          .from(
+            "profiles",
+          )
+          .select(
+            "role",
+          )
+          .eq(
+            "id",
+            userId,
+          )
+          .single();
+
+      if (
+        profileError
+      ) {
+        throw new Error(
+          `Could not verify coach role: ${profileError.message}`,
+        );
+      }
+
+      if (
+        profile.role !==
+        "coach"
+      ) {
+        throw new Error(
+          "Forbidden: Coach access required.",
+        );
+      }
+
       return next({
         context: {
           supabase,
           userId,
-          isDevelopmentCoach: false,
+          isDevelopmentCoach:
+            false,
         },
       });
     },
