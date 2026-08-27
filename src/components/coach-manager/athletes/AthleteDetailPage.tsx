@@ -189,8 +189,7 @@ export function AthleteDetailPage() {
     : backToTrainingResponse
       ? "Back to Training Response"
       : "Back to Athletes";
-
-  const [athlete, setAthlete] =
+const [athlete, setAthlete] =
     useState<AthleteProfile | null>(null);
 
   const [profileLoading, setProfileLoading] =
@@ -309,7 +308,18 @@ export function AthleteDetailPage() {
         </p>
 
         <Link
-          to={backTarget}
+          to={from === "training-response" || from === "checkin-analysis" || from === "regeneration-analysis" || from === "session-comparison" ? "/coach-manager/analyses" : backTarget}
+          search={
+            from === "training-response"
+              ? { tab: "training-response" }
+              : from === "checkin-analysis"
+                ? { tab: "checkin" }
+                : from === "regeneration-analysis"
+                  ? { tab: "regeneration" }
+                  : from === "session-comparison"
+                    ? { tab: "session-comparison" }
+                    : undefined
+          }
           className="mt-4 inline-flex items-center gap-2 text-xs font-semibold text-orange-600"
         >
           <ArrowLeft className="h-3.5 w-3.5" />
@@ -415,7 +425,18 @@ export function AthleteDetailPage() {
   return (
     <div className="mx-auto max-w-[1180px] space-y-3">
       <Link
-        to={backTarget}
+        to={from === "training-response" || from === "checkin-analysis" || from === "regeneration-analysis" || from === "session-comparison" ? "/coach-manager/analyses" : backTarget}
+          search={
+            from === "training-response"
+              ? { tab: "training-response" }
+              : from === "checkin-analysis"
+                ? { tab: "checkin" }
+                : from === "regeneration-analysis"
+                  ? { tab: "regeneration" }
+                  : from === "session-comparison"
+                    ? { tab: "session-comparison" }
+                    : undefined
+          }
         className="inline-flex items-center gap-2 text-[10px] font-semibold text-muted-foreground transition hover:text-orange-600"
       >
         <ArrowLeft className="h-3.5 w-3.5" />
@@ -960,5 +981,8 @@ export function AthleteDetailPage() {
     </div>
   );
 }
+
+
+
 
 

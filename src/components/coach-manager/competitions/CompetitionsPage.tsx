@@ -1,13 +1,17 @@
-﻿import {
+import {
   useMemo,
   useState,
 } from "react";
 
+import { useNavigate } from "@tanstack/react-router";
+
 import {
+  ArrowRight,
   CalendarDays,
   ChevronRight,
   Flag,
   MapPin,
+  Pencil,
   Plus,
   Search,
   Trash2,
@@ -24,6 +28,10 @@ import {
 import {
   useCoachAthletes,
 } from "@/hooks/useCoachAthletes";
+
+import {
+  CompetitionEditor,
+} from "@/components/coach-manager/competitions/CompetitionEditor";
 
 
 function formatCompetitionDate(
@@ -545,6 +553,7 @@ function CompetitionDetail({
   athletes,
   onSaveEntry,
   onRemoveEntry,
+  onEdit,
   onDelete,
 }: {
   competition:
@@ -576,6 +585,9 @@ function CompetitionDetail({
       athleteId:
         string,
     ) => Promise<void>;
+
+  onEdit:
+    () => void;
 
   onDelete:
     (
@@ -746,23 +758,35 @@ function CompetitionDetail({
             </div>
           </div>
 
-          <button
-            type="button"
-            onClick={() => {
-              if (
-                window.confirm(
-                  `Delete ${competition.name}?`,
-                )
-              ) {
-                void onDelete(
-                  competition.id,
-                );
-              }
-            }}
-            className="grid h-8 w-8 place-items-center rounded-lg border border-red-100 text-red-500 hover:bg-red-50"
-          >
-            <Trash2 className="h-3.5 w-3.5" />
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={onEdit}
+              className="flex h-8 items-center gap-1.5 rounded-lg border border-border px-2.5 text-[7px] font-semibold text-muted-foreground transition hover:bg-muted/20"
+            >
+              <Pencil className="h-3 w-3" />
+              Edit
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                if (
+                  window.confirm(
+                    `Delete ${competition.name}?`,
+                  )
+                ) {
+                  void onDelete(
+                    competition.id,
+                  );
+                }
+              }}
+              className="grid h-8 w-8 place-items-center rounded-lg border border-red-100 text-red-500 hover:bg-red-50"
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+            </button>
+          </div>
+
         </div>
 
         <div className="mt-3 grid grid-cols-4 gap-2">
@@ -1049,11 +1073,14 @@ function CompetitionDetail({
 
 
 export function CompetitionsPage() {
+  const navigate = useNavigate();
+
   const {
     competitions,
     loading,
     error,
     createCompetition,
+    updateCompetition,
     deleteCompetition,
     saveEntry,
     removeEntry,
@@ -1082,6 +1109,20 @@ export function CompetitionsPage() {
   const [
     adding,
     setAdding,
+  ] =
+    useState(false);
+
+  const [
+    editingCompetition,
+    setEditingCompetition,
+  ] =
+    useState<CompetitionWithEntries | null>(
+      null,
+    );
+
+  const [
+    competitionSaving,
+    setCompetitionSaving,
   ] =
     useState(false);
 
@@ -1249,6 +1290,40 @@ export function CompetitionsPage() {
         >
           <Plus className="h-3.5 w-3.5" />
           Add competition
+        </button>
+      </section>
+
+      <section className="flex items-center justify-between rounded-2xl border border-violet-100 bg-violet-50/30 px-4 py-3">
+        <div className="flex items-center gap-3">
+          <div className="grid h-9 w-9 place-items-center rounded-xl bg-white text-violet-600 shadow-sm">
+            <CalendarDays className="h-4 w-4" />
+          </div>
+
+          <div>
+            <p className="text-[9px] font-bold">
+              Competition Calendar
+            </p>
+
+            <p className="mt-0.5 text-[7px] text-muted-foreground">
+              Competition dates are connected with your Training calendar.
+            </p>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          onClick={() =>
+            navigate({
+              to: "/coach-manager/training",
+              search: {
+                view: "calendar",
+              },
+            })
+          }
+          className="flex items-center gap-2 rounded-xl border border-violet-100 bg-white px-3 py-2 text-[8px] font-semibold text-violet-700 transition hover:bg-violet-50"
+        >
+          Go to Calendar
+          <ArrowRight className="h-3.5 w-3.5" />
         </button>
       </section>
 
@@ -1486,6 +1561,11 @@ export function CompetitionsPage() {
             onRemoveEntry={
               removeEntry
             }
+            onEdit={() => {
+              setEditingCompetition(
+                selectedCompetition,
+              );
+            }}
             onDelete={async (
               competitionId,
             ) => {
@@ -1514,9 +1594,56 @@ export function CompetitionsPage() {
           </section>
         )}
       </div>
+
+      <CompetitionEditor
+        competition={editingCompetition}
+        open={editingCompetition !== null}
+        saving={competitionSaving}
+        onClose={() => {
+          setEditingCompetition(null);
+        }}
+        onSave={async (values: {
+          name: string;
+          competition_date: string;
+          competition_type: string;
+          venue: string | null;
+          location: string | null;
+          priority: string | null;
+          notes: string | null;
+        }) => {
+          if (!editingCompetition) return;
+
+          try {
+            setCompetitionSaving(true);
+
+            await updateCompetition(
+              editingCompetition.id,
+              values,
+            );
+
+            setEditingCompetition(null);
+          } finally {
+            setCompetitionSaving(false);
+          }
+        }}
+      />
+
     </div>
   );
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

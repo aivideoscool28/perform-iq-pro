@@ -116,15 +116,47 @@ function normalizeMessageContent(content: any) {
       };
     }
 
-    // Convert the old OpenAI-compatible image format
-    // into the AI SDK image format.
+    /*
+     * Video Analysis sends extracted frames using the old
+     * OpenAI-compatible image_url format:
+     *
+     * data:image/jpeg;base64,...
+     *
+     * The AI SDK should receive the actual base64 payload and
+     * its media type separately rather than the complete data URL.
+     */
     if (part?.type === "image_url") {
+      const imageUrl = part.image_url?.url;
+
+      if (typeof imageUrl !== "string" || !imageUrl.trim()) {
+        throw new Error("AI image input is missing.");
+      }
+
+      const dataUrlMatch = imageUrl.match(
+        /^data:([^;,]+);base64,(.+)$/s,
+      );
+
+      if (dataUrlMatch) {
+        const [, mediaType, base64Data] =
+          dataUrlMatch;
+
+        return {
+          type: "image",
+          image: base64Data,
+          mediaType,
+        };
+      }
+
+      /*
+       * Keep normal remote image URLs supported too.
+       */
       return {
         type: "image",
-        image: part.image_url?.url,
+        image: new URL(imageUrl),
       };
     }
 
     return part;
   });
 }
+

@@ -90,6 +90,9 @@ export function CheckinAnalysis() {
   const [trendMode, setTrendMode] =
     useState<"average" | "unusual">("average");
 
+  const [showOutcomeReview, setShowOutcomeReview] =
+    useState(false);
+
   const [data, setData] =
     useState<CoachCheckinData | null>(null);
 
@@ -282,6 +285,72 @@ export function CheckinAnalysis() {
       [data],
     );
 
+  const outcomeReviewSessions =
+    useMemo(
+      () =>
+        currentPeriodCheckins
+          .filter(
+            (checkin) =>
+              checkin.session_goal_achieved === "Nein" ||
+              checkin.performance_quality ===
+                "Stark abgefallen",
+          )
+          .map((checkin) => {
+            const reasons: string[] = [];
+
+            if (
+              checkin.session_goal_achieved ===
+              "Nein"
+            ) {
+              reasons.push(
+                "Goal not achieved",
+              );
+            }
+
+            if (
+              checkin.performance_quality ===
+              "Stark abgefallen"
+            ) {
+              reasons.push(
+                "Performance strongly declined",
+              );
+            }
+
+            return {
+              athleteId:
+                checkin.user_id,
+
+              athlete:
+                athleteNameById.get(
+                  checkin.user_id,
+                ) ??
+                "Unknown athlete",
+
+              date:
+                checkin.checkin_date,
+
+              workoutType:
+                typeof checkin.workout_type ===
+                  "string" &&
+                checkin.workout_type.trim()
+                  .length > 0
+                  ? checkin.workout_type.trim()
+                  : "Training",
+
+              reason:
+                reasons.join(" · "),
+            };
+          })
+          .sort(
+            (a, b) =>
+              new Date(b.date).getTime() -
+              new Date(a.date).getTime(),
+          ),
+      [
+        currentPeriodCheckins,
+        athleteNameById,
+      ],
+    );
   const unusualResponses =
     useMemo(
       () =>
@@ -989,7 +1058,49 @@ export function CheckinAnalysis() {
 
           {trendMode === "average" ? (
             <>
-              <div className="relative mt-3 h-36">
+              <div className="mt-3 grid grid-cols-3 gap-1.5">
+                <div className="rounded-lg bg-violet-50 px-2 py-1.5">
+                  <p className="text-[6px] font-semibold uppercase tracking-wide text-violet-500">
+                    Current
+                  </p>
+                  <p className="mt-0.5 text-[10px] font-bold text-violet-700">
+                    {currentTrendAverage !== null ? currentTrendAverage.toFixed(1) : "—"}
+                  </p>
+                </div>
+
+                <div className="rounded-lg bg-slate-50 px-2 py-1.5">
+                  <p className="text-[6px] font-semibold uppercase tracking-wide text-slate-400">
+                    Previous
+                  </p>
+                  <p className="mt-0.5 text-[10px] font-bold text-slate-600">
+                    {previousTrendAverage !== null
+                      ? previousTrendAverage.toFixed(1)
+                      : "—"}
+                  </p>
+                </div>
+
+                <div className="rounded-lg border border-border px-2 py-1.5">
+                  <p className="text-[6px] font-semibold uppercase tracking-wide text-muted-foreground">
+                    Change
+                  </p>
+                  <p className="mt-0.5 text-[9px] font-bold">
+                    {currentTrendAverage !== null &&
+                    previousTrendAverage !== null
+                      ? `${
+                          currentTrendAverage > previousTrendAverage
+                            ? "↑"
+                            : currentTrendAverage < previousTrendAverage
+                              ? "↓"
+                              : "→"
+                        } ${Math.abs(
+                          currentTrendAverage - previousTrendAverage,
+                        ).toFixed(1)}`
+                      : "—"}
+                  </p>
+                </div>
+              </div>
+
+              <div className="relative mt-2 h-36">
                 <div className="absolute inset-x-0 top-0 bottom-5 flex flex-col justify-between">
                   {trendAxisLabels.map((value) => (
                     <div key={value} className="flex items-center gap-2">
@@ -1267,70 +1378,94 @@ export function CheckinAnalysis() {
           </h3>
 
           <p className="mt-1 text-[8px] text-muted-foreground">
-            Goal achievement × performance quality
+            Simple session outcome based on goal achievement and performance quality
           </p>
 
-          <div className="mt-3">
-            <div className="grid grid-cols-[72px_repeat(4,1fr)] gap-1.5 text-center">
-              <div />
+          {(() => {
+            const workedWell =
+              matrix[0][0].count +
+              matrix[0][1].count;
 
-              {[
-                "Improved",
-                "Stable",
-                "Declined",
-                "Can't judge",
-              ].map((label) => (
-                <div
-                  key={label}
-                  className="px-1 pb-1 text-[6px] font-medium leading-tight text-muted-foreground"
-                >
-                  {label}
-                </div>
-              ))}
+            const review =
+              summary.sessionsToReview;
 
-              {matrix.map((row, rowIndex) => (
-                <>
-                  <div
-                    key={`label-${rowIndex}`}
-                    className="flex items-center pr-1 text-left text-[7px] font-semibold leading-tight"
-                  >
-                    {["Achieved", "Partly achieved", "Not achieved"][rowIndex]}
+            const mixed =
+              Math.max(
+                0,
+                summary.totalSessions -
+                  workedWell -
+                  review,
+              );
+
+            const total =
+              workedWell + mixed + review;
+
+            const percentage = (count: number) =>
+              total > 0
+                ? Math.round((count / total) * 100)
+                : 0;
+
+            return (
+              <>
+                <div className="mt-3 grid grid-cols-3 gap-2">
+                  <div className="rounded-xl border border-green-100 bg-green-50/60 p-2.5">
+                    <p className="text-[8px] font-bold text-green-700">
+                      Worked well
+                    </p>
+
+                    <p className="mt-1 text-xl font-bold text-green-700">
+                      {percentage(workedWell)}%
+                    </p>
+
+                    <p className="text-[7px] text-muted-foreground">
+                      {workedWell} sessions
+                    </p>
                   </div>
 
-                  {row.map((cell, cellIndex) => (
-                    <button
-                      key={`${rowIndex}-${cellIndex}`}
-                      type="button"
-                      className={`rounded-lg border border-white px-1.5 py-1.5 text-center ${cell.style}`}
-                    >
-                      <p className="text-[11px] font-bold leading-none">{cell.value}</p>
-                      {cell.count > 0 && (
-                        <p className="mt-1 text-[6px] leading-none opacity-70">
-                          {cell.count} sessions
-                        </p>
-                      )}
-                    </button>
-                  ))}
-                </>
-              ))}
-            </div>
-          </div>
+                  <div className="rounded-xl border border-blue-100 bg-blue-50/60 p-2.5">
+                    <p className="text-[8px] font-bold text-blue-700">
+                      Mixed
+                    </p>
 
-          <div className="mt-2 flex items-center justify-between rounded-lg bg-red-50 px-2.5 py-1.5">
-            <div>
-              <p className="text-[8px] font-semibold text-red-700">
-                {summary.sessionsToReview} sessions worth reviewing
-              </p>
+                    <p className="mt-1 text-xl font-bold text-blue-700">
+                      {percentage(mixed)}%
+                    </p>
 
-              <p className="text-[7px] text-muted-foreground">
-                Goal missed or performance quality declined significantly.
-              </p>
-            </div>
+                    <p className="text-[7px] text-muted-foreground">
+                      {mixed} sessions
+                    </p>
+                  </div>
 
-            <span className="text-[8px] font-semibold text-red-600">
-              Review signal
-            </span>
-          </div>
+                  <div className="rounded-xl border border-red-100 bg-red-50/60 p-2.5">
+                    <p className="text-[8px] font-bold text-red-700">
+                      Review
+                    </p>
+
+                    <p className="mt-1 text-xl font-bold text-red-700">
+                      {percentage(review)}%
+                    </p>
+
+                    <p className="text-[7px] text-muted-foreground">
+                      {review} sessions
+                    </p>
+                  </div>
+                </div>
+
+                <div className="mt-2 rounded-lg bg-muted/30 px-2.5 py-2">
+                  <p className="text-[7px] leading-relaxed text-muted-foreground">
+                    <span className="font-semibold text-foreground">
+                      Worked well
+                    </span>{" "}
+                    = goal achieved with stable or improved performance.{" "}
+                    <span className="font-semibold text-foreground">
+                      Review
+                    </span>{" "}
+                    = goal missed or performance declined. Other sessions are shown as mixed.
+                  </p>
+                </div>
+              </>
+            );
+          })()}
         </section>
       </div>
 
@@ -1481,6 +1616,11 @@ export function CheckinAnalysis() {
     </div>
   );
 }
+
+
+
+
+
 
 
 

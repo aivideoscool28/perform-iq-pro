@@ -130,6 +130,7 @@ function Page() {
   const [scoreOpen, setScoreOpen] = useState(false);
 
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
+  const [shareSuccess, setShareSuccess] = useState(false);
   const [videoName, setVideoName] = useState<string | null>(null);
 
   const [analysisState, setAnalysisState] = useState<
@@ -143,6 +144,9 @@ function Page() {
   );
 
   const [result, setResult] = useState<AnalysisResult | null>(null);
+
+  const [savedAnalysisId, setSavedAnalysisId] =
+    useState<string | null>(null);
 
   const [discipline, setDiscipline] = useState("Sprint");
 const runAnalysis = useServerFn(analyzeVideoFrames);
@@ -280,7 +284,10 @@ const runAnalysis = useServerFn(analyzeVideoFrames);
 
       setResult(analysisResult);
 
-      const { error: saveAnalysisError } =
+      const {
+        data: savedAnalysis,
+        error: saveAnalysisError,
+      } =
         await supabase
           .from("video_analyses")
           .insert({
@@ -295,7 +302,9 @@ const runAnalysis = useServerFn(analyzeVideoFrames);
             kpis: data.kpis,
             score_breakdown: data.score_breakdown,
             ai_analysis: data,
-          });
+          })
+          .select("id")
+          .single();
 
       if (saveAnalysisError) {
         console.error(
@@ -306,6 +315,10 @@ const runAnalysis = useServerFn(analyzeVideoFrames);
         toast.error(
           "Analyse erstellt, aber Speichern fehlgeschlagen.",
         );
+      }
+
+      if (!saveAnalysisError && savedAnalysis?.id) {
+        setSavedAnalysisId(savedAnalysis.id);
       }
 
       setAnalysisProgress(100);
@@ -333,6 +346,28 @@ const runAnalysis = useServerFn(analyzeVideoFrames);
     }
   };
 
+  const shareAnalysisWithCoach = async () => {
+    if (!savedAnalysisId) {
+      toast.error("Die Analyse wurde noch nicht gespeichert.");
+      return;
+    }
+
+    const { error } = await supabase
+      .from("video_analyses")
+      .update({
+        shared_with_coach: true,
+      })
+      .eq("id", savedAnalysisId);
+
+    if (error) {
+      console.error("Share with coach failed:", error);
+      toast.error("Teilen mit dem Trainer fehlgeschlagen.");
+      return;
+    }
+
+    toast.success("Videoanalyse wurde mit deinem Trainer geteilt.");
+    setShareSuccess(true);
+  };
   useEffect(() => {
     if (analysisState !== "analyzing") return;
 
@@ -380,6 +415,16 @@ const runAnalysis = useServerFn(analyzeVideoFrames);
             onOpenScore={() => setScoreOpen(true)}
             onOpenFinding={setOpen}
           />
+
+          {result && savedAnalysisId && (
+            <button
+              type="button"
+              onClick={shareAnalysisWithCoach}
+              className="w-full rounded-xl bg-orange-500 px-4 py-3 text-sm font-semibold text-white transition hover:bg-orange-600"
+            >
+              Mit Trainer teilen
+            </button>
+          )}
         </div>
 
         <KpiPanel kpis={currentKpis} />
@@ -392,9 +437,39 @@ const runAnalysis = useServerFn(analyzeVideoFrames);
         />
 
       </EditableShell>
+      {shareSuccess && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
+          <div className="w-full max-w-md rounded-2xl bg-white p-7 text-center shadow-2xl">
+            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-orange-100 text-2xl text-orange-600">
+              ✓
+            </div>
+
+            <h2 className="text-xl font-bold text-slate-900">
+              Erfolgreich geteilt
+            </h2>
+
+            <p className="mt-2 text-sm text-slate-600">
+              Deine Videoanalyse wurde erfolgreich mit deinem Trainer geteilt.
+            </p>
+
+            <button
+              type="button"
+              onClick={() => setShareSuccess(false)}
+              className="mt-6 w-full rounded-xl bg-orange-500 px-4 py-3 font-semibold text-white transition hover:bg-orange-600"
+            >
+              Fertig
+            </button>
+          </div>
+        </div>
+      )}
+
     </AppShell>
   );
 }
+
+
+
+
 
 
 

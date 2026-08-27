@@ -56,7 +56,8 @@ export function CoachSideMenu() {
 
         <Link
           to="/coach-manager/training"
-          className={linkClass}
+            search={{ view: undefined }}
+            className={linkClass}
         >
           <CalendarDays className="h-4 w-4" />
           Training
@@ -64,6 +65,7 @@ export function CoachSideMenu() {
 
         <Link
           to="/coach-manager/analyses"
+          search={{ tab: "overview" }}
           className={linkClass}
         >
           <ChartNoAxesCombined className="h-4 w-4" />
@@ -120,6 +122,11 @@ export function CoachSideMenu() {
     </aside>
   );
 }
+
+
+
+
+
 
 
 

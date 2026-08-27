@@ -1,4 +1,4 @@
-﻿import { Link } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import {
   Clock,
   Dumbbell,
@@ -57,6 +57,7 @@ export function TodaysTrainingCard({
 
           <Link
             to="/coach-manager/training"
+            search={{ view: undefined }}
             className="rounded-xl border border-orange-400 bg-white px-6 py-3 text-sm font-semibold text-orange-600 transition hover:bg-orange-50"
           >
             Go to Training →
@@ -176,6 +177,7 @@ export function TodaysTrainingCard({
         <div className="flex justify-end">
           <Link
             to="/coach-manager/training"
+            search={{ view: undefined }}
             className="rounded-xl border border-orange-400 bg-white px-6 py-3 text-sm font-semibold text-orange-600 transition hover:bg-orange-50"
           >
             View Training →
@@ -185,3 +187,7 @@ export function TodaysTrainingCard({
     </section>
   );
 }
+
+
+
+

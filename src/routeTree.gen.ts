@@ -29,6 +29,7 @@ import { Route as CoachRouteImport } from './routes/coach'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CoachManagerIndexRouteImport } from './routes/coach-manager/index'
+import { Route as VideoBeforeCoachShareButtonRouteImport } from './routes/video.before-coach-share-button'
 import { Route as RecoveryBeforeDotsRouteImport } from './routes/recovery.before-dots'
 import { Route as IndexBeforeRegenerationRouteImport } from './routes/index.before-regeneration'
 import { Route as CoachManagerVideoRouteImport } from './routes/coach-manager/video'
@@ -39,6 +40,8 @@ import { Route as CoachManagerAthletesRouteImport } from './routes/coach-manager
 import { Route as CoachManagerAnalysesRouteImport } from './routes/coach-manager/analyses'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as CoachManagerAthletesAthleteIdRouteImport } from './routes/coach-manager/athletes.$athleteId'
+import { Route as CoachManagerAnalysesBeforeAnalysisBackNavigationRouteImport } from './routes/coach-manager/analyses.before-analysis-back-navigation'
+import { Route as CoachManagerAthletesAthleteIdBeforeAnalysisBackNavigationRouteImport } from './routes/coach-manager/athletes.$athleteId.before-analysis-back-navigation'
 
 const WorkoutAnalysisRoute = WorkoutAnalysisRouteImport.update({
   id: '/workout-analysis',
@@ -140,6 +143,12 @@ const CoachManagerIndexRoute = CoachManagerIndexRouteImport.update({
   path: '/',
   getParentRoute: () => CoachManagerRoute,
 } as any)
+const VideoBeforeCoachShareButtonRoute =
+  VideoBeforeCoachShareButtonRouteImport.update({
+    id: '/before-coach-share-button',
+    path: '/before-coach-share-button',
+    getParentRoute: () => VideoRoute,
+  } as any)
 const RecoveryBeforeDotsRoute = RecoveryBeforeDotsRouteImport.update({
   id: '/before-dots',
   path: '/before-dots',
@@ -192,6 +201,18 @@ const CoachManagerAthletesAthleteIdRoute =
     path: '/$athleteId',
     getParentRoute: () => CoachManagerAthletesRoute,
   } as any)
+const CoachManagerAnalysesBeforeAnalysisBackNavigationRoute =
+  CoachManagerAnalysesBeforeAnalysisBackNavigationRouteImport.update({
+    id: '/before-analysis-back-navigation',
+    path: '/before-analysis-back-navigation',
+    getParentRoute: () => CoachManagerAnalysesRoute,
+  } as any)
+const CoachManagerAthletesAthleteIdBeforeAnalysisBackNavigationRoute =
+  CoachManagerAthletesAthleteIdBeforeAnalysisBackNavigationRouteImport.update({
+    id: '/before-analysis-back-navigation',
+    path: '/before-analysis-back-navigation',
+    getParentRoute: () => CoachManagerAthletesAthleteIdRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -211,10 +232,10 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/settings': typeof SettingsRoute
   '/training': typeof TrainingRoute
-  '/video': typeof VideoRoute
+  '/video': typeof VideoRouteWithChildren
   '/workout-analysis': typeof WorkoutAnalysisRoute
   '/api/chat': typeof ApiChatRoute
-  '/coach-manager/analyses': typeof CoachManagerAnalysesRoute
+  '/coach-manager/analyses': typeof CoachManagerAnalysesRouteWithChildren
   '/coach-manager/athletes': typeof CoachManagerAthletesRouteWithChildren
   '/coach-manager/competitions': typeof CoachManagerCompetitionsRoute
   '/coach-manager/notes': typeof CoachManagerNotesRoute
@@ -222,8 +243,11 @@ export interface FileRoutesByFullPath {
   '/coach-manager/video': typeof CoachManagerVideoRoute
   '/index/before-regeneration': typeof IndexBeforeRegenerationRoute
   '/recovery/before-dots': typeof RecoveryBeforeDotsRoute
+  '/video/before-coach-share-button': typeof VideoBeforeCoachShareButtonRoute
   '/coach-manager/': typeof CoachManagerIndexRoute
-  '/coach-manager/athletes/$athleteId': typeof CoachManagerAthletesAthleteIdRoute
+  '/coach-manager/analyses/before-analysis-back-navigation': typeof CoachManagerAnalysesBeforeAnalysisBackNavigationRoute
+  '/coach-manager/athletes/$athleteId': typeof CoachManagerAthletesAthleteIdRouteWithChildren
+  '/coach-manager/athletes/$athleteId/before-analysis-back-navigation': typeof CoachManagerAthletesAthleteIdBeforeAnalysisBackNavigationRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -242,10 +266,10 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/settings': typeof SettingsRoute
   '/training': typeof TrainingRoute
-  '/video': typeof VideoRoute
+  '/video': typeof VideoRouteWithChildren
   '/workout-analysis': typeof WorkoutAnalysisRoute
   '/api/chat': typeof ApiChatRoute
-  '/coach-manager/analyses': typeof CoachManagerAnalysesRoute
+  '/coach-manager/analyses': typeof CoachManagerAnalysesRouteWithChildren
   '/coach-manager/athletes': typeof CoachManagerAthletesRouteWithChildren
   '/coach-manager/competitions': typeof CoachManagerCompetitionsRoute
   '/coach-manager/notes': typeof CoachManagerNotesRoute
@@ -253,8 +277,11 @@ export interface FileRoutesByTo {
   '/coach-manager/video': typeof CoachManagerVideoRoute
   '/index/before-regeneration': typeof IndexBeforeRegenerationRoute
   '/recovery/before-dots': typeof RecoveryBeforeDotsRoute
+  '/video/before-coach-share-button': typeof VideoBeforeCoachShareButtonRoute
   '/coach-manager': typeof CoachManagerIndexRoute
-  '/coach-manager/athletes/$athleteId': typeof CoachManagerAthletesAthleteIdRoute
+  '/coach-manager/analyses/before-analysis-back-navigation': typeof CoachManagerAnalysesBeforeAnalysisBackNavigationRoute
+  '/coach-manager/athletes/$athleteId': typeof CoachManagerAthletesAthleteIdRouteWithChildren
+  '/coach-manager/athletes/$athleteId/before-analysis-back-navigation': typeof CoachManagerAthletesAthleteIdBeforeAnalysisBackNavigationRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -275,10 +302,10 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/settings': typeof SettingsRoute
   '/training': typeof TrainingRoute
-  '/video': typeof VideoRoute
+  '/video': typeof VideoRouteWithChildren
   '/workout-analysis': typeof WorkoutAnalysisRoute
   '/api/chat': typeof ApiChatRoute
-  '/coach-manager/analyses': typeof CoachManagerAnalysesRoute
+  '/coach-manager/analyses': typeof CoachManagerAnalysesRouteWithChildren
   '/coach-manager/athletes': typeof CoachManagerAthletesRouteWithChildren
   '/coach-manager/competitions': typeof CoachManagerCompetitionsRoute
   '/coach-manager/notes': typeof CoachManagerNotesRoute
@@ -286,8 +313,11 @@ export interface FileRoutesById {
   '/coach-manager/video': typeof CoachManagerVideoRoute
   '/index/before-regeneration': typeof IndexBeforeRegenerationRoute
   '/recovery/before-dots': typeof RecoveryBeforeDotsRoute
+  '/video/before-coach-share-button': typeof VideoBeforeCoachShareButtonRoute
   '/coach-manager/': typeof CoachManagerIndexRoute
-  '/coach-manager/athletes/$athleteId': typeof CoachManagerAthletesAthleteIdRoute
+  '/coach-manager/analyses/before-analysis-back-navigation': typeof CoachManagerAnalysesBeforeAnalysisBackNavigationRoute
+  '/coach-manager/athletes/$athleteId': typeof CoachManagerAthletesAthleteIdRouteWithChildren
+  '/coach-manager/athletes/$athleteId/before-analysis-back-navigation': typeof CoachManagerAthletesAthleteIdBeforeAnalysisBackNavigationRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -320,8 +350,11 @@ export interface FileRouteTypes {
     | '/coach-manager/video'
     | '/index/before-regeneration'
     | '/recovery/before-dots'
+    | '/video/before-coach-share-button'
     | '/coach-manager/'
+    | '/coach-manager/analyses/before-analysis-back-navigation'
     | '/coach-manager/athletes/$athleteId'
+    | '/coach-manager/athletes/$athleteId/before-analysis-back-navigation'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -351,8 +384,11 @@ export interface FileRouteTypes {
     | '/coach-manager/video'
     | '/index/before-regeneration'
     | '/recovery/before-dots'
+    | '/video/before-coach-share-button'
     | '/coach-manager'
+    | '/coach-manager/analyses/before-analysis-back-navigation'
     | '/coach-manager/athletes/$athleteId'
+    | '/coach-manager/athletes/$athleteId/before-analysis-back-navigation'
   id:
     | '__root__'
     | '/'
@@ -383,8 +419,11 @@ export interface FileRouteTypes {
     | '/coach-manager/video'
     | '/index/before-regeneration'
     | '/recovery/before-dots'
+    | '/video/before-coach-share-button'
     | '/coach-manager/'
+    | '/coach-manager/analyses/before-analysis-back-navigation'
     | '/coach-manager/athletes/$athleteId'
+    | '/coach-manager/athletes/$athleteId/before-analysis-back-navigation'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -405,7 +444,7 @@ export interface RootRouteChildren {
   ResetPasswordRoute: typeof ResetPasswordRoute
   SettingsRoute: typeof SettingsRoute
   TrainingRoute: typeof TrainingRoute
-  VideoRoute: typeof VideoRoute
+  VideoRoute: typeof VideoRouteWithChildren
   WorkoutAnalysisRoute: typeof WorkoutAnalysisRoute
   ApiChatRoute: typeof ApiChatRoute
   IndexBeforeRegenerationRoute: typeof IndexBeforeRegenerationRoute
@@ -553,6 +592,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CoachManagerIndexRouteImport
       parentRoute: typeof CoachManagerRoute
     }
+    '/video/before-coach-share-button': {
+      id: '/video/before-coach-share-button'
+      path: '/before-coach-share-button'
+      fullPath: '/video/before-coach-share-button'
+      preLoaderRoute: typeof VideoBeforeCoachShareButtonRouteImport
+      parentRoute: typeof VideoRoute
+    }
     '/recovery/before-dots': {
       id: '/recovery/before-dots'
       path: '/before-dots'
@@ -623,22 +669,64 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CoachManagerAthletesAthleteIdRouteImport
       parentRoute: typeof CoachManagerAthletesRoute
     }
+    '/coach-manager/analyses/before-analysis-back-navigation': {
+      id: '/coach-manager/analyses/before-analysis-back-navigation'
+      path: '/before-analysis-back-navigation'
+      fullPath: '/coach-manager/analyses/before-analysis-back-navigation'
+      preLoaderRoute: typeof CoachManagerAnalysesBeforeAnalysisBackNavigationRouteImport
+      parentRoute: typeof CoachManagerAnalysesRoute
+    }
+    '/coach-manager/athletes/$athleteId/before-analysis-back-navigation': {
+      id: '/coach-manager/athletes/$athleteId/before-analysis-back-navigation'
+      path: '/before-analysis-back-navigation'
+      fullPath: '/coach-manager/athletes/$athleteId/before-analysis-back-navigation'
+      preLoaderRoute: typeof CoachManagerAthletesAthleteIdBeforeAnalysisBackNavigationRouteImport
+      parentRoute: typeof CoachManagerAthletesAthleteIdRoute
+    }
   }
 }
 
+interface CoachManagerAnalysesRouteChildren {
+  CoachManagerAnalysesBeforeAnalysisBackNavigationRoute: typeof CoachManagerAnalysesBeforeAnalysisBackNavigationRoute
+}
+
+const CoachManagerAnalysesRouteChildren: CoachManagerAnalysesRouteChildren = {
+  CoachManagerAnalysesBeforeAnalysisBackNavigationRoute:
+    CoachManagerAnalysesBeforeAnalysisBackNavigationRoute,
+}
+
+const CoachManagerAnalysesRouteWithChildren =
+  CoachManagerAnalysesRoute._addFileChildren(CoachManagerAnalysesRouteChildren)
+
+interface CoachManagerAthletesAthleteIdRouteChildren {
+  CoachManagerAthletesAthleteIdBeforeAnalysisBackNavigationRoute: typeof CoachManagerAthletesAthleteIdBeforeAnalysisBackNavigationRoute
+}
+
+const CoachManagerAthletesAthleteIdRouteChildren: CoachManagerAthletesAthleteIdRouteChildren =
+  {
+    CoachManagerAthletesAthleteIdBeforeAnalysisBackNavigationRoute:
+      CoachManagerAthletesAthleteIdBeforeAnalysisBackNavigationRoute,
+  }
+
+const CoachManagerAthletesAthleteIdRouteWithChildren =
+  CoachManagerAthletesAthleteIdRoute._addFileChildren(
+    CoachManagerAthletesAthleteIdRouteChildren,
+  )
+
 interface CoachManagerAthletesRouteChildren {
-  CoachManagerAthletesAthleteIdRoute: typeof CoachManagerAthletesAthleteIdRoute
+  CoachManagerAthletesAthleteIdRoute: typeof CoachManagerAthletesAthleteIdRouteWithChildren
 }
 
 const CoachManagerAthletesRouteChildren: CoachManagerAthletesRouteChildren = {
-  CoachManagerAthletesAthleteIdRoute: CoachManagerAthletesAthleteIdRoute,
+  CoachManagerAthletesAthleteIdRoute:
+    CoachManagerAthletesAthleteIdRouteWithChildren,
 }
 
 const CoachManagerAthletesRouteWithChildren =
   CoachManagerAthletesRoute._addFileChildren(CoachManagerAthletesRouteChildren)
 
 interface CoachManagerRouteChildren {
-  CoachManagerAnalysesRoute: typeof CoachManagerAnalysesRoute
+  CoachManagerAnalysesRoute: typeof CoachManagerAnalysesRouteWithChildren
   CoachManagerAthletesRoute: typeof CoachManagerAthletesRouteWithChildren
   CoachManagerCompetitionsRoute: typeof CoachManagerCompetitionsRoute
   CoachManagerNotesRoute: typeof CoachManagerNotesRoute
@@ -648,7 +736,7 @@ interface CoachManagerRouteChildren {
 }
 
 const CoachManagerRouteChildren: CoachManagerRouteChildren = {
-  CoachManagerAnalysesRoute: CoachManagerAnalysesRoute,
+  CoachManagerAnalysesRoute: CoachManagerAnalysesRouteWithChildren,
   CoachManagerAthletesRoute: CoachManagerAthletesRouteWithChildren,
   CoachManagerCompetitionsRoute: CoachManagerCompetitionsRoute,
   CoachManagerNotesRoute: CoachManagerNotesRoute,
@@ -673,6 +761,16 @@ const RecoveryRouteWithChildren = RecoveryRoute._addFileChildren(
   RecoveryRouteChildren,
 )
 
+interface VideoRouteChildren {
+  VideoBeforeCoachShareButtonRoute: typeof VideoBeforeCoachShareButtonRoute
+}
+
+const VideoRouteChildren: VideoRouteChildren = {
+  VideoBeforeCoachShareButtonRoute: VideoBeforeCoachShareButtonRoute,
+}
+
+const VideoRouteWithChildren = VideoRoute._addFileChildren(VideoRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRoute: AuthRoute,
@@ -691,7 +789,7 @@ const rootRouteChildren: RootRouteChildren = {
   ResetPasswordRoute: ResetPasswordRoute,
   SettingsRoute: SettingsRoute,
   TrainingRoute: TrainingRoute,
-  VideoRoute: VideoRoute,
+  VideoRoute: VideoRouteWithChildren,
   WorkoutAnalysisRoute: WorkoutAnalysisRoute,
   ApiChatRoute: ApiChatRoute,
   IndexBeforeRegenerationRoute: IndexBeforeRegenerationRoute,

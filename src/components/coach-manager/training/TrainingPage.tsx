@@ -1,3 +1,4 @@
+import { useSearch } from "@tanstack/react-router";
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -30,8 +31,16 @@ import {
 type TrainingView = "today" | "create" | "history" | "calendar" | "individual";
 
 export function TrainingPage() {
+  const search = useSearch({
+    from: "/coach-manager/training",
+  });
+
   const [activeView, setActiveView] =
-    useState<TrainingView>("today");
+    useState<TrainingView>(
+      search.view === "calendar"
+        ? "calendar"
+        : "today",
+    );
 
   const queryClient =
     useQueryClient();
@@ -490,6 +499,7 @@ export function TrainingPage() {
     </div>
   );
 }
+
 
 
 

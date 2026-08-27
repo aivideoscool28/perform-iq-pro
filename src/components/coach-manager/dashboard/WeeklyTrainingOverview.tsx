@@ -1,4 +1,4 @@
-﻿import { Link } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 
 import type {
   CoachTrainingSession,
@@ -149,10 +149,15 @@ export function WeeklyTrainingOverview({
 
       <Link
         to="/coach-manager/training"
-        className="mt-3 inline-block text-xs font-semibold text-orange-600"
+            search={{ view: undefined }}
+            className="mt-3 inline-block text-xs font-semibold text-orange-600"
       >
         Go to Training Plan →
       </Link>
     </section>
   );
 }
+
+
+
+

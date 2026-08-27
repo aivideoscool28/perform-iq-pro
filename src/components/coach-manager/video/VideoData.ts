@@ -1,4 +1,4 @@
-﻿import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/supabase/client";
 
 import {
   getCurrentCoachId,
@@ -96,6 +96,10 @@ export async function getCoachVideoData(): Promise<CoachVideoData> {
           "user_id",
           athleteIds,
         )
+        .eq(
+          "shared_with_coach",
+          true,
+        )
         .order(
           "created_at",
           {
@@ -189,3 +193,4 @@ export async function updateCoachVideoNotes(
     );
   }
 }
+
