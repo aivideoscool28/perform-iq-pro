@@ -530,7 +530,7 @@ function AuthPage() {
                 cleanEmail,
                 {
                   redirectTo:
-                    `${window.location.origin}/reset-password`,
+                    `${import.meta.env.VITE_APP_URL || window.location.origin}/reset-password`,
                 },
               );
 
@@ -577,7 +577,7 @@ function AuthPage() {
 
                 options: {
                   emailRedirectTo:
-                    `${window.location.origin}/auth`,
+                    `${import.meta.env.VITE_APP_URL || window.location.origin}/auth`,
 
                   data: {
                     display_name:
@@ -814,7 +814,7 @@ function AuthPage() {
 
               options: {
                 redirectTo:
-                  `${window.location.origin}/`,
+                  `${import.meta.env.VITE_APP_URL || window.location.origin}/`,
               },
             });
 
@@ -1399,3 +1399,4 @@ function AuthPage() {
     </div>
   );
 }
+

@@ -1,6 +1,5 @@
-﻿import { Link, useRouterState } from "@tanstack/react-router";
+import { Link, useRouterState } from "@tanstack/react-router";
 import {
-  Activity,
   LayoutDashboard,
   User,
   Dumbbell,
@@ -16,6 +15,7 @@ import {
   BarChart3,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
+import logoLong from "@/assets/Logo_Long.png";
 
 type NavItem = { to: string; label: string; icon: LucideIcon; tour?: string };
 
@@ -39,19 +39,13 @@ export function Sidebar() {
 
   return (
     <>
-      <aside className="hidden lg:flex w-64 shrink-0 flex-col h-screen sticky top-0 p-4 border-r border-border/60 glass-strong z-10">
-        <Link to="/" className="flex items-center gap-2.5 px-2 py-3 mb-6">
-          <div className="relative h-9 w-9 rounded-xl bg-gradient-to-br from-neon-cyan to-neon-violet glow-cyan flex items-center justify-center">
-            <Activity className="h-5 w-5 text-background" strokeWidth={2.5} />
-          </div>
-          <div className="flex flex-col leading-tight">
-            <span className="font-bold tracking-tight text-base">
-              Athletic<span className="gradient-text">iq</span>
-            </span>
-            <span className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
-              Performance OS
-            </span>
-          </div>
+      <aside className="hidden lg:flex w-64 shrink-0 flex-col h-screen sticky top-0 px-3 pb-4 pt-1 border-r border-border/60 glass-strong z-10">
+        <Link to="/" className="mb-4 block py-1">
+          <img
+            src={logoLong}
+            alt="Aether Athlete IQ"
+            className="h-auto w-[150px] object-contain"
+          />
         </Link>
 
         <nav className="flex flex-col gap-1 flex-1">
@@ -125,4 +119,7 @@ export function Sidebar() {
     </>
   );
 }
+
+
+
 

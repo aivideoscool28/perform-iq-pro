@@ -8,6 +8,7 @@ import { Sparkles } from "lucide-react";
 import { TrainingOverview } from "@/components/coach-manager/training/TrainingOverview";
 import { TrainingIntelligence } from "@/components/coach-manager/training/TrainingIntelligence";
 import { TrainingTools } from "@/components/coach-manager/training/TrainingTools";
+import { TrainingTemplatePicker } from "@/components/coach-manager/training/TrainingTemplatePicker";
 import { PreviousTrainingPicker } from "@/components/coach-manager/training/PreviousTrainingPicker";
 import { TrainingSidebar } from "@/components/coach-manager/training/TrainingSidebar";
 import { TrainingEditor } from "@/components/coach-manager/training/TrainingEditor";
@@ -55,6 +56,10 @@ export function TrainingPage() {
     saveError,
   } = useCoachTodayTraining();
 
+  const [
+    templatePickerOpen,
+    setTemplatePickerOpen,
+  ] = useState(false);
   const [editorOpen, setEditorOpen] =
     useState(false);
 
@@ -314,6 +319,9 @@ export function TrainingPage() {
           onUsePreviousTraining={() => {
             setPreviousTrainingPickerOpen(true);
           }}
+          onUseTemplate={() => {
+            setTemplatePickerOpen(true);
+          }}
         />
       )}
 
@@ -362,6 +370,84 @@ export function TrainingPage() {
         </div>
       )}
 
+      <TrainingTemplatePicker
+        open={templatePickerOpen}
+        onClose={() => {
+          setTemplatePickerOpen(false);
+        }}
+        onSelect={(template) => {
+          setTemplatePickerOpen(false);
+
+          const now =
+            new Date().toISOString();
+
+          setReusedTraining({
+            id:
+              template.id,
+
+            coach_id:
+              template.coach_id ??
+              "aether-template",
+
+            title:
+              template.name,
+
+            group_name:
+              null,
+
+            session_date:
+              new Date()
+                .toISOString()
+                .slice(0, 10),
+
+            start_time:
+              null,
+
+            end_time:
+              null,
+
+            location:
+              null,
+
+            discipline:
+              template.discipline,
+
+            intensity:
+              template.intensity,
+
+            duration_minutes:
+              template.duration_minutes,
+
+            session_goal:
+              template.session_goal,
+
+            coach_note:
+              template.coach_note,
+
+            exercises:
+              template.exercises,
+
+            status:
+              "draft",
+
+            created_at:
+              template.created_at ??
+              now,
+
+            updated_at:
+              template.updated_at ??
+              now,
+          });
+
+          setEditorMode(
+            "create-new",
+          );
+
+          setEditorOpen(
+            true,
+          );
+        }}
+      />
       <PreviousTrainingPicker
         open={previousTrainingPickerOpen}
         onClose={() =>
@@ -404,6 +490,10 @@ export function TrainingPage() {
     </div>
   );
 }
+
+
+
+
 
 
 

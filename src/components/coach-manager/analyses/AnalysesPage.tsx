@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useSearch } from "@tanstack/react-router";
 
 import { useCoachAthletes } from "@/hooks/useCoachAthletes";
 import {
@@ -18,8 +19,14 @@ import { TrainingResponse } from "@/components/coach-manager/analyses/TrainingRe
 import { SessionComparison } from "@/components/coach-manager/analyses/session-comparison/SessionComparison";
 
 export function AnalysesPage() {
+  const { tab } = useSearch({
+    from: "/coach-manager/analyses",
+  });
+
   const [activeTab, setActiveTab] =
-    useState<AnalysisTab>("overview");
+    useState<AnalysisTab>(
+      (tab as AnalysisTab) ?? "overview",
+    );
 
   const { athletes } = useCoachAthletes();
 
@@ -107,6 +114,7 @@ export function AnalysesPage() {
     </div>
   );
 }
+
 
 
 

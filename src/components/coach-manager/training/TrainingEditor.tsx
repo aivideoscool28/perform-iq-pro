@@ -6,6 +6,7 @@ import {
 
 import {
   BookOpen,
+  BookmarkPlus,
   Plus,
   Save,
   Search,
@@ -22,6 +23,10 @@ import type {
 import {
   useCoachExerciseLibrary,
 } from "@/hooks/coach-manager/useCoachExerciseLibrary";
+
+import {
+  useCoachTrainingTemplates,
+} from "@/hooks/coach-manager/useCoachTrainingTemplates";
 
 type TrainingEditorProps = {
   open: boolean;
@@ -98,6 +103,17 @@ export function TrainingEditor({
     loading: libraryLoading,
     error: libraryError,
   } = useCoachExerciseLibrary();
+
+  const {
+    createTemplate,
+    templateSaving,
+    templateError,
+  } = useCoachTrainingTemplates();
+
+  const [
+    templateSaved,
+    setTemplateSaved,
+  ] = useState(false);
 
   const [
     libraryOpen,
@@ -320,6 +336,97 @@ export function TrainingEditor({
     );
   }
 
+  async function handleSaveAsTemplate() {
+    if (!title.trim()) {
+      return;
+    }
+
+    setTemplateSaved(false);
+
+    const cleanExercises =
+      exercises
+        .filter(
+          (exercise) =>
+            exercise.name.trim(),
+        )
+        .map((exercise) => ({
+          section:
+            exercise.section?.trim() ||
+            undefined,
+
+          name:
+            exercise.name.trim(),
+
+          details:
+            exercise.details?.trim() ||
+            undefined,
+
+          rest:
+            exercise.rest?.trim() ||
+            undefined,
+        }));
+
+    const cleanDiscipline =
+      discipline.trim();
+
+    let category =
+      cleanDiscipline ||
+      "Other";
+
+    if (
+      cleanDiscipline
+        .toLowerCase()
+        .includes("hurdle")
+    ) {
+      category =
+        "Hurdles";
+    } else if (
+      cleanDiscipline
+        .toLowerCase()
+        .includes("sprint")
+    ) {
+      category =
+        "Sprint";
+    }
+
+    await createTemplate({
+      name:
+        title.trim(),
+
+      description:
+        goal.trim()
+          ? `Reusable session: ${goal.trim()}`
+          : "Coach-created reusable training template.",
+
+      category,
+
+      discipline:
+        cleanDiscipline ||
+        null,
+
+      intensity:
+        intensity.trim() ||
+        null,
+
+      durationMinutes:
+        duration
+          ? Number(duration)
+          : null,
+
+      sessionGoal:
+        goal.trim() ||
+        null,
+
+      coachNote:
+        coachNote.trim() ||
+        null,
+
+      exercises:
+        cleanExercises,
+    });
+
+    setTemplateSaved(true);
+  }
   async function handleSave() {
     if (!title.trim()) {
       return;
@@ -916,6 +1023,22 @@ export function TrainingEditor({
           </div>
         )}
 
+        {(templateSaved || templateError) && (
+          <div className="mt-4">
+            {templateSaved && (
+              <p className="text-[10px] font-semibold text-emerald-600">
+                Saved to My Templates.
+              </p>
+            )}
+
+            {templateError && (
+              <p className="text-[10px] font-semibold text-red-600">
+                Could not save template: {templateError}
+              </p>
+            )}
+          </div>
+        )}
+
         <div className="mt-5 flex justify-end gap-2 border-t border-border pt-4">
           <button
             type="button"
@@ -924,6 +1047,24 @@ export function TrainingEditor({
             className="rounded-xl border border-border px-4 py-2 text-xs font-semibold"
           >
             Cancel
+          </button>
+
+          <button
+            type="button"
+            onClick={() =>
+              void handleSaveAsTemplate()
+            }
+            disabled={
+              templateSaving ||
+              !title.trim()
+            }
+            className="flex items-center gap-2 rounded-xl border border-orange-200 bg-orange-50 px-4 py-2 text-xs font-semibold text-orange-700 transition hover:bg-orange-100 disabled:opacity-50"
+          >
+            <BookmarkPlus className="h-3.5 w-3.5" />
+
+            {templateSaving
+              ? "Saving Template..."
+              : "Save as Template"}
           </button>
 
           <button
@@ -946,6 +1087,7 @@ export function TrainingEditor({
     </div>
   );
 }
+
 
 
 

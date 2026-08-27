@@ -1,10 +1,9 @@
-﻿import {
+import {
   BookOpen,
   Copy,
   Dumbbell,
   Plus,
   Search,
-  Sparkles,
 } from "lucide-react";
 
 import {
@@ -35,12 +34,6 @@ const createOptions = [
     icon: BookOpen,
     style: "bg-violet-50 text-violet-600",
   },
-  {
-    label: "Create with AI",
-    detail: "Let AI help you build",
-    icon: Sparkles,
-    style: "bg-violet-50 text-violet-600",
-  },
 ];
 
 const categories = [
@@ -54,9 +47,11 @@ const categories = [
 export function TrainingTools({
   onStartFromScratch,
   onUsePreviousTraining,
+  onUseTemplate,
 }: {
   onStartFromScratch: () => void;
   onUsePreviousTraining: () => void;
+  onUseTemplate: () => void;
 }) {
   const {
     exercises,
@@ -172,7 +167,7 @@ export function TrainingTools({
           Build a new training session in a few clicks.
         </p>
 
-        <div className="mt-3 grid grid-cols-4 gap-2">
+        <div className="mt-3 grid grid-cols-3 gap-2">
           {createOptions.map(
             ({
               label,
@@ -197,6 +192,14 @@ export function TrainingTools({
                     "Use previous training"
                   ) {
                     onUsePreviousTraining();
+                    return;
+                  }
+
+                  if (
+                    label ===
+                    "Use template"
+                  ) {
+                    onUseTemplate();
                   }
                 }}
                 className="flex items-center gap-2 rounded-xl border border-border p-2 text-left transition hover:bg-muted/20"
@@ -555,6 +558,7 @@ export function TrainingTools({
     </div>
   );
 }
+
 
 
 

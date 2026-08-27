@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Link,
   useParams,
@@ -175,14 +175,20 @@ export function AthleteDetailPage() {
   });
 
   const backToTraining = from === "training";
+  const backToTrainingResponse =
+    from === "training-response";
 
   const backTarget = backToTraining
     ? "/coach-manager/training"
-    : "/coach-manager/athletes";
+    : backToTrainingResponse
+      ? "/coach-manager/analyses"
+      : "/coach-manager/athletes";
 
   const backLabel = backToTraining
     ? "Back to Training"
-    : "Back to Athletes";
+    : backToTrainingResponse
+      ? "Back to Training Response"
+      : "Back to Athletes";
 
   const [athlete, setAthlete] =
     useState<AthleteProfile | null>(null);
@@ -954,4 +960,5 @@ export function AthleteDetailPage() {
     </div>
   );
 }
+
 

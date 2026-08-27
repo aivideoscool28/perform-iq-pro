@@ -1,3 +1,4 @@
+import logoLong from "@/assets/Logo_Long.png";
 import { Link } from "@tanstack/react-router";
 import {
   LayoutDashboard,
@@ -119,6 +120,8 @@ export function CoachSideMenu() {
     </aside>
   );
 }
+
+
 
 
 

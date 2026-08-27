@@ -702,6 +702,23 @@ export function CheckinAnalysis() {
     );
   }
 
+  const athleteReviewIds =
+    new Set(
+      unusualResponses.map(
+        (item) => item.athleteId,
+      ),
+    );
+
+  const athletesWithoutReviewSignal =
+    (data?.athletes ?? [])
+      .filter(
+        (athlete) =>
+          !athleteReviewIds.has(
+            athlete.id,
+          ),
+      )
+      .slice(0, 4);
+
   return (
     <div className="space-y-3">
 
@@ -740,6 +757,172 @@ export function CheckinAnalysis() {
             </div>
           </article>
         ))}
+      </section>
+
+      <section className="rounded-2xl border border-border bg-white p-3 shadow-sm">
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <p className="text-[8px] font-bold uppercase tracking-[0.14em] text-violet-600">
+              Coach Priority
+            </p>
+
+            <h3 className="mt-1 text-sm font-bold">
+              Which athletes should I look at?
+            </h3>
+
+            <p className="mt-1 text-[8px] text-muted-foreground">
+              Recent athlete-level check-in signals, ordered for faster review.
+            </p>
+          </div>
+
+          <span className="rounded-lg bg-violet-50 px-2.5 py-1 text-[8px] font-semibold text-violet-700">
+            {unusualResponses.length} to review
+          </span>
+        </div>
+
+        <div className="mt-3 grid grid-cols-2 gap-3">
+          <div className="rounded-xl border border-orange-100 bg-orange-50/30 p-2.5">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-[9px] font-bold text-orange-700">
+                  Review first
+                </p>
+
+                <p className="mt-0.5 text-[7px] text-muted-foreground">
+                  Athletes with unusual recent responses
+                </p>
+              </div>
+
+              <span className="rounded-full bg-orange-100 px-2 py-0.5 text-[7px] font-bold text-orange-700">
+                {unusualResponses.length}
+              </span>
+            </div>
+
+            <div className="mt-2 space-y-1.5">
+              {unusualResponses
+                .slice(0, 4)
+                .map((item) => (
+                  <button
+                    key={item.athleteId}
+                    type="button"
+                    onClick={() =>
+                      navigate({
+                        to: "/coach-manager/athletes/$athleteId",
+                        params: {
+                          athleteId:
+                            item.athleteId,
+                        },
+                        search: {
+                          from: "checkin",
+                        },
+                      })
+                    }
+                    className="flex w-full items-center justify-between rounded-lg border border-orange-100 bg-white px-2.5 py-2 text-left transition hover:border-orange-200 hover:bg-orange-50/50"
+                  >
+                    <div className="min-w-0">
+                      <p className="truncate text-[9px] font-semibold">
+                        {item.athlete}
+                      </p>
+
+                      <p className="mt-0.5 truncate text-[7px] text-muted-foreground">
+                        {item.signal}
+                      </p>
+                    </div>
+
+                    <div className="ml-2 flex shrink-0 items-center gap-2">
+                      <span
+                        className={`rounded-full px-2 py-0.5 text-[7px] font-semibold ${item.style}`}
+                      >
+                        {item.detail}
+                      </span>
+
+                      <ChevronRight className="h-3 w-3 text-muted-foreground" />
+                    </div>
+                  </button>
+                ))}
+
+              {unusualResponses.length === 0 && (
+                <div className="rounded-lg border border-dashed border-orange-100 bg-white px-3 py-4 text-center">
+                  <p className="text-[8px] font-semibold">
+                    No unusual athlete responses
+                  </p>
+
+                  <p className="mt-1 text-[7px] text-muted-foreground">
+                    No athlete currently meets the review rules.
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="rounded-xl border border-green-100 bg-green-50/30 p-2.5">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-[9px] font-bold text-green-700">
+                  No current review signal
+                </p>
+
+                <p className="mt-0.5 text-[7px] text-muted-foreground">
+                  No unusual response detected in this analysis
+                </p>
+              </div>
+
+              <span className="rounded-full bg-green-100 px-2 py-0.5 text-[7px] font-bold text-green-700">
+                {athletesWithoutReviewSignal.length}
+              </span>
+            </div>
+
+            <div className="mt-2 space-y-1.5">
+              {athletesWithoutReviewSignal.map(
+                (athlete) => (
+                  <button
+                    key={athlete.id}
+                    type="button"
+                    onClick={() =>
+                      navigate({
+                        to: "/coach-manager/athletes/$athleteId",
+                        params: {
+                          athleteId:
+                            athlete.id,
+                        },
+                        search: {
+                          from: "checkin",
+                        },
+                      })
+                    }
+                    className="flex w-full items-center justify-between rounded-lg border border-green-100 bg-white px-2.5 py-2 text-left transition hover:border-green-200 hover:bg-green-50/50"
+                  >
+                    <div>
+                      <p className="text-[9px] font-semibold">
+                        {athlete.display_name ??
+                          "Unnamed athlete"}
+                      </p>
+
+                      <p className="mt-0.5 text-[7px] text-muted-foreground">
+                        No current unusual-response signal
+                      </p>
+                    </div>
+
+                    <ChevronRight className="h-3 w-3 text-muted-foreground" />
+                  </button>
+                ),
+              )}
+
+              {athletesWithoutReviewSignal.length ===
+                0 && (
+                <div className="rounded-lg border border-dashed border-green-100 bg-white px-3 py-4 text-center">
+                  <p className="text-[8px] font-semibold">
+                    All athletes currently have a review signal
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <p className="mt-2 text-[7px] text-muted-foreground">
+          Priority reflects athlete-reported check-in patterns. It is a review aid, not a diagnosis or automatic coaching decision.
+        </p>
       </section>
 
       <div className="grid grid-cols-[1fr_0.9fr_1.12fr] gap-3">
@@ -940,7 +1123,7 @@ export function CheckinAnalysis() {
                         athleteId: item.athleteId,
                       },
                       search: {
-                        from: "athletes",
+                        from: "checkin",
                       },
                     })
                   }
@@ -1298,6 +1481,8 @@ export function CheckinAnalysis() {
     </div>
   );
 }
+
+
 
 
 

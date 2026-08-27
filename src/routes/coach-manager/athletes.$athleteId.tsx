@@ -1,4 +1,4 @@
-﻿import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 
 import { AthleteDetailPage } from "@/components/coach-manager/athletes/AthleteDetailPage";
 
@@ -9,7 +9,11 @@ export const Route = createFileRoute(
     from:
       search.from === "training"
         ? "training"
-        : "athletes",
+        : search.from === "training-response"
+          ? "training-response"
+          : search.from === "checkin"
+            ? "checkin"
+            : "athletes",
   }),
 
   component: AthleteDetailPage,

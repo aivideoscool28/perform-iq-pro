@@ -575,6 +575,21 @@ export function TrainingResponse() {
       ],
     );
 
+  const athleteNameById =
+    useMemo(
+      () =>
+        new Map(
+          (data?.athletes ?? []).map(
+            (athlete) => [
+              athlete.id,
+              athlete.display_name ??
+                "Unnamed athlete",
+            ],
+          ),
+        ),
+      [data],
+    );
+
   const sessionsToReview =
     useMemo(
       () =>
@@ -1388,7 +1403,7 @@ export function TrainingResponse() {
                           athleteId: session.athleteId,
                         },
                         search: {
-                          from: "athletes",
+                          from: "training-response",
                         },
                       })
                     }
@@ -1399,7 +1414,15 @@ export function TrainingResponse() {
                     </div>
 
                     <div className="min-w-0 flex-1">
-                      <p className="text-[8px] font-semibold">
+                      <p className="text-[8px] font-bold text-foreground">
+                        {
+                          athleteNameById.get(
+                            session.athleteId,
+                          ) ?? "Unknown athlete"
+                        }
+                      </p>
+
+                      <p className="mt-0.5 text-[8px] font-medium text-muted-foreground">
                         {
                           session.workoutType
                         }
@@ -1576,5 +1599,7 @@ export function TrainingResponse() {
     </div>
   );
 }
+
+
 
 
