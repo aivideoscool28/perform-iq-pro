@@ -441,3 +441,19 @@
     min-height: 260px;
   }
 }
+
+/* =========================================================
+   REAL COACH ANALYSES SCREENSHOT
+   ========================================================= */
+
+.coach-analyses__placeholder {
+  background-image: url("../assets/athletics/Coach_Analysis.jpeg") !important;
+  background-size: cover !important;
+  background-position: top left !important;
+  background-repeat: no-repeat !important;
+}
+
+.coach-analyses__placeholder > * {
+  visibility: hidden;
+}
+

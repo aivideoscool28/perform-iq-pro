@@ -158,3 +158,1459 @@ html {
   }
 }
 
+
+/* =========================================================
+   REAL HERO PRODUCT IMAGES
+   ========================================================= */
+
+.product-preview__window--real {
+  overflow: hidden;
+  background: #fff;
+}
+
+.product-preview__image {
+  display: block;
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+  object-position: top left;
+}
+
+.product-preview--athlete .product-preview__image {
+  object-position: top left;
+}
+
+.product-preview--coach .product-preview__image {
+  object-position: top left;
+}
+
+
+/* =========================================================
+   ATHLETE EXPERIENCE — REAL PRODUCT SCREENSHOTS
+   ========================================================= */
+
+.product-placeholder--image {
+  padding: 0 !important;
+  overflow: hidden;
+
+  background: #fff !important;
+
+  border: 1px solid rgba(25, 25, 25, 0.08);
+
+  box-shadow:
+    0 12px 30px rgba(25, 25, 25, 0.055);
+}
+
+.athlete-feature-image {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+  object-position: top left;
+}
+
+
+/* Main Training / Check-In / AI Coach screenshots */
+
+.cycle-card--train .product-placeholder--image,
+.cycle-card--reflect .product-placeholder--image,
+.cycle-card--support .product-placeholder--image {
+  min-height: 280px;
+}
+
+
+/* Workout Analysis mini screenshot */
+
+.cycle-card--understand .product-placeholder--mini.product-placeholder--image {
+  min-height: 275px;
+}
+
+
+/* Keep screenshots crisp and clean */
+
+.cycle-card--train .athlete-feature-image,
+.cycle-card--reflect .athlete-feature-image,
+.cycle-card--understand .athlete-feature-image,
+.cycle-card--support .athlete-feature-image {
+  object-position: top center;
+}
+
+
+/* =========================================================
+   HERO PRODUCT PREVIEW — BIGGER / STRONGER
+   ========================================================= */
+
+.hero__visual {
+  transform: scale(1.08);
+  transform-origin: center right;
+}
+
+.product-preview__window--real {
+  overflow: hidden;
+  background: #fff;
+  border-radius: 22px;
+  box-shadow:
+    0 22px 55px rgba(20, 20, 20, 0.10);
+}
+
+.product-preview__image {
+  width: 115%;
+  height: 115%;
+  max-width: none;
+
+  object-fit: cover;
+  object-position: top left;
+
+  transform: translate(-2%, -1%);
+}
+
+/* Athlete Hub — slightly larger */
+.product-preview--athlete .product-preview__image {
+  width: 120%;
+  height: 120%;
+  transform: translate(-3%, -2%);
+}
+
+/* Coach Manager */
+.product-preview--coach .product-preview__image {
+  width: 118%;
+  height: 118%;
+  transform: translate(-3%, -2%);
+}
+
+.product-preview__label {
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.15em;
+}
+
+@media (max-width: 1050px) {
+  .hero__visual {
+    transform: scale(1);
+  }
+}
+
+
+/* =========================================================
+   HERO SCREENSHOTS — FINAL DISPLAY FIX
+   Respect original screenshot compositions
+   ========================================================= */
+
+.hero__visual {
+  transform: none !important;
+  width: 100%;
+  max-width: 700px;
+  justify-self: end;
+}
+
+.product-preview__window--real {
+  overflow: hidden;
+  background: #fff;
+
+  border: 1px solid rgba(20, 20, 20, 0.08);
+  border-radius: 18px;
+
+  box-shadow:
+    0 20px 46px rgba(20, 20, 20, 0.09);
+}
+
+.product-preview__image,
+.product-preview--athlete .product-preview__image,
+.product-preview--coach .product-preview__image {
+  display: block;
+
+  width: 100% !important;
+  height: auto !important;
+
+  max-width: 100% !important;
+
+  object-fit: contain !important;
+  object-position: center top !important;
+
+  transform: none !important;
+}
+
+/* Make actual screenshot windows larger,
+   rather than zooming inside them */
+
+.product-preview--athlete {
+  width: 88%;
+  margin-left: 0;
+}
+
+.product-preview--coach {
+  width: 75%;
+  margin-left: auto;
+  margin-top: -90px;
+  position: relative;
+  z-index: 3;
+}
+
+.product-preview__label--below {
+  margin-top: 10px;
+  margin-right: 8px;
+
+  text-align: right;
+
+  color: #ff5722;
+
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.15em;
+}
+
+@media (max-width: 1000px) {
+  .product-preview--athlete {
+    width: 94%;
+  }
+
+  .product-preview--coach {
+    width: 82%;
+    margin-top: -55px;
+  }
+}
+
+
+/* =========================================================
+   HERO PRODUCT COMPOSITION — FINAL OVERLAP
+   ========================================================= */
+
+.hero__visual {
+  position: relative !important;
+
+  width: 100% !important;
+  max-width: 690px !important;
+
+  min-height: 560px;
+
+  justify-self: end;
+
+  transform: none !important;
+}
+
+
+/* Athlete Hub — back image */
+
+.product-preview--athlete {
+  position: absolute !important;
+
+  top: 40px;
+  left: 0;
+
+  width: 84% !important;
+
+  margin: 0 !important;
+
+  z-index: 1;
+}
+
+
+/* Coach Manager — front image */
+
+.product-preview--coach {
+  position: absolute !important;
+
+  top: 260px;
+  right: -10px;
+
+  width: 72% !important;
+
+  margin: 0 !important;
+
+  z-index: 3;
+}
+
+
+/* Full screenshot, no destructive crop */
+
+.product-preview__image,
+.product-preview--athlete .product-preview__image,
+.product-preview--coach .product-preview__image {
+  display: block !important;
+
+  width: 100% !important;
+  height: auto !important;
+
+  max-width: 100% !important;
+
+  object-fit: contain !important;
+  object-position: top center !important;
+
+  transform: none !important;
+}
+
+
+/* Labels */
+
+.product-preview--athlete .product-preview__label {
+  margin: 0 0 9px 12px;
+
+  text-align: left;
+}
+
+.product-preview__label--below {
+  margin-top: 10px !important;
+  margin-right: 14px !important;
+
+  text-align: right !important;
+}
+
+
+/* Nice screenshot frame */
+
+.product-preview__window--real {
+  overflow: hidden;
+
+  border-radius: 18px;
+
+  background: #fff;
+
+  border: 1px solid rgba(20,20,20,0.08);
+
+  box-shadow:
+    0 20px 50px rgba(20,20,20,0.10);
+}
+
+
+/* =========================================================
+   HERO — SLIGHTLY BIGGER FINAL SIZE
+   ========================================================= */
+
+.hero__visual {
+  max-width: 760px !important;
+  min-height: 610px !important;
+}
+
+.product-preview--athlete {
+  width: 89% !important;
+}
+
+.product-preview--coach {
+  width: 77% !important;
+
+  top: 270px !important;
+  right: -18px !important;
+}
+
+.product-preview__label--below {
+  margin-top: 10px !important;
+  margin-right: 10px !important;
+}
+
+
+/* =========================================================
+   ATHLETE 01–04 — CLEAN FULL SCREENSHOT DISPLAY
+   Revert aggressive internal zoom
+   ========================================================= */
+
+.cycle-card .product-placeholder--image {
+  position: relative !important;
+
+  min-height: 0 !important;
+  height: auto !important;
+
+  padding: 0 !important;
+
+  overflow: hidden !important;
+
+  background: #fff !important;
+
+  border: 1px solid rgba(20, 20, 20, 0.08) !important;
+  border-radius: 18px !important;
+
+  box-shadow:
+    0 16px 34px rgba(20, 20, 20, 0.065) !important;
+}
+
+
+/* FULL ORIGINAL IMAGE */
+
+.cycle-card .athlete-feature-image,
+.cycle-card--train .athlete-feature-image,
+.cycle-card--reflect .athlete-feature-image,
+.cycle-card--understand .athlete-feature-image,
+.cycle-card--support .athlete-feature-image {
+
+  position: static !important;
+
+  display: block !important;
+
+  width: 100% !important;
+  height: auto !important;
+
+  max-width: 100% !important;
+
+  transform: none !important;
+
+  object-fit: contain !important;
+  object-position: top center !important;
+}
+
+
+/* =========================================================
+   BALANCED CARD COLUMNS
+   ========================================================= */
+
+.cycle-card--train,
+.cycle-card--reflect,
+.cycle-card--support {
+  grid-template-columns:
+    minmax(0, 0.82fr)
+    minmax(0, 1.18fr) !important;
+}
+
+.cycle-card--understand {
+  grid-template-columns:
+    minmax(0, 0.80fr)
+    minmax(0, 1.20fr) !important;
+}
+
+
+/* =========================================================
+   SCREENSHOT WIDTHS
+   ========================================================= */
+
+.cycle-card--train .product-placeholder--image {
+  width: 100% !important;
+  max-width: 410px !important;
+
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+.cycle-card--reflect .product-placeholder--image {
+  width: 100% !important;
+  max-width: 410px !important;
+
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+.cycle-card--support .product-placeholder--image {
+  width: 100% !important;
+  max-width: 420px !important;
+
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+
+/* Workout analysis */
+
+.cycle-card--understand
+.product-placeholder--mini.product-placeholder--image {
+  width: 100% !important;
+
+  min-height: 0 !important;
+
+  margin: 0 !important;
+}
+
+
+/* =========================================================
+   HERO — BIGGER ATHLETE HUB + BIGGER COACH MANAGER
+   KEEP CURRENT COMPOSITION
+   ========================================================= */
+
+.hero__visual {
+  max-width: 820px !important;
+  min-height: 650px !important;
+}
+
+
+/* Athlete Hub:
+   move slightly upward + make larger */
+
+.product-preview--athlete {
+  top: 15px !important;
+  left: 0 !important;
+
+  width: 94% !important;
+
+  margin: 0 !important;
+}
+
+
+/* Coach Manager:
+   leave a little gap below Athlete Hub,
+   then make the coach screenshot much larger */
+
+.product-preview--coach {
+  top: 330px !important;
+  right: -22px !important;
+
+  width: 84% !important;
+
+  margin: 0 !important;
+}
+
+
+/* Keep screenshot compositions untouched */
+
+.product-preview--athlete .product-preview__image,
+.product-preview--coach .product-preview__image {
+  width: 100% !important;
+  height: auto !important;
+
+  max-width: 100% !important;
+
+  object-fit: contain !important;
+  object-position: top center !important;
+
+  transform: none !important;
+}
+
+
+/* Coach Manager text BELOW the image */
+
+.product-preview__label--below {
+  margin-top: 12px !important;
+  margin-right: 8px !important;
+
+  text-align: right !important;
+
+  font-size: 11px !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.16em !important;
+}
+
+
+/* Athlete Hub label slightly stronger */
+
+.product-preview--athlete .product-preview__label {
+  margin-bottom: 10px !important;
+
+  font-size: 11px !important;
+  font-weight: 900 !important;
+}
+
+
+/* =========================================================
+   01–04 ATHLETE CARDS — SAME DESIGN, JUST BIGGER IMAGES
+   ========================================================= */
+
+/* 01 TRAIN */
+
+.cycle-card--train .product-placeholder--image {
+  max-width: 485px !important;
+  width: 100% !important;
+}
+
+
+/* 02 REFLECT */
+
+.cycle-card--reflect .product-placeholder--image {
+  max-width: 485px !important;
+  width: 100% !important;
+}
+
+
+/* 03 UNDERSTAND — Workout Analysis side */
+
+.cycle-card--understand
+.product-placeholder--mini.product-placeholder--image {
+  width: 100% !important;
+  max-width: 245px !important;
+}
+
+
+/* 04 GET SUPPORT */
+
+.cycle-card--support .product-placeholder--image {
+  max-width: 485px !important;
+  width: 100% !important;
+}
+
+
+/* Give the visual columns a little more room */
+
+.cycle-card--train,
+.cycle-card--reflect,
+.cycle-card--support {
+  grid-template-columns:
+    minmax(0, 0.76fr)
+    minmax(0, 1.24fr) !important;
+}
+
+.cycle-card--understand {
+  grid-template-columns:
+    minmax(0, 0.76fr)
+    minmax(0, 1.24fr) !important;
+}
+
+
+/* Do NOT crop / zoom screenshots */
+
+.cycle-card .athlete-feature-image {
+  position: static !important;
+
+  width: 100% !important;
+  height: auto !important;
+
+  max-width: 100% !important;
+
+  object-fit: contain !important;
+  object-position: top center !important;
+
+  transform: none !important;
+}
+
+
+/* =========================================================
+   HERO VISUAL POSITION — STRONG FINAL OVERRIDE
+   ========================================================= */
+
+/* Move the ENTIRE Athlete Hub much higher */
+.product-preview--athlete {
+  transform: translateY(-95px) !important;
+  width: 100% !important;
+  max-width: 760px !important;
+}
+
+/* Make Athlete Hub screenshot larger */
+.product-preview--athlete .product-preview__image {
+  width: 100% !important;
+  max-width: none !important;
+  height: auto !important;
+  transform: none !important;
+}
+
+/* Coach Manager stays underneath and becomes larger */
+.product-preview--coach {
+  transform: translateY(-45px) !important;
+  width: 90% !important;
+  max-width: 700px !important;
+}
+
+/* Keep Coach screenshot itself large */
+.product-preview--coach .product-preview__image {
+  width: 100% !important;
+  max-width: none !important;
+  height: auto !important;
+  transform: none !important;
+}
+
+/* Coach Manager label BELOW screenshot */
+.product-preview--coach .product-preview__label,
+.product-preview__label--below {
+  position: static !important;
+  display: block !important;
+  margin-top: 12px !important;
+  text-align: right !important;
+}
+
+/* Give the right hero area enough room */
+.hero__visual {
+  min-height: 720px !important;
+  overflow: visible !important;
+}
+
+
+/* =========================================================
+   HERO — MOVE TEXT UP + RESTORE OVERLAP
+   ========================================================= */
+
+/* Move the LEFT hero text block higher */
+.hero__content {
+  transform: translateY(-55px) !important;
+}
+
+
+/* Keep Athlete Hub high */
+.product-preview--athlete {
+  transform: translateY(-105px) !important;
+
+  width: 100% !important;
+  max-width: 760px !important;
+
+  z-index: 1 !important;
+}
+
+
+/* Bring Coach Manager upward so it overlaps Athlete Hub */
+.product-preview--coach {
+  transform: translateY(-155px) !important;
+
+  width: 92% !important;
+  max-width: 700px !important;
+
+  margin-left: auto !important;
+
+  position: relative !important;
+  z-index: 3 !important;
+}
+
+
+/* Preserve screenshot proportions */
+.product-preview--athlete .product-preview__image,
+.product-preview--coach .product-preview__image {
+  width: 100% !important;
+  height: auto !important;
+
+  max-width: 100% !important;
+
+  object-fit: contain !important;
+
+  transform: none !important;
+}
+
+
+/* Coach Manager text BELOW the coach screenshot */
+.product-preview--coach .product-preview__label,
+.product-preview__label--below {
+  position: static !important;
+
+  display: block !important;
+
+  margin-top: 10px !important;
+  margin-right: 12px !important;
+
+  text-align: right !important;
+
+  color: #ff5722 !important;
+
+  font-size: 11px !important;
+  font-weight: 900 !important;
+
+  letter-spacing: 0.16em !important;
+}
+
+
+/* Give the right side enough vertical room */
+.hero__visual {
+  min-height: 700px !important;
+
+  overflow: visible !important;
+}
+
+
+/* =========================================================
+   AETHER WEBSITE — FINAL HERO COMPOSITION
+   ========================================================= */
+
+.hero-final {
+  width: min(1440px, calc(100% - 58px)) !important;
+
+  min-height: 570px !important;
+
+  margin: 0 auto !important;
+  padding: 62px 0 25px !important;
+
+  display: grid !important;
+
+  grid-template-columns:
+    minmax(0, 0.95fr)
+    minmax(560px, 1.05fr) !important;
+
+  align-items: start !important;
+
+  column-gap: 55px !important;
+
+  overflow: visible !important;
+}
+
+
+/* =========================================================
+   HERO TEXT
+   ========================================================= */
+
+.hero-final .hero__content {
+  align-self: start !important;
+
+  padding-top: 30px !important;
+
+  max-width: 660px !important;
+}
+
+
+.hero-final .hero__eyebrow {
+  margin-bottom: 28px !important;
+
+  font-size: 11px !important;
+  font-weight: 850 !important;
+
+  letter-spacing: 0.16em !important;
+
+  color: #ff5722 !important;
+}
+
+
+.hero-final .hero__title {
+  margin: 0 !important;
+
+  max-width: 650px !important;
+
+  font-size: clamp(55px, 4.7vw, 74px) !important;
+  line-height: 0.98 !important;
+
+  letter-spacing: -0.06em !important;
+
+  color: #171719 !important;
+}
+
+
+.hero-final .hero__title span {
+  color: #ff5722 !important;
+}
+
+
+.hero-final .hero__description {
+  max-width: 635px !important;
+
+  margin: 34px 0 0 !important;
+
+  font-size: 16px !important;
+  line-height: 1.7 !important;
+
+  color: #66636a !important;
+}
+
+
+.hero-final .hero__actions {
+  margin-top: 33px !important;
+
+  display: flex !important;
+  align-items: center !important;
+
+  flex-wrap: nowrap !important;
+
+  gap: 14px !important;
+}
+
+
+.hero-final .hero__trial {
+  min-height: 52px !important;
+
+  padding: 0 0 0 18px !important;
+
+  display: flex !important;
+
+  flex-direction: column !important;
+  justify-content: center !important;
+
+  border-left: 2px solid #ff5722 !important;
+}
+
+
+.hero-final .hero__trial strong {
+  color: #ff5722 !important;
+
+  font-size: 13px !important;
+  font-weight: 900 !important;
+}
+
+
+.hero-final .hero__trial span {
+  margin-top: 3px !important;
+
+  color: #77747a !important;
+
+  font-size: 10px !important;
+  font-weight: 650 !important;
+}
+
+
+.hero-final .hero__specialization {
+  margin-top: 36px !important;
+
+  padding-left: 15px !important;
+
+  border-left: 3px solid #ff5722 !important;
+}
+
+
+.hero-final .hero__specialization strong {
+  display: block !important;
+
+  font-size: 14px !important;
+  font-weight: 850 !important;
+}
+
+
+.hero-final .hero__specialization span {
+  display: block !important;
+
+  margin-top: 3px !important;
+
+  font-size: 12px !important;
+
+  color: #747177 !important;
+}
+
+
+/* =========================================================
+   HERO PRODUCT STACK
+   ========================================================= */
+
+.hero-final .hero-product-stack {
+  position: relative !important;
+
+  width: 100% !important;
+  max-width: none !important;
+
+  min-height: 610px !important;
+
+  margin: 0 !important;
+
+  overflow: visible !important;
+
+  transform: none !important;
+}
+
+
+/* Athlete Hub — higher + large */
+
+.hero-final .hero-product--athlete {
+  position: absolute !important;
+
+  top: -22px !important;
+  left: 0 !important;
+
+  width: 83% !important;
+
+  z-index: 1 !important;
+}
+
+
+/* Coach Manager — overlapping */
+
+.hero-final .hero-product--coach {
+  position: absolute !important;
+
+  top: 300px !important;
+  right: -22px !important;
+
+  width: 77% !important;
+
+  z-index: 4 !important;
+}
+
+
+/* labels */
+
+.hero-final .hero-product__label {
+  margin: 0 0 9px 12px !important;
+
+  color: #ff5722 !important;
+
+  font-size: 11px !important;
+  font-weight: 900 !important;
+
+  letter-spacing: 0.17em !important;
+}
+
+
+.hero-final .hero-product__label--coach {
+  margin: 10px 7px 0 0 !important;
+
+  text-align: right !important;
+}
+
+
+/* screenshot frame */
+
+.hero-final .hero-product__frame {
+  overflow: hidden !important;
+
+  width: 100% !important;
+
+  border: 1px solid rgba(25, 25, 25, 0.08) !important;
+  border-radius: 18px !important;
+
+  background: #fff !important;
+
+  box-shadow:
+    0 18px 48px rgba(20, 20, 20, 0.10) !important;
+}
+
+
+.hero-final .hero-product__frame img {
+  display: block !important;
+
+  width: 100% !important;
+  height: auto !important;
+
+  max-width: none !important;
+
+  object-fit: contain !important;
+  object-position: top center !important;
+
+  transform: none !important;
+}
+
+
+/* =========================================================
+   HERO → ATHLETE SECTION TRANSITION
+   ========================================================= */
+
+.athlete-experience {
+  margin-top: 25px !important;
+}
+
+
+.athlete-experience__intro {
+  max-width: 800px !important;
+
+  margin: 0 auto 48px !important;
+
+  text-align: center !important;
+}
+
+
+.athlete-experience__intro h2 {
+  font-size: clamp(40px, 4vw, 60px) !important;
+
+  line-height: 0.98 !important;
+
+  letter-spacing: -0.055em !important;
+}
+
+
+.athlete-experience__lead {
+  max-width: 760px !important;
+
+  margin: 20px auto 0 !important;
+
+  font-size: 15px !important;
+  line-height: 1.65 !important;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 1100px) {
+
+  .hero-final {
+    grid-template-columns: 1fr 1fr !important;
+
+    column-gap: 30px !important;
+  }
+
+  .hero-final .hero-product--athlete {
+    width: 92% !important;
+  }
+
+  .hero-final .hero-product--coach {
+    width: 83% !important;
+
+    right: 0 !important;
+  }
+}
+
+
+@media (max-width: 850px) {
+
+  .hero-final {
+    grid-template-columns: 1fr !important;
+
+    padding-top: 45px !important;
+  }
+
+  .hero-final .hero-product-stack {
+    min-height: 650px !important;
+
+    margin-top: 50px !important;
+  }
+
+  .hero-final .hero-product--athlete {
+    left: 0 !important;
+
+    width: 82% !important;
+  }
+
+  .hero-final .hero-product--coach {
+    top: 300px !important;
+
+    width: 76% !important;
+  }
+
+  .hero-final .hero__actions {
+    flex-wrap: wrap !important;
+  }
+}
+
+
+/* =========================================================
+   01 TRAIN — bigger image box
+   ========================================================= */
+
+.cycle-card--train .product-placeholder--image {
+  width: 100% !important;
+  max-width: 540px !important;
+
+  margin-left: auto !important;
+  margin-right: 0 !important;
+}
+
+
+/* =========================================================
+   02 REFLECT — bigger image box
+   ========================================================= */
+
+.cycle-card--reflect .product-placeholder--image {
+  width: 100% !important;
+  max-width: 540px !important;
+
+  margin-left: auto !important;
+  margin-right: 0 !important;
+}
+
+
+/* =========================================================
+   04 AI COACH — bigger image box
+   ========================================================= */
+
+.cycle-card--support .product-placeholder--image {
+  width: 100% !important;
+  max-width: 545px !important;
+
+  margin-left: auto !important;
+  margin-right: 0 !important;
+}
+
+
+/* =========================================================
+   03 UNDERSTAND — slightly larger analysis area
+   ========================================================= */
+
+.cycle-card--understand .understand-previews {
+  width: 100% !important;
+
+  gap: 16px !important;
+
+  justify-content: flex-end !important;
+}
+
+.cycle-card--understand
+.product-placeholder--mini {
+  width: 100% !important;
+}
+
+.cycle-card--understand
+.product-placeholder--mini.product-placeholder--image {
+  max-width: 300px !important;
+}
+
+
+/* =========================================================
+   KEEP ALL REAL SCREENSHOTS FULL
+   ========================================================= */
+
+.cycle-card .product-placeholder--image {
+  position: relative !important;
+
+  height: auto !important;
+  min-height: 0 !important;
+
+  padding: 0 !important;
+
+  overflow: hidden !important;
+
+  border-radius: 18px !important;
+
+  background: #fff !important;
+}
+
+.cycle-card .athlete-feature-image {
+  position: static !important;
+
+  display: block !important;
+
+  width: 100% !important;
+  height: auto !important;
+
+  max-width: 100% !important;
+
+  object-fit: contain !important;
+  object-position: top center !important;
+
+  transform: none !important;
+}
+
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (max-width: 1000px) {
+  .athlete-cycle {
+    width: calc(100% - 36px) !important;
+
+    margin-left: 18px !important;
+    margin-right: 18px !important;
+  }
+}
+
+
+
+/* =========================================================
+   ATHLETE CYCLE — FINAL LAYOUT
+   ========================================================= */
+
+.athlete-cycle {
+  width: calc(100vw - 74px) !important;
+  max-width: none !important;
+
+  margin-left: calc(50% - 50vw + 37px) !important;
+  margin-right: 37px !important;
+
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+}
+
+/* Big cards almost edge-to-edge */
+.cycle-card {
+  width: 100% !important;
+  box-sizing: border-box !important;
+
+  padding: 42px 46px !important;
+}
+
+/* Give screenshots noticeably more room */
+.cycle-card--train,
+.cycle-card--reflect,
+.cycle-card--support {
+  grid-template-columns:
+    minmax(0, 0.65fr)
+    minmax(0, 1.35fr) !important;
+}
+
+.cycle-card--understand {
+  grid-template-columns:
+    minmax(0, 0.62fr)
+    minmax(0, 1.38fr) !important;
+}
+
+/* Screenshot frames */
+.cycle-card--train .product-placeholder--image,
+.cycle-card--reflect .product-placeholder--image,
+.cycle-card--support .product-placeholder--image {
+  width: 100% !important;
+  max-width: 590px !important;
+
+  margin-left: auto !important;
+  margin-right: 0 !important;
+}
+
+.cycle-card--understand .understand-previews {
+  width: 100% !important;
+  gap: 18px !important;
+}
+
+.cycle-card--understand
+.product-placeholder--mini.product-placeholder--image {
+  width: 100% !important;
+  max-width: 330px !important;
+}
+
+/* Preserve your original screenshots */
+.cycle-card .product-placeholder--image {
+  height: auto !important;
+  min-height: 0 !important;
+
+  padding: 0 !important;
+
+  overflow: hidden !important;
+
+  border-radius: 18px !important;
+  background: #fff !important;
+}
+
+.cycle-card .athlete-feature-image {
+  position: static !important;
+
+  width: 100% !important;
+  height: auto !important;
+
+  max-width: 100% !important;
+
+  object-fit: contain !important;
+  transform: none !important;
+}
+
+/* Tablet */
+@media (max-width: 950px) {
+  .athlete-cycle {
+    width: calc(100% - 28px) !important;
+
+    margin-left: 14px !important;
+    margin-right: 14px !important;
+  }
+}
+
+
+/* =========================================================
+   ATHLETE CYCLE — RESTORE ORIGINAL CARD SIZE
+   ========================================================= */
+
+.athlete-cycle {
+  width: calc(100% - 72px) !important;
+  max-width: none !important;
+
+  margin-left: 36px !important;
+  margin-right: 36px !important;
+
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+}
+
+
+/* restore the 4 boxes to the earlier proportions */
+.cycle-card {
+  min-height: 0 !important;
+  height: auto !important;
+
+  padding: 30px 34px !important;
+
+  box-sizing: border-box !important;
+}
+
+
+/* balanced text + image like before */
+.cycle-card--train,
+.cycle-card--reflect,
+.cycle-card--support {
+  grid-template-columns:
+    minmax(0, 0.86fr)
+    minmax(0, 1.14fr) !important;
+}
+
+.cycle-card--understand {
+  grid-template-columns:
+    minmax(0, 0.84fr)
+    minmax(0, 1.16fr) !important;
+}
+
+
+/* keep screenshot box only a LITTLE bigger */
+.cycle-card--train .product-placeholder--image,
+.cycle-card--reflect .product-placeholder--image,
+.cycle-card--support .product-placeholder--image {
+  width: 100% !important;
+  max-width: 440px !important;
+
+  margin-left: auto !important;
+  margin-right: 0 !important;
+}
+
+
+/* 03 analysis */
+.cycle-card--understand .understand-previews {
+  width: 100% !important;
+  gap: 12px !important;
+}
+
+.cycle-card--understand
+.product-placeholder--mini.product-placeholder--image {
+  width: 100% !important;
+  max-width: 230px !important;
+}
+
+
+/* preserve full screenshot */
+.cycle-card .product-placeholder--image {
+  height: auto !important;
+  min-height: 0 !important;
+
+  padding: 0 !important;
+
+  overflow: hidden !important;
+
+  border-radius: 18px !important;
+  background: #fff !important;
+}
+
+.cycle-card .athlete-feature-image {
+  position: static !important;
+
+  width: 100% !important;
+  height: auto !important;
+
+  max-width: 100% !important;
+
+  object-fit: contain !important;
+  object-position: top center !important;
+
+  transform: none !important;
+}
+
+
+/* FINAL: ONLY make the 01–04 boxes wider toward screen edges */
+.athlete-cycle {
+  width: calc(100vw - 48px) !important;
+  max-width: none !important;
+
+  margin-left: calc(50% - 50vw + 24px) !important;
+  margin-right: 24px !important;
+}
+
+
+/* Slightly larger screenshots — keep cards/layout unchanged */
+
+.cycle-card--train .product-placeholder--image,
+.cycle-card--reflect .product-placeholder--image,
+.cycle-card--support .product-placeholder--image {
+  max-width: 500px !important;
+}
+
+/* 03 Understand screenshots */
+.cycle-card--understand
+.product-placeholder--mini.product-placeholder--image {
+  max-width: 255px !important;
+}
+
+
+/* =========================================================
+   AETHER BRAND LOGO
+   ========================================================= */
+
+.navbar__brand {
+  display: flex !important;
+  align-items: center !important;
+  text-decoration: none !important;
+}
+
+.navbar__brand-logo {
+  display: block !important;
+  width: 245px !important;
+  height: auto !important;
+  object-fit: contain !important;
+}
+
+/* hide old branding if any old CSS/component survives */
+.navbar__logo-mark,
+.navbar__name,
+.navbar__tagline {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  .navbar__brand-logo {
+    width: 190px !important;
+  }
+}
+
+
+/* =========================================================
+   NAVBAR — MOVE REAL LOGO LEFT
+   ========================================================= */
+
+.navbar {
+  padding-left: 18px !important;
+  padding-right: 30px !important;
+}
+
+.navbar__brand {
+  margin-left: 0 !important;
+}
+
+.navbar__brand-logo {
+  margin-left: 0 !important;
+  transform: translateX(-4px) !important;
+}
+

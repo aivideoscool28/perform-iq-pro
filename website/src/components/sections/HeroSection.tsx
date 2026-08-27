@@ -1,8 +1,11 @@
 import { PrimaryButton } from "../ui/PrimaryButton";
 
+import athleteDashboard from "../../assets/athletics/new_athlete_dashboard.jpeg";
+import coachDashboard from "../../assets/athletics/coach_dashboard.jpeg";
+
 export function HeroSection() {
   return (
-    <main id="top" className="hero">
+    <main id="top" className="hero hero-final">
       <section className="hero__content">
         <div className="hero__eyebrow">
           <span className="hero__eyebrow-dot" />
@@ -16,7 +19,7 @@ export function HeroSection() {
         </h1>
 
         <p className="hero__description">
-          Built specifically for track &amp; field, Athletic IQ connects
+          Built specifically for track &amp; field, Aether Athlete IQ connects
           training, athlete feedback and AI-powered analysis — helping athletes
           understand their development and coaches make better-informed
           decisions.
@@ -27,13 +30,13 @@ export function HeroSection() {
             Try Aether Athlete IQ →
           </PrimaryButton>
 
-          <PrimaryButton href="#product" variant="secondary">
+          <PrimaryButton href="#athletes" variant="secondary">
             See how it works ↓
           </PrimaryButton>
 
           <div className="hero__trial">
             <strong>2 weeks free</strong>
-            <span>for coaches & clubs</span>
+            <span>for coaches &amp; clubs</span>
           </div>
         </div>
 
@@ -43,46 +46,36 @@ export function HeroSection() {
         </div>
       </section>
 
-      <section className="hero__visual" aria-label="Athletic IQ product preview">
-        <div className="product-preview product-preview--athlete">
-          <div className="product-preview__label">ATHLETE EXPERIENCE</div>
+      <section
+        className="hero__visual hero-product-stack"
+        aria-label="Aether Athlete IQ product preview"
+      >
+        <div className="hero-product hero-product--athlete">
+          <div className="hero-product__label">
+            ATHLETE HUB
+          </div>
 
-          <div className="product-preview__window">
-            <div className="product-preview__topbar">
-              <span />
-              <span />
-              <span />
-            </div>
-
-            <div className="product-preview__placeholder">
-              <div className="placeholder-logo">AI</div>
-              <strong>Athlete Dashboard</strong>
-              <span>Real Athletic IQ screenshot coming here</span>
-            </div>
+          <div className="hero-product__frame">
+            <img
+              src={athleteDashboard}
+              alt="Aether Athlete IQ Athlete Hub"
+            />
           </div>
         </div>
 
-        <div className="product-preview product-preview--coach">
-          <div className="product-preview__label">COACH EXPERIENCE</div>
+        <div className="hero-product hero-product--coach">
+          <div className="hero-product__frame">
+            <img
+              src={coachDashboard}
+              alt="Aether Athlete IQ Coach Manager"
+            />
+          </div>
 
-          <div className="product-preview__window">
-            <div className="product-preview__topbar">
-              <span />
-              <span />
-              <span />
-            </div>
-
-            <div className="product-preview__placeholder">
-              <div className="placeholder-logo">AI</div>
-              <strong>Coach Manager</strong>
-              <span>Real Coach Manager screenshot coming here</span>
-            </div>
+          <div className="hero-product__label hero-product__label--coach">
+            COACH MANAGER
           </div>
         </div>
       </section>
     </main>
   );
 }
-
-
-

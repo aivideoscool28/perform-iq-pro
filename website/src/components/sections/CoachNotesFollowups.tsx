@@ -1,7 +1,5 @@
 import {
-  BellRing,
-  CheckCircle2,
-  Clock3,
+  BellRing,  Clock3,
   NotebookPen,
   UserRound,
 } from "lucide-react";
@@ -87,3 +85,4 @@ export function CoachNotesFollowups() {
     </section>
   );
 }
+

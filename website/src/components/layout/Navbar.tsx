@@ -1,3 +1,4 @@
+import logoLong from "../../assets/athletics/Logo_Long.png";
 import { PrimaryButton } from "../ui/PrimaryButton";
 import AudienceSwitcher from "./AudienceSwitcher";
 
@@ -14,13 +15,12 @@ export function Navbar({
 }: NavbarProps) {
   return (
     <header className="navbar">
-      <a className="navbar__brand" href="#top">
-        <div className="navbar__logo-mark">AI</div>
-
-        <div>
-          <div className="navbar__name">Aether Athlete IQ</div>
-          <div className="navbar__tagline">Performance Intelligence</div>
-        </div>
+      <a className="navbar__brand" href="#top" aria-label="Aether Athlete IQ home">
+        <img
+          src={logoLong}
+          alt="Aether Athlete IQ"
+          className="navbar__brand-logo"
+        />
       </a>
 
       <nav className="navbar__links" aria-label="Main navigation">
@@ -44,5 +44,3 @@ export function Navbar({
     </header>
   );
 }
-
-

@@ -598,3 +598,61 @@
 
 
 
+
+/* =========================================================
+   REAL COACH MANAGER SCREENSHOTS
+   ========================================================= */
+
+.coach-feature-card--athlete .coach-feature-card__placeholder {
+  background-image: url("../assets/athletics/Coach_Athletes.jpeg") !important;
+  background-size: cover !important;
+  background-position: top left !important;
+  background-repeat: no-repeat !important;
+}
+
+.coach-feature-card--athlete .coach-feature-card__placeholder > * {
+  visibility: hidden;
+}
+
+
+/* 02 — Training */
+
+.coach-feature-card--training .coach-feature-card__placeholder {
+  background-image: url("../assets/athletics/Coach_Training.jpeg") !important;
+  background-size: cover !important;
+  background-position: top left !important;
+  background-repeat: no-repeat !important;
+}
+
+.coach-feature-card--training .coach-feature-card__placeholder > * {
+  visibility: hidden;
+}
+
+
+/* 03 — Notes */
+
+.coach-feature-card--notes .coach-feature-card__placeholder {
+  background-image: url("../assets/athletics/Coach_Notes.jpeg") !important;
+  background-size: cover !important;
+  background-position: top left !important;
+  background-repeat: no-repeat !important;
+}
+
+.coach-feature-card--notes .coach-feature-card__placeholder > * {
+  visibility: hidden;
+}
+
+
+/* 04 — Video Analysis */
+
+.coach-feature-card--video .coach-feature-card__placeholder {
+  background-image: url("../assets/athletics/Coach_VideoAnalysis.jpeg") !important;
+  background-size: cover !important;
+  background-position: top left !important;
+  background-repeat: no-repeat !important;
+}
+
+.coach-feature-card--video .coach-feature-card__placeholder > * {
+  visibility: hidden;
+}
+

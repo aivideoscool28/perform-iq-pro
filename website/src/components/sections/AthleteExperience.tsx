@@ -10,6 +10,10 @@ import {
   Target,
   UsersRound,
 } from "lucide-react";
+import trainingImage from "../../assets/athletics/Trainings_Plan.jpeg";
+import checkinImage from "../../assets/athletics/Daily_Checkin.jpeg";
+import workoutAnalysisImage from "../../assets/athletics/Workout_Analysis.jpeg";
+import aiCoachImage from "../../assets/athletics/AI_Coach.jpeg";
 
 type TickProps = {
   children: React.ReactNode;
@@ -79,9 +83,12 @@ export function AthleteExperience() {
             </ul>
           </div>
 
-          <div className="product-placeholder">
-            <strong>Today's Training</strong>
-            <span>Real Training screenshot coming here</span>
+          <div className="product-placeholder product-placeholder--image">
+            <img
+              src={trainingImage}
+              alt="Aether Athlete IQ training plan"
+              className="athlete-feature-image"
+            />
           </div>
         </article>
 
@@ -114,9 +121,12 @@ export function AthleteExperience() {
             </ul>
           </div>
 
-          <div className="product-placeholder">
-            <strong>Post-Training Check-In</strong>
-            <span>Real Daily Check-In screenshot coming here</span>
+          <div className="product-placeholder product-placeholder--image">
+            <img
+              src={checkinImage}
+              alt="Aether Athlete IQ Daily Check-In"
+              className="athlete-feature-image"
+            />
           </div>
         </article>
 
@@ -156,9 +166,12 @@ export function AthleteExperience() {
               <span>Real Video Analysis screenshot coming here</span>
             </div>
 
-            <div className="product-placeholder product-placeholder--mini">
-              <strong>Workout Analysis</strong>
-              <span>Real Workout Analysis screenshot coming here</span>
+            <div className="product-placeholder product-placeholder--mini product-placeholder--image">
+              <img
+                src={workoutAnalysisImage}
+                alt="Aether Athlete IQ Workout Analysis"
+                className="athlete-feature-image"
+              />
             </div>
           </div>
         </article>
@@ -193,9 +206,12 @@ export function AthleteExperience() {
             </ul>
           </div>
 
-          <div className="product-placeholder">
-            <strong>AI Coach</strong>
-            <span>Real AI Coach screenshot coming here</span>
+          <div className="product-placeholder product-placeholder--image">
+            <img
+              src={aiCoachImage}
+              alt="Aether Athlete IQ AI Coach"
+              className="athlete-feature-image"
+            />
           </div>
         </article>
 
@@ -341,6 +357,11 @@ export function AthleteExperience() {
     </section>
   );
 }
+
+
+
+
+
 
 
 
