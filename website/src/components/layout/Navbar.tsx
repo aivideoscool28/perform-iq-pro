@@ -1,6 +1,9 @@
+﻿import { useTranslation } from "react-i18next";
+
 import logoLong from "../../assets/athletics/Logo_Long.png";
 import { PrimaryButton } from "../ui/PrimaryButton";
 import AudienceSwitcher from "./AudienceSwitcher";
+import { LanguageSwitcher } from "./LanguageSwitcher";
 
 type Audience = "athlete" | "coach";
 
@@ -13,9 +16,15 @@ export function Navbar({
   audience,
   onAudienceChange,
 }: NavbarProps) {
+  const { t } = useTranslation();
+
   return (
     <header className="navbar">
-      <a className="navbar__brand" href="#top" aria-label="Aether Athlete IQ home">
+      <a
+        className="navbar__brand"
+        href="#top"
+        aria-label={t("navbar.home")}
+      >
         <img
           src={logoLong}
           alt="Aether Athlete IQ"
@@ -23,13 +32,26 @@ export function Navbar({
         />
       </a>
 
-      <nav className="navbar__links" aria-label="Main navigation">
-        <a href="#why-aether">Why Aether</a>
-        <a href="#faq">FAQs</a>
-        <a href="#contact">Contact</a>
+      <nav
+        className="navbar__links"
+        aria-label={t("navbar.navigation")}
+      >
+        <a href="#why-aether">
+          {t("navbar.whyAether")}
+        </a>
+
+        <a href="#faq">
+          {t("navbar.faq")}
+        </a>
+
+        <a href="#contact">
+          {t("navbar.contact")}
+        </a>
       </nav>
 
       <div className="navbar__actions">
+        <LanguageSwitcher />
+
         <AudienceSwitcher
           activeAudience={audience}
           onChange={onAudienceChange}
@@ -37,7 +59,7 @@ export function Navbar({
 
         <div className="navbar__cta">
           <PrimaryButton href="https://aether-athlete-iq.netlify.app">
-            Try Aether IQ →
+            {t("navbar.tryAether")}
           </PrimaryButton>
         </div>
       </div>

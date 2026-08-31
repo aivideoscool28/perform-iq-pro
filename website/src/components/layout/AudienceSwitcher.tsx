@@ -1,4 +1,5 @@
-import { Dumbbell, ClipboardList } from "lucide-react";
+﻿import { Dumbbell, ClipboardList } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 type Audience = "athlete" | "coach";
 
@@ -11,9 +12,15 @@ export default function AudienceSwitcher({
   activeAudience,
   onChange,
 }: AudienceSwitcherProps) {
+  const { t } = useTranslation();
+
   return (
     <div className="audience-switcher-wrap">
-      <div className="audience-switcher" role="tablist" aria-label="Choose experience">
+      <div
+        className="audience-switcher"
+        role="tablist"
+        aria-label={t("audience.chooseExperience")}
+      >
         <button
           type="button"
           role="tab"
@@ -24,7 +31,10 @@ export default function AudienceSwitcher({
           onClick={() => onChange("athlete")}
         >
           <Dumbbell size={18} strokeWidth={2} />
-          <span>Athletes</span>
+
+          <span>
+            {t("audience.athletes")}
+          </span>
         </button>
 
         <button
@@ -37,7 +47,10 @@ export default function AudienceSwitcher({
           onClick={() => onChange("coach")}
         >
           <ClipboardList size={18} strokeWidth={2} />
-          <span>Coaches</span>
+
+          <span>
+            {t("audience.coaches")}
+          </span>
         </button>
       </div>
     </div>

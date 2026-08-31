@@ -1,4 +1,6 @@
-import { useState } from "react";
+﻿import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import "./i18n";
 import "./styles/coach-connection.css";
 import "./styles/coach-athlete.css";
 import "./styles/why-aether.css";
@@ -25,6 +27,7 @@ type Audience = "athlete" | "coach";
 
 function App() {
   const [audience, setAudience] = useState<Audience>("athlete");
+  const { t } = useTranslation();
 
   return (
     <div className="website-shell">
@@ -42,19 +45,17 @@ function App() {
       ) : (
         <main className="coach-coming-soon">
           <p className="coach-coming-soon__eyebrow">
-            BUILT FOR COACHES
+            {t("coach.eyebrow")}
           </p>
 
           <h1>
-            What if your athletes' data
+            {t("coach.titleBefore")}
             <br />
-            actually <span>helped you coach?</span>
+            <span>{t("coach.titleHighlight")}</span>
           </h1>
 
           <p>
-            Aether Athlete IQ connects athlete information and brings what
-            matters to you — so you can understand more and make better-informed
-            coaching decisions.
+            {t("coach.description")}
           </p>
 
           <CoachConnectionBar />
@@ -79,3 +80,5 @@ function App() {
 }
 
 export default App;
+
+
