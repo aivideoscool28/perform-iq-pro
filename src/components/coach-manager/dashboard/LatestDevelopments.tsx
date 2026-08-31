@@ -1,4 +1,4 @@
-import {
+﻿import {
   useNavigate,
 } from "@tanstack/react-router";
 
@@ -117,7 +117,7 @@ export function LatestDevelopments() {
 
       <div className="mt-3 space-y-2">
         {loading && (
-          <p className="py-4 text-center text-[9px] text-muted-foreground">
+          <p className="py-4 text-center text-[13px] text-muted-foreground">
             Loading linked athletes...
           </p>
         )}
@@ -125,7 +125,7 @@ export function LatestDevelopments() {
         {!loading &&
           developments.length ===
             0 && (
-            <p className="py-4 text-center text-[9px] text-muted-foreground">
+            <p className="py-4 text-center text-[13px] text-muted-foreground">
               No linked athletes found.
             </p>
           )}
@@ -164,7 +164,7 @@ export function LatestDevelopments() {
                       </p>
 
                       <span
-                        className={`rounded-full px-2 py-0.5 text-[8px] font-bold ${item.badge}`}
+                        className={`rounded-full px-2 py-0.5 text-[12px] font-bold ${item.badge}`}
                       >
                         {
                           item.priority
@@ -178,7 +178,7 @@ export function LatestDevelopments() {
                       }
                     </p>
 
-                    <p className="mt-0.5 text-[9px] text-muted-foreground">
+                    <p className="mt-0.5 text-[13px] text-muted-foreground">
                       {
                         item.detail
                       }

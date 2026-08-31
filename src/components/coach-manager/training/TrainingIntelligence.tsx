@@ -1,4 +1,4 @@
-import type { CoachAthlete } from "@/hooks/useCoachAthletes";
+﻿import type { CoachAthlete } from "@/hooks/useCoachAthletes";
 import { Link } from "@tanstack/react-router";
 
 import {
@@ -59,7 +59,7 @@ export function TrainingIntelligence({
 
           <div>
             <h3 className="text-xs font-bold">Before You Coach</h3>
-            <p className="text-[9px] text-muted-foreground">
+            <p className="text-[13px] text-muted-foreground">
               What changed since the latest athlete data.
             </p>
           </div>
@@ -78,11 +78,11 @@ export function TrainingIntelligence({
                 </p>
               </div>
 
-              <p className="text-[8px] text-muted-foreground">
+              <p className="text-[12px] text-muted-foreground">
                 No relevant changes
               </p>
 
-              <p className="text-[8px] font-medium text-green-600">
+              <p className="text-[12px] font-medium text-green-600">
                 Good to go
               </p>
             </div>
@@ -100,7 +100,7 @@ export function TrainingIntelligence({
                 3 athletes
               </p>
 
-              <p className="text-[8px] text-muted-foreground">
+              <p className="text-[12px] text-muted-foreground">
                 Changes worth reviewing
               </p>
             </div>
@@ -117,18 +117,18 @@ export function TrainingIntelligence({
                 2 athletes
               </p>
 
-              <p className="text-[8px] text-muted-foreground">
+              <p className="text-[12px] text-muted-foreground">
                 Insufficient recent data
               </p>
             </div>
 
-            <span className="text-[8px] text-muted-foreground">
+            <span className="text-[12px] text-muted-foreground">
               Not enough recent data
             </span>
           </div>
         </div>
         <div className="mt-3 space-y-1.5">
-          <p className="text-[9px] font-semibold text-muted-foreground">
+          <p className="text-[13px] font-semibold text-muted-foreground">
             Key changes
           </p>
 
@@ -148,19 +148,19 @@ export function TrainingIntelligence({
                 </div>
 
                 <div className="min-w-0 flex-1">
-                  <p className="text-[9px] font-semibold">{athlete.name}</p>
-                  <p className="text-[8px] text-muted-foreground">
+                  <p className="text-[13px] font-semibold">{athlete.name}</p>
+                  <p className="text-[12px] text-muted-foreground">
                     {athlete.reason}
                   </p>
                 </div>
 
                 <span
-                  className={`rounded-full px-2 py-0.5 text-[8px] font-semibold ${athlete.style}`}
+                  className={`rounded-full px-2 py-0.5 text-[12px] font-semibold ${athlete.style}`}
                 >
                   {athlete.tag}
                 </span>
 
-                <span className="text-[10px] text-muted-foreground">→</span>
+                <span className="text-[14px] text-muted-foreground">→</span>
               </Link>
             );
           })}
@@ -173,7 +173,7 @@ export function TrainingIntelligence({
 
           <div>
             <h3 className="text-xs font-bold">Training Adjustments</h3>
-            <p className="text-[9px] text-muted-foreground">
+            <p className="text-[13px] text-muted-foreground">
               Individual changes you have made.
             </p>
           </div>
@@ -182,8 +182,8 @@ export function TrainingIntelligence({
         <div className="mt-3 rounded-xl border border-green-100 bg-green-50/30 p-2.5">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-[10px] font-semibold">Main training</p>
-              <p className="text-[8px] text-muted-foreground">
+              <p className="text-[14px] font-semibold">Main training</p>
+              <p className="text-[12px] text-muted-foreground">
                 21 athletes following the main plan
               </p>
             </div>
@@ -193,7 +193,7 @@ export function TrainingIntelligence({
         </div>
 
         <div className="mt-2 space-y-1.5">
-          <p className="text-[9px] font-semibold">
+          <p className="text-[13px] font-semibold">
             3 individual adjustments
           </p>
 
@@ -204,18 +204,18 @@ export function TrainingIntelligence({
               params={{ athleteId: athlete.id }} search={{ from: "training" }}
               className="flex w-full items-center gap-2 rounded-lg border border-border/70 px-2 py-1.5 text-left transition hover:bg-muted/20"
             >
-              <div className="grid h-7 w-7 place-items-center rounded-full bg-orange-50 text-[9px] font-bold text-orange-600">
+              <div className="grid h-7 w-7 place-items-center rounded-full bg-orange-50 text-[13px] font-bold text-orange-600">
                 {athlete.initials}
               </div>
 
               <div className="min-w-0 flex-1">
-                <p className="text-[9px] font-semibold">{athlete.name}</p>
-                <p className="text-[8px] text-muted-foreground">
+                <p className="text-[13px] font-semibold">{athlete.name}</p>
+                <p className="text-[12px] text-muted-foreground">
                   {athlete.change}
                 </p>
               </div>
 
-              <span className={`rounded-full px-2 py-0.5 text-[8px] font-semibold ${athlete.style}`}>
+              <span className={`rounded-full px-2 py-0.5 text-[12px] font-semibold ${athlete.style}`}>
                 {athlete.tag}
               </span>
 
@@ -227,7 +227,7 @@ export function TrainingIntelligence({
         <button
           type="button"
           onClick={onOpenIndividualPlans}
-          className="mt-2.5 w-full rounded-lg border border-border py-2 text-[9px] font-semibold"
+          className="mt-2.5 w-full rounded-lg border border-border py-2 text-[13px] font-semibold"
         >
           Manage all adjustments →
         </button>
@@ -239,32 +239,32 @@ export function TrainingIntelligence({
 
           <div>
             <h3 className="text-xs font-bold">AI Training Check</h3>
-            <p className="text-[9px] text-muted-foreground">
+            <p className="text-[13px] text-muted-foreground">
               Suggestions based on today's context.
             </p>
           </div>
         </div>
 
         <div className="mt-3 rounded-xl border border-violet-100 bg-violet-50/60 p-3">
-          <p className="text-[9px] font-semibold text-violet-700">
+          <p className="text-[13px] font-semibold text-violet-700">
             Possible consideration
           </p>
 
-          <p className="mt-2 text-[9px] leading-relaxed text-muted-foreground">
+          <p className="mt-2 text-[13px] leading-relaxed text-muted-foreground">
             Three athletes may benefit from individual adjustments today.
             The main group training does not necessarily need to change.
           </p>
 
           <button
             type="button"
-            className="mt-3 text-[9px] font-semibold text-violet-600"
+            className="mt-3 text-[13px] font-semibold text-violet-600"
           >
             Review suggestions →
           </button>
         </div>
 
         <div className="mt-3 rounded-xl border border-border p-3">
-          <p className="text-[9px] font-semibold">Focus areas</p>
+          <p className="text-[13px] font-semibold">Focus areas</p>
 
           <div className="mt-2 space-y-2">
             <div className="flex items-center gap-2">
@@ -272,7 +272,7 @@ export function TrainingIntelligence({
                 <Target className="h-3 w-3 text-orange-500" />
               </div>
 
-              <p className="text-[8px] text-muted-foreground">
+              <p className="text-[12px] text-muted-foreground">
                 Sprint acceleration quality
               </p>
             </div>
@@ -282,7 +282,7 @@ export function TrainingIntelligence({
                 <Dumbbell className="h-3 w-3 text-red-500" />
               </div>
 
-              <p className="text-[8px] text-muted-foreground">
+              <p className="text-[12px] text-muted-foreground">
                 Hamstring / posterior chain
               </p>
             </div>
@@ -292,7 +292,7 @@ export function TrainingIntelligence({
                 <RefreshCw className="h-3 w-3 text-green-600" />
               </div>
 
-              <p className="text-[8px] text-muted-foreground">
+              <p className="text-[12px] text-muted-foreground">
                 Recovery management
               </p>
             </div>
@@ -302,6 +302,7 @@ export function TrainingIntelligence({
     </div>
   );
 }
+
 
 
 

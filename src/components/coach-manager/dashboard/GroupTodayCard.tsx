@@ -88,11 +88,11 @@ export function GroupTodayCard() {
                 {value}
               </p>
 
-              <p className="text-[10px] font-medium text-foreground">
+              <p className="text-[14px] font-medium text-foreground">
                 {label}
               </p>
 
-              <p className="mt-0.5 text-[8px] text-muted-foreground">
+              <p className="mt-0.5 text-[12px] text-muted-foreground">
                 {detail}
               </p>
             </div>
@@ -101,11 +101,11 @@ export function GroupTodayCard() {
       </div>
 
       <div className="mt-3 rounded-xl border border-orange-100 bg-orange-50/40 px-3 py-2">
-        <p className="text-[9px] font-semibold text-orange-700">
+        <p className="text-[13px] font-semibold text-orange-700">
           2 athletes are worth reviewing before training.
         </p>
 
-        <p className="mt-0.5 text-[8px] text-muted-foreground">
+        <p className="mt-0.5 text-[12px] text-muted-foreground">
           Later, Layer 2 will determine this from evidence such as repeated changes,
           personal baseline, pain/body reports and training response.
         </p>
@@ -113,5 +113,6 @@ export function GroupTodayCard() {
     </section>
   );
 }
+
 
 

@@ -1,4 +1,4 @@
-import type { CoachAthlete } from "@/hooks/useCoachAthletes";
+﻿import type { CoachAthlete } from "@/hooks/useCoachAthletes";
 
 import {
   AlertTriangle,
@@ -84,7 +84,7 @@ export function AthletesSummaryCards({
               </div>
 
               <div className="min-w-0">
-                <p className="text-[9px] font-semibold leading-tight text-muted-foreground">
+                <p className="text-[13px] font-semibold leading-tight text-muted-foreground">
                   {label}
                 </p>
 
@@ -93,7 +93,7 @@ export function AthletesSummaryCards({
                 </p>
 
                 <p
-                  className={`mt-0.5 text-[9px] font-medium leading-tight ${detailColor}`}
+                  className={`mt-0.5 text-[13px] font-medium leading-tight ${detailColor}`}
                 >
                   {detail}
                 </p>
@@ -105,4 +105,5 @@ export function AthletesSummaryCards({
     </div>
   );
 }
+
 

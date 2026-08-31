@@ -1,4 +1,4 @@
-import {
+﻿import {
   Sparkles,
   Users,
   Layers3,
@@ -19,7 +19,7 @@ export function CoachInsightCard() {
               Athletic IQ Insight
             </p>
 
-            <span className="rounded-full bg-violet-100 px-2 py-0.5 text-[9px] font-bold text-violet-600">
+            <span className="rounded-full bg-violet-100 px-2 py-0.5 text-[13px] font-bold text-violet-600">
               TRAINING RESPONSE
             </span>
           </div>
@@ -37,7 +37,7 @@ export function CoachInsightCard() {
             <div className="flex items-center gap-1.5 rounded-lg border border-violet-100 bg-white/70 px-2 py-1">
               <Users className="h-3 w-3 text-violet-500" />
 
-              <span className="text-[9px] font-medium">
+              <span className="text-[13px] font-medium">
                 5 athletes affected
               </span>
             </div>
@@ -45,7 +45,7 @@ export function CoachInsightCard() {
             <div className="flex items-center gap-1.5 rounded-lg border border-violet-100 bg-white/70 px-2 py-1">
               <Layers3 className="h-3 w-3 text-violet-500" />
 
-              <span className="text-[9px] font-medium">
+              <span className="text-[13px] font-medium">
                 Repeated across 2 sessions
               </span>
             </div>
@@ -63,3 +63,4 @@ export function CoachInsightCard() {
     </section>
   );
 }
+

@@ -1,4 +1,4 @@
-import {
+﻿import {
   CalendarClock,
   ClipboardCheck,
   MessageCircle,
@@ -45,12 +45,12 @@ export function CoachActionCenter() {
             Coach Action Center
           </h3>
 
-          <p className="mt-1 text-[9px] leading-relaxed text-muted-foreground">
+          <p className="mt-1 text-[13px] leading-relaxed text-muted-foreground">
             AI suggestions for what you can do today.
           </p>
         </div>
 
-        <span className="rounded-full bg-orange-50 px-2 py-0.5 text-[9px] font-bold text-orange-600">
+        <span className="rounded-full bg-orange-50 px-2 py-0.5 text-[13px] font-bold text-orange-600">
           4
         </span>
       </div>
@@ -76,11 +76,11 @@ export function CoachActionCenter() {
               </div>
 
               <div className="min-w-0 flex-1">
-                <p className="text-[10px] font-semibold leading-tight">
+                <p className="text-[14px] font-semibold leading-tight">
                   {title}
                 </p>
 
-                <p className="mt-0.5 text-[8px] leading-tight text-muted-foreground">
+                <p className="mt-0.5 text-[12px] leading-tight text-muted-foreground">
                   {detail}
                 </p>
               </div>
@@ -95,10 +95,11 @@ export function CoachActionCenter() {
 
       <button
         type="button"
-        className="mt-2.5 w-full text-center text-[9px] font-semibold text-orange-600"
+        className="mt-2.5 w-full text-center text-[13px] font-semibold text-orange-600"
       >
         View all suggestions →
       </button>
     </section>
   );
 }
+

@@ -204,7 +204,7 @@ export function IndividualTrainingPlans({
         <button
           type="button"
           onClick={onBack}
-          className="text-[10px] font-semibold text-orange-600"
+          className="text-[14px] font-semibold text-orange-600"
         >
           ← Back to Training
         </button>
@@ -212,7 +212,7 @@ export function IndividualTrainingPlans({
         <section className="rounded-2xl border border-border bg-white p-4 shadow-sm">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-orange-600">
+              <p className="text-[14px] font-semibold uppercase tracking-[0.16em] text-orange-600">
                 Individual Training
               </p>
 
@@ -220,7 +220,7 @@ export function IndividualTrainingPlans({
                 Athlete Training Plans
               </h2>
 
-              <p className="mt-1 text-[10px] text-muted-foreground">
+              <p className="mt-1 text-[14px] text-muted-foreground">
                 Build and adjust training for individual athletes.
               </p>
             </div>
@@ -266,7 +266,7 @@ export function IndividualTrainingPlans({
                   : "Select an athlete"}
               </p>
 
-              <p className="mt-1 text-[9px] text-muted-foreground">
+              <p className="mt-1 text-[13px] text-muted-foreground">
                 {formatWeek(
                   weekStart,
                 )}
@@ -298,7 +298,7 @@ export function IndividualTrainingPlans({
                     ),
                   )
                 }
-                className="rounded-lg border border-border px-3 py-2 text-[9px] font-semibold"
+                className="rounded-lg border border-border px-3 py-2 text-[13px] font-semibold"
               >
                 Today
               </button>
@@ -322,7 +322,7 @@ export function IndividualTrainingPlans({
 
           {error && (
             <div className="border-b border-red-100 bg-red-50 px-4 py-2">
-              <p className="text-[9px] font-semibold text-red-700">
+              <p className="text-[13px] font-semibold text-red-700">
                 {error}
               </p>
             </div>
@@ -365,7 +365,7 @@ export function IndividualTrainingPlans({
                   >
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-[8px] font-semibold uppercase text-muted-foreground">
+                        <p className="text-[12px] font-semibold uppercase text-muted-foreground">
                           {date.toLocaleDateString(
                             "en-US",
                             {
@@ -377,7 +377,7 @@ export function IndividualTrainingPlans({
 
                         <p
                           className={[
-                            "mt-1 grid h-6 w-6 place-items-center rounded-full text-[9px] font-bold",
+                            "mt-1 grid h-6 w-6 place-items-center rounded-full text-[13px] font-bold",
                             today
                               ? "bg-orange-500 text-white"
                               : "",
@@ -430,13 +430,13 @@ export function IndividualTrainingPlans({
                             }}
                             className="w-full rounded-xl border border-orange-100 bg-orange-50 p-2 text-left transition hover:bg-orange-100/60"
                           >
-                            <p className="truncate text-[9px] font-bold text-orange-700">
+                            <p className="truncate text-[13px] font-bold text-orange-700">
                               {
                                 plan.title
                               }
                             </p>
 
-                            <p className="mt-1 text-[8px] text-orange-700/70">
+                            <p className="mt-1 text-[12px] text-orange-700/70">
                               {plan.duration_minutes
                                 ? `${plan.duration_minutes} min`
                                 : "Individual plan"}
@@ -444,7 +444,7 @@ export function IndividualTrainingPlans({
 
                             <span
                               className={[
-                                "mt-1.5 inline-flex rounded-full px-1.5 py-0.5 text-[7px] font-bold uppercase tracking-wide",
+                                "mt-1.5 inline-flex rounded-full px-1.5 py-0.5 text-[12px] font-bold uppercase tracking-wide",
                                 plan.is_published
                                   ? "bg-green-100 text-green-700"
                                   : "bg-slate-100 text-slate-600",
@@ -461,7 +461,7 @@ export function IndividualTrainingPlans({
                       {!loading &&
                         dayPlans.length ===
                           0 && (
-                          <p className="pt-2 text-center text-[8px] text-muted-foreground">
+                          <p className="pt-2 text-center text-[12px] text-muted-foreground">
                             No plan
                           </p>
                         )}
@@ -849,7 +849,7 @@ function IndividualPlanEditor({
       <div className="max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-2xl border border-border bg-white p-4 shadow-xl">
         <div className="flex items-start justify-between">
           <div>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-orange-600">
+            <p className="text-[14px] font-semibold uppercase tracking-[0.16em] text-orange-600">
               Individual Training
             </p>
 
@@ -873,11 +873,11 @@ function IndividualPlanEditor({
           <section className="mt-4 rounded-xl border border-orange-100 bg-orange-50/30 p-3">
             <div className="flex items-center justify-between gap-3">
               <div>
-                <p className="text-[10px] font-bold">
+                <p className="text-[14px] font-bold">
                   Start from today's main training
                 </p>
 
-                <p className="mt-0.5 text-[8px] text-muted-foreground">
+                <p className="mt-0.5 text-[12px] text-muted-foreground">
                   Copy the group session, then change only what this athlete needs.
                 </p>
               </div>
@@ -886,7 +886,7 @@ function IndividualPlanEditor({
                 type="button"
                 onClick={copyMainTraining}
                 disabled={!mainSession}
-                className="rounded-xl bg-orange-500 px-3 py-2 text-[9px] font-semibold text-white disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-500"
+                className="rounded-xl bg-orange-500 px-3 py-2 text-[13px] font-semibold text-white disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-500"
               >
                 {mainSession
                   ? "Copy Main Training"
@@ -898,7 +898,7 @@ function IndividualPlanEditor({
 
         <div className="mt-4 grid grid-cols-2 gap-3">
           <div>
-            <label className="text-[9px] font-semibold">
+            <label className="text-[13px] font-semibold">
               Training title
             </label>
 
@@ -915,7 +915,7 @@ function IndividualPlanEditor({
           </div>
 
           <div>
-            <label className="text-[9px] font-semibold">
+            <label className="text-[13px] font-semibold">
               Date
             </label>
 
@@ -934,7 +934,7 @@ function IndividualPlanEditor({
           </div>
 
           <div>
-            <label className="text-[9px] font-semibold">
+            <label className="text-[13px] font-semibold">
               Discipline
             </label>
 
@@ -952,7 +952,7 @@ function IndividualPlanEditor({
           </div>
 
           <div>
-            <label className="text-[9px] font-semibold">
+            <label className="text-[13px] font-semibold">
               Duration
             </label>
 
@@ -972,7 +972,7 @@ function IndividualPlanEditor({
 
         <div className="mt-3 grid grid-cols-2 gap-3">
           <div>
-            <label className="text-[9px] font-semibold">
+            <label className="text-[13px] font-semibold">
               Session goal
             </label>
 
@@ -988,7 +988,7 @@ function IndividualPlanEditor({
           </div>
 
           <div>
-            <label className="text-[9px] font-semibold">
+            <label className="text-[13px] font-semibold">
               Coach note
             </label>
 
@@ -1021,7 +1021,7 @@ function IndividualPlanEditor({
               onClick={
                 addExercise
               }
-              className="flex items-center gap-1 rounded-lg border border-border px-2 py-1.5 text-[9px] font-semibold"
+              className="flex items-center gap-1 rounded-lg border border-border px-2 py-1.5 text-[13px] font-semibold"
             >
               <Plus className="h-3 w-3" />
               Add Exercise
@@ -1053,7 +1053,7 @@ function IndividualPlanEditor({
                       )
                     }
                     placeholder="Section"
-                    className="rounded-lg border border-border px-2 py-2 text-[9px]"
+                    className="rounded-lg border border-border px-2 py-2 text-[13px]"
                   />
 
                   <input
@@ -1068,7 +1068,7 @@ function IndividualPlanEditor({
                       )
                     }
                     placeholder="Exercise"
-                    className="rounded-lg border border-border px-2 py-2 text-[9px]"
+                    className="rounded-lg border border-border px-2 py-2 text-[13px]"
                   />
 
                   <input
@@ -1084,7 +1084,7 @@ function IndividualPlanEditor({
                       )
                     }
                     placeholder="4 × 30 m"
-                    className="rounded-lg border border-border px-2 py-2 text-[9px]"
+                    className="rounded-lg border border-border px-2 py-2 text-[13px]"
                   />
 
                   <input
@@ -1100,7 +1100,7 @@ function IndividualPlanEditor({
                       )
                     }
                     placeholder="4 min"
-                    className="rounded-lg border border-border px-2 py-2 text-[9px]"
+                    className="rounded-lg border border-border px-2 py-2 text-[13px]"
                   />
 
                   <button
@@ -1122,7 +1122,7 @@ function IndividualPlanEditor({
 
         {error && (
           <div className="mt-3 rounded-xl border border-red-100 bg-red-50 p-3">
-            <p className="text-[9px] font-semibold text-red-700">
+            <p className="text-[13px] font-semibold text-red-700">
               {error}
             </p>
           </div>
@@ -1139,7 +1139,7 @@ function IndividualPlanEditor({
                 onClick={
                   remove
                 }
-                className="text-[9px] font-semibold text-red-600"
+                className="text-[13px] font-semibold text-red-600"
               >
                 Delete Plan
               </button>
@@ -1155,7 +1155,7 @@ function IndividualPlanEditor({
               disabled={
                 saving
               }
-              className="rounded-xl border border-border px-3 py-2 text-[9px] font-semibold"
+              className="rounded-xl border border-border px-3 py-2 text-[13px] font-semibold"
             >
               Cancel
             </button>
@@ -1167,7 +1167,7 @@ function IndividualPlanEditor({
                 saving ||
                 !title.trim()
               }
-              className="rounded-xl border border-orange-200 bg-orange-50 px-4 py-2 text-[9px] font-semibold text-orange-700 disabled:opacity-50"
+              className="rounded-xl border border-orange-200 bg-orange-50 px-4 py-2 text-[13px] font-semibold text-orange-700 disabled:opacity-50"
             >
               {saving
                 ? "Saving..."
@@ -1181,7 +1181,7 @@ function IndividualPlanEditor({
                 saving ||
                 !title.trim()
               }
-              className="rounded-xl bg-orange-500 px-4 py-2 text-[9px] font-semibold text-white disabled:opacity-50"
+              className="rounded-xl bg-orange-500 px-4 py-2 text-[13px] font-semibold text-white disabled:opacity-50"
             >
               {saving
                 ? "Publishing..."
@@ -1195,6 +1195,7 @@ function IndividualPlanEditor({
     </div>
   );
 }
+
 
 
 

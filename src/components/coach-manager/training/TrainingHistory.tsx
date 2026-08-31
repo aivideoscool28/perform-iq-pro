@@ -31,7 +31,7 @@ export function TrainingHistory({
             Training History
           </h2>
 
-          <p className="text-[9px] text-muted-foreground">
+          <p className="text-[13px] text-muted-foreground">
             Review and reuse previous sessions.
           </p>
         </div>
@@ -39,7 +39,7 @@ export function TrainingHistory({
 
       {error && (
         <div className="mt-3 rounded-xl border border-red-100 bg-red-50 p-3">
-          <p className="text-[9px] font-semibold text-red-700">
+          <p className="text-[13px] font-semibold text-red-700">
             {error}
           </p>
         </div>
@@ -70,13 +70,13 @@ export function TrainingHistory({
                 className="flex items-center justify-between gap-3 rounded-xl border border-border p-3"
               >
                 <div>
-                  <p className="text-[10px] font-bold">
+                  <p className="text-[14px] font-bold">
                     {
                       session.title
                     }
                   </p>
 
-                  <p className="mt-1 text-[8px] text-muted-foreground">
+                  <p className="mt-1 text-[12px] text-muted-foreground">
                     {
                       session.session_date
                     }
@@ -95,7 +95,7 @@ export function TrainingHistory({
                       session.id,
                     )
                   }
-                  className="flex items-center gap-1 rounded-lg border border-border px-2 py-1.5 text-[8px] font-semibold"
+                  className="flex items-center gap-1 rounded-lg border border-border px-2 py-1.5 text-[12px] font-semibold"
                 >
                   <Copy className="h-3 w-3" />
                   Reuse
@@ -107,3 +107,4 @@ export function TrainingHistory({
     </section>
   );
 }
+

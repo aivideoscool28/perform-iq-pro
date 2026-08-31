@@ -238,7 +238,7 @@ export function AthleteQuestions() {
                     {selectedQuestion.athlete}
                   </p>
 
-                  <p className="text-[10px] text-muted-foreground">
+                  <p className="text-[14px] text-muted-foreground">
                     {selectedQuestion.time}
                   </p>
                 </div>
@@ -267,7 +267,7 @@ export function AthleteQuestions() {
             </div>
 
             <div className="mt-4">
-              <label className="text-[10px] font-semibold">
+              <label className="text-[14px] font-semibold">
                 Your answer
               </label>
 
@@ -282,7 +282,7 @@ export function AthleteQuestions() {
 
             {error && (
               <div className="mt-3 rounded-xl border border-red-100 bg-red-50 px-3 py-2">
-                <p className="text-[10px] font-semibold text-red-700">
+                <p className="text-[14px] font-semibold text-red-700">
                   Could not send answer
                 </p>
               </div>
@@ -293,11 +293,11 @@ export function AthleteQuestions() {
                 <CheckCircle2 className="h-4 w-4 text-green-600" />
 
                 <div>
-                  <p className="text-[10px] font-semibold text-green-700">
+                  <p className="text-[14px] font-semibold text-green-700">
                     Answer sent
                   </p>
 
-                  <p className="text-[9px] text-green-700/80">
+                  <p className="text-[13px] text-green-700/80">
                     Saved successfully in Supabase.
                   </p>
                 </div>
@@ -308,7 +308,7 @@ export function AthleteQuestions() {
               <button
                 type="button"
                 onClick={closeQuestion}
-                className="rounded-xl border border-border px-4 py-2 text-[10px] font-semibold"
+                className="rounded-xl border border-border px-4 py-2 text-[14px] font-semibold"
               >
                 Close
               </button>
@@ -317,7 +317,7 @@ export function AthleteQuestions() {
                 type="button"
                 onClick={sendAnswer}
                 disabled={!answer.trim() || answerSent || sending}
-                className="flex items-center gap-2 rounded-xl bg-orange-500 px-4 py-2 text-[10px] font-semibold text-white transition hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-40"
+                className="flex items-center gap-2 rounded-xl bg-orange-500 px-4 py-2 text-[14px] font-semibold text-white transition hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-40"
               >
                 <Send className="h-3.5 w-3.5" />
                 {sending
@@ -333,6 +333,7 @@ export function AthleteQuestions() {
     </>
   );
 }
+
 
 
 

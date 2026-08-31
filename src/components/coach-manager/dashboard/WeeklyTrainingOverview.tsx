@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+﻿import { Link } from "@tanstack/react-router";
 
 import type {
   CoachTrainingSession,
@@ -103,7 +103,7 @@ export function WeeklyTrainingOverview({
                       </p>
 
                       <div className="mt-1 flex items-center justify-between gap-2">
-                        <p className="truncate text-[10px] text-muted-foreground">
+                        <p className="truncate text-[14px] text-muted-foreground">
                           {formatTime(
                             session.start_time,
                             session.end_time,
@@ -112,7 +112,7 @@ export function WeeklyTrainingOverview({
 
                         <div className="flex shrink-0 items-center gap-1">
                           {session.discipline && (
-                            <span className="rounded-full bg-orange-50 px-2 py-0.5 text-[8px] font-semibold text-orange-600">
+                            <span className="rounded-full bg-orange-50 px-2 py-0.5 text-[12px] font-semibold text-orange-600">
                               {
                                 session.discipline
                               }
@@ -120,7 +120,7 @@ export function WeeklyTrainingOverview({
                           )}
 
                           <span
-                            className={`rounded-full px-2 py-0.5 text-[8px] font-semibold capitalize ${statusStyle}`}
+                            className={`rounded-full px-2 py-0.5 text-[12px] font-semibold capitalize ${statusStyle}`}
                           >
                             {session.status}
                           </span>
@@ -136,11 +136,11 @@ export function WeeklyTrainingOverview({
         {!loading &&
           visibleSessions.length === 0 && (
             <div className="rounded-xl border border-dashed border-border px-3 py-5 text-center">
-              <p className="text-[10px] font-semibold">
+              <p className="text-[14px] font-semibold">
                 No upcoming sessions this week
               </p>
 
-              <p className="mt-1 text-[9px] text-muted-foreground">
+              <p className="mt-1 text-[13px] text-muted-foreground">
                 Create a training session to add it here.
               </p>
             </div>
@@ -157,6 +157,7 @@ export function WeeklyTrainingOverview({
     </section>
   );
 }
+
 
 
 

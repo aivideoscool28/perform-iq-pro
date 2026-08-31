@@ -1,4 +1,4 @@
-import {
+﻿import {
   useEffect,
   useState,
 } from "react";
@@ -154,7 +154,7 @@ export function CompetitionEditor({
       <div className="w-full max-w-lg rounded-2xl border border-border bg-white p-5 shadow-2xl">
         <div className="flex items-start justify-between">
           <div>
-            <p className="text-[9px] font-bold uppercase tracking-[0.16em] text-violet-600">
+            <p className="text-[13px] font-bold uppercase tracking-[0.16em] text-violet-600">
               Competition
             </p>
 
@@ -162,7 +162,7 @@ export function CompetitionEditor({
               Edit competition
             </h2>
 
-            <p className="mt-1 text-[8px] text-muted-foreground">
+            <p className="mt-1 text-[12px] text-muted-foreground">
               Update competition details and date.
             </p>
           </div>
@@ -274,7 +274,7 @@ export function CompetitionEditor({
           <button
             type="button"
             onClick={onClose}
-            className="rounded-xl border border-border px-4 py-2 text-[8px] font-semibold"
+            className="rounded-xl border border-border px-4 py-2 text-[12px] font-semibold"
           >
             Cancel
           </button>
@@ -289,7 +289,7 @@ export function CompetitionEditor({
             onClick={() =>
               void save()
             }
-            className="rounded-xl bg-violet-600 px-4 py-2 text-[8px] font-semibold text-white disabled:opacity-50"
+            className="rounded-xl bg-violet-600 px-4 py-2 text-[12px] font-semibold text-white disabled:opacity-50"
           >
             {saving
               ? "Saving..."
@@ -300,3 +300,4 @@ export function CompetitionEditor({
     </div>
   );
 }
+

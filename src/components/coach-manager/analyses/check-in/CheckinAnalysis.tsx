@@ -1,4 +1,4 @@
-import { useNavigate } from "@tanstack/react-router";
+﻿import { useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 
 import {
@@ -806,20 +806,20 @@ export function CheckinAnalysis() {
               </div>
 
               <div className="min-w-0">
-                <p className="text-[8px] font-semibold text-muted-foreground">
+                <p className="text-[12px] font-semibold text-muted-foreground">
                   {label}
                 </p>
 
                 <div className="mt-0.5 flex items-baseline gap-1">
                   <p className="text-xl font-bold">{value}</p>
                   {suffix && (
-                    <span className="text-[9px] text-muted-foreground">
+                    <span className="text-[13px] text-muted-foreground">
                       {suffix}
                     </span>
                   )}
                 </div>
 
-                <p className={`text-[7px] ${style.split(" ")[1]}`}>
+                <p className={`text-[12px] ${style.split(" ")[1]}`}>
                   {detail}
                 </p>
               </div>
@@ -831,7 +831,7 @@ export function CheckinAnalysis() {
       <section className="rounded-2xl border border-border bg-white p-3 shadow-sm">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <p className="text-[8px] font-bold uppercase tracking-[0.14em] text-violet-600">
+            <p className="text-[12px] font-bold uppercase tracking-[0.14em] text-violet-600">
               Coach Priority
             </p>
 
@@ -839,12 +839,12 @@ export function CheckinAnalysis() {
               Which athletes should I look at?
             </h3>
 
-            <p className="mt-1 text-[8px] text-muted-foreground">
+            <p className="mt-1 text-[12px] text-muted-foreground">
               Recent athlete-level check-in signals, ordered for faster review.
             </p>
           </div>
 
-          <span className="rounded-lg bg-violet-50 px-2.5 py-1 text-[8px] font-semibold text-violet-700">
+          <span className="rounded-lg bg-violet-50 px-2.5 py-1 text-[12px] font-semibold text-violet-700">
             {unusualResponses.length} to review
           </span>
         </div>
@@ -853,16 +853,16 @@ export function CheckinAnalysis() {
           <div className="rounded-xl border border-orange-100 bg-orange-50/30 p-2.5">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-[9px] font-bold text-orange-700">
+                <p className="text-[13px] font-bold text-orange-700">
                   Review first
                 </p>
 
-                <p className="mt-0.5 text-[7px] text-muted-foreground">
+                <p className="mt-0.5 text-[12px] text-muted-foreground">
                   Athletes with unusual recent responses
                 </p>
               </div>
 
-              <span className="rounded-full bg-orange-100 px-2 py-0.5 text-[7px] font-bold text-orange-700">
+              <span className="rounded-full bg-orange-100 px-2 py-0.5 text-[12px] font-bold text-orange-700">
                 {unusualResponses.length}
               </span>
             </div>
@@ -889,18 +889,18 @@ export function CheckinAnalysis() {
                     className="flex w-full items-center justify-between rounded-lg border border-orange-100 bg-white px-2.5 py-2 text-left transition hover:border-orange-200 hover:bg-orange-50/50"
                   >
                     <div className="min-w-0">
-                      <p className="truncate text-[9px] font-semibold">
+                      <p className="truncate text-[13px] font-semibold">
                         {item.athlete}
                       </p>
 
-                      <p className="mt-0.5 truncate text-[7px] text-muted-foreground">
+                      <p className="mt-0.5 truncate text-[12px] text-muted-foreground">
                         {item.signal}
                       </p>
                     </div>
 
                     <div className="ml-2 flex shrink-0 items-center gap-2">
                       <span
-                        className={`rounded-full px-2 py-0.5 text-[7px] font-semibold ${item.style}`}
+                        className={`rounded-full px-2 py-0.5 text-[12px] font-semibold ${item.style}`}
                       >
                         {item.detail}
                       </span>
@@ -912,11 +912,11 @@ export function CheckinAnalysis() {
 
               {unusualResponses.length === 0 && (
                 <div className="rounded-lg border border-dashed border-orange-100 bg-white px-3 py-4 text-center">
-                  <p className="text-[8px] font-semibold">
+                  <p className="text-[12px] font-semibold">
                     No unusual athlete responses
                   </p>
 
-                  <p className="mt-1 text-[7px] text-muted-foreground">
+                  <p className="mt-1 text-[12px] text-muted-foreground">
                     No athlete currently meets the review rules.
                   </p>
                 </div>
@@ -927,16 +927,16 @@ export function CheckinAnalysis() {
           <div className="rounded-xl border border-green-100 bg-green-50/30 p-2.5">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-[9px] font-bold text-green-700">
+                <p className="text-[13px] font-bold text-green-700">
                   No current review signal
                 </p>
 
-                <p className="mt-0.5 text-[7px] text-muted-foreground">
+                <p className="mt-0.5 text-[12px] text-muted-foreground">
                   No unusual response detected in this analysis
                 </p>
               </div>
 
-              <span className="rounded-full bg-green-100 px-2 py-0.5 text-[7px] font-bold text-green-700">
+              <span className="rounded-full bg-green-100 px-2 py-0.5 text-[12px] font-bold text-green-700">
                 {athletesWithoutReviewSignal.length}
               </span>
             </div>
@@ -962,12 +962,12 @@ export function CheckinAnalysis() {
                     className="flex w-full items-center justify-between rounded-lg border border-green-100 bg-white px-2.5 py-2 text-left transition hover:border-green-200 hover:bg-green-50/50"
                   >
                     <div>
-                      <p className="text-[9px] font-semibold">
+                      <p className="text-[13px] font-semibold">
                         {athlete.display_name ??
                           "Unnamed athlete"}
                       </p>
 
-                      <p className="mt-0.5 text-[7px] text-muted-foreground">
+                      <p className="mt-0.5 text-[12px] text-muted-foreground">
                         No current unusual-response signal
                       </p>
                     </div>
@@ -980,7 +980,7 @@ export function CheckinAnalysis() {
               {athletesWithoutReviewSignal.length ===
                 0 && (
                 <div className="rounded-lg border border-dashed border-green-100 bg-white px-3 py-4 text-center">
-                  <p className="text-[8px] font-semibold">
+                  <p className="text-[12px] font-semibold">
                     All athletes currently have a review signal
                   </p>
                 </div>
@@ -989,7 +989,7 @@ export function CheckinAnalysis() {
           </div>
         </div>
 
-        <p className="mt-2 text-[7px] text-muted-foreground">
+        <p className="mt-2 text-[12px] text-muted-foreground">
           Priority reflects athlete-reported check-in patterns. It is a review aid, not a diagnosis or automatic coaching decision.
         </p>
       </section>
@@ -1002,7 +1002,7 @@ export function CheckinAnalysis() {
                 1. How are athletes responding?
               </h3>
 
-              <p className="mt-1 text-[8px] text-muted-foreground">
+              <p className="mt-1 text-[12px] text-muted-foreground">
                 Trends across the selected period
               </p>
             </div>
@@ -1012,7 +1012,7 @@ export function CheckinAnalysis() {
                 type="button"
                 onClick={() => setTrendMode("average")}
                 className={[
-                  "rounded-md px-2 py-1 text-[7px] font-semibold",
+                  "rounded-md px-2 py-1 text-[12px] font-semibold",
                   trendMode === "average"
                     ? "bg-white text-violet-700 shadow-sm"
                     : "text-muted-foreground",
@@ -1025,7 +1025,7 @@ export function CheckinAnalysis() {
                 type="button"
                 onClick={() => setTrendMode("unusual")}
                 className={[
-                  "rounded-md px-2 py-1 text-[7px] font-semibold",
+                  "rounded-md px-2 py-1 text-[12px] font-semibold",
                   trendMode === "unusual"
                     ? "bg-white text-violet-700 shadow-sm"
                     : "text-muted-foreground",
@@ -1044,7 +1044,7 @@ export function CheckinAnalysis() {
                   type="button"
                   onClick={() => setTrendMetric(item)}
                   className={[
-                    "rounded-lg border px-2 py-1 text-[7px] font-semibold",
+                    "rounded-lg border px-2 py-1 text-[12px] font-semibold",
                     trendMetric === item
                       ? "border-violet-200 bg-violet-50 text-violet-700"
                       : "border-border text-muted-foreground",
@@ -1060,19 +1060,19 @@ export function CheckinAnalysis() {
             <>
               <div className="mt-3 grid grid-cols-3 gap-1.5">
                 <div className="rounded-lg bg-violet-50 px-2 py-1.5">
-                  <p className="text-[6px] font-semibold uppercase tracking-wide text-violet-500">
+                  <p className="text-[11px] font-semibold uppercase tracking-wide text-violet-500">
                     Current
                   </p>
-                  <p className="mt-0.5 text-[10px] font-bold text-violet-700">
+                  <p className="mt-0.5 text-[14px] font-bold text-violet-700">
                     {currentTrendAverage !== null ? currentTrendAverage.toFixed(1) : "—"}
                   </p>
                 </div>
 
                 <div className="rounded-lg bg-slate-50 px-2 py-1.5">
-                  <p className="text-[6px] font-semibold uppercase tracking-wide text-slate-400">
+                  <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-400">
                     Previous
                   </p>
-                  <p className="mt-0.5 text-[10px] font-bold text-slate-600">
+                  <p className="mt-0.5 text-[14px] font-bold text-slate-600">
                     {previousTrendAverage !== null
                       ? previousTrendAverage.toFixed(1)
                       : "—"}
@@ -1080,10 +1080,10 @@ export function CheckinAnalysis() {
                 </div>
 
                 <div className="rounded-lg border border-border px-2 py-1.5">
-                  <p className="text-[6px] font-semibold uppercase tracking-wide text-muted-foreground">
+                  <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
                     Change
                   </p>
-                  <p className="mt-0.5 text-[9px] font-bold">
+                  <p className="mt-0.5 text-[13px] font-bold">
                     {currentTrendAverage !== null &&
                     previousTrendAverage !== null
                       ? `${
@@ -1104,7 +1104,7 @@ export function CheckinAnalysis() {
                 <div className="absolute inset-x-0 top-0 bottom-5 flex flex-col justify-between">
                   {trendAxisLabels.map((value) => (
                     <div key={value} className="flex items-center gap-2">
-                      <span className="w-5 text-[7px] text-muted-foreground">
+                      <span className="w-5 text-[12px] text-muted-foreground">
                         {value}
                       </span>
 
@@ -1180,7 +1180,7 @@ export function CheckinAnalysis() {
                   )}
                 </svg>
 
-                <div className="absolute bottom-0 left-6 right-0 flex justify-between text-[7px] text-muted-foreground">
+                <div className="absolute bottom-0 left-6 right-0 flex justify-between text-[12px] text-muted-foreground">
                   {trendData.length > 0 ? (
                     trendData.map((point) => (
                       <span key={point.date}>
@@ -1193,7 +1193,7 @@ export function CheckinAnalysis() {
                 </div>
               </div>
 
-              <div className="mt-2 flex items-center gap-4 text-[7px] text-muted-foreground">
+              <div className="mt-2 flex items-center gap-4 text-[12px] text-muted-foreground">
                 <span className="flex items-center gap-1">
                   <span className="h-0.5 w-4 bg-violet-600" />
                   Current 4 weeks
@@ -1205,20 +1205,20 @@ export function CheckinAnalysis() {
                 </span>
               </div>
 
-              <div className="mt-3 rounded-lg bg-violet-50 px-2.5 py-2 text-[8px] text-violet-700">
+              <div className="mt-3 rounded-lg bg-violet-50 px-2.5 py-2 text-[12px] text-violet-700">
                 {trendInsight}
               </div>
             </>
           ) : (
             <div className="mt-3 space-y-2">
               <div className="rounded-lg border border-orange-100 bg-orange-50/40 px-2.5 py-2">
-                <p className="text-[8px] font-semibold text-orange-700">
+                <p className="text-[12px] font-semibold text-orange-700">
                   {summary.mostReportedPainArea
                   ? `${summary.mostReportedPainArea.count} reports`
                   : "No reports"} differ from their recent response pattern
                 </p>
 
-                <p className="mt-0.5 text-[7px] text-muted-foreground">
+                <p className="mt-0.5 text-[12px] text-muted-foreground">
                   These are changes worth inspecting, not automatic problems.
                 </p>
               </div>
@@ -1241,18 +1241,18 @@ export function CheckinAnalysis() {
                   className="flex w-full items-center justify-between rounded-xl border border-border px-3 py-2 text-left transition hover:bg-muted/20"
                 >
                   <div>
-                    <p className="text-[9px] font-semibold">
+                    <p className="text-[13px] font-semibold">
                       {item.athlete}
                     </p>
 
-                    <p className="mt-0.5 text-[8px] text-muted-foreground">
+                    <p className="mt-0.5 text-[12px] text-muted-foreground">
                       {item.signal}
                     </p>
                   </div>
 
                   <div className="flex items-center gap-2">
                     <span
-                      className={`rounded-full px-2 py-1 text-[7px] font-semibold ${item.style}`}
+                      className={`rounded-full px-2 py-1 text-[12px] font-semibold ${item.style}`}
                     >
                       {item.detail}
                     </span>
@@ -1262,7 +1262,7 @@ export function CheckinAnalysis() {
                 </button>
               ))}
 
-              <p className="text-[8px] font-semibold text-violet-600">
+              <p className="text-[12px] font-semibold text-violet-600">
                 Showing unusual responses above
               </p>
             </div>
@@ -1274,7 +1274,7 @@ export function CheckinAnalysis() {
             2. Was training harder than expected?
           </h3>
 
-          <p className="mt-1 text-[8px] text-muted-foreground">
+          <p className="mt-1 text-[12px] text-muted-foreground">
             Intended difficulty compared with athlete perception
           </p>
 
@@ -1291,7 +1291,7 @@ export function CheckinAnalysis() {
                   <p className="text-base font-bold">
                   {summary.totalSessions}
                 </p>
-                  <p className="text-[7px] text-muted-foreground">
+                  <p className="text-[12px] text-muted-foreground">
                     Sessions
                   </p>
                 </div>
@@ -1323,7 +1323,7 @@ export function CheckinAnalysis() {
               ].map(([label, value, style]) => (
                 <div
                   key={label}
-                  className="flex items-center justify-between text-[8px]"
+                  className="flex items-center justify-between text-[12px]"
                 >
                   <span>{label}</span>
                   <span className={`font-bold ${style}`}>{value}</span>
@@ -1332,7 +1332,7 @@ export function CheckinAnalysis() {
             </div>
           </div>
 
-          <p className="mt-4 text-[8px] font-semibold">
+          <p className="mt-4 text-[12px] font-semibold">
             Where is unexpected difficulty happening?
           </p>
 
@@ -1343,7 +1343,7 @@ export function CheckinAnalysis() {
                 type="button"
                 className="grid w-full grid-cols-[100px_1fr_28px_28px_12px] items-center gap-2 text-left"
               >
-                <span className="text-[7px] font-medium">
+                <span className="text-[12px] font-medium">
                   {item.label}
                 </span>
 
@@ -1354,11 +1354,11 @@ export function CheckinAnalysis() {
                   />
                 </div>
 
-                <span className="text-[7px] font-semibold">
+                <span className="text-[12px] font-semibold">
                   {item.percentage}%
                 </span>
 
-                <span className="text-[7px] text-muted-foreground">
+                <span className="text-[12px] text-muted-foreground">
                   {item.athletes}
                 </span>
 
@@ -1367,7 +1367,7 @@ export function CheckinAnalysis() {
             ))}
           </div>
 
-          <p className="mt-3 rounded-lg border border-violet-100 bg-violet-50 px-2 py-1.5 text-[8px] font-semibold text-violet-700">
+          <p className="mt-3 rounded-lg border border-violet-100 bg-violet-50 px-2 py-1.5 text-[12px] font-semibold text-violet-700">
             Session evidence shown above
           </p>
         </section>
@@ -1377,7 +1377,7 @@ export function CheckinAnalysis() {
             3. Did training work as intended?
           </h3>
 
-          <p className="mt-1 text-[8px] text-muted-foreground">
+          <p className="mt-1 text-[12px] text-muted-foreground">
             Simple session outcome based on goal achievement and performance quality
           </p>
 
@@ -1409,7 +1409,7 @@ export function CheckinAnalysis() {
               <>
                 <div className="mt-3 grid grid-cols-3 gap-2">
                   <div className="rounded-xl border border-green-100 bg-green-50/60 p-2.5">
-                    <p className="text-[8px] font-bold text-green-700">
+                    <p className="text-[12px] font-bold text-green-700">
                       Worked well
                     </p>
 
@@ -1417,13 +1417,13 @@ export function CheckinAnalysis() {
                       {percentage(workedWell)}%
                     </p>
 
-                    <p className="text-[7px] text-muted-foreground">
+                    <p className="text-[12px] text-muted-foreground">
                       {workedWell} sessions
                     </p>
                   </div>
 
                   <div className="rounded-xl border border-blue-100 bg-blue-50/60 p-2.5">
-                    <p className="text-[8px] font-bold text-blue-700">
+                    <p className="text-[12px] font-bold text-blue-700">
                       Mixed
                     </p>
 
@@ -1431,13 +1431,13 @@ export function CheckinAnalysis() {
                       {percentage(mixed)}%
                     </p>
 
-                    <p className="text-[7px] text-muted-foreground">
+                    <p className="text-[12px] text-muted-foreground">
                       {mixed} sessions
                     </p>
                   </div>
 
                   <div className="rounded-xl border border-red-100 bg-red-50/60 p-2.5">
-                    <p className="text-[8px] font-bold text-red-700">
+                    <p className="text-[12px] font-bold text-red-700">
                       Review
                     </p>
 
@@ -1445,14 +1445,14 @@ export function CheckinAnalysis() {
                       {percentage(review)}%
                     </p>
 
-                    <p className="text-[7px] text-muted-foreground">
+                    <p className="text-[12px] text-muted-foreground">
                       {review} sessions
                     </p>
                   </div>
                 </div>
 
                 <div className="mt-2 rounded-lg bg-muted/30 px-2.5 py-2">
-                  <p className="text-[7px] leading-relaxed text-muted-foreground">
+                  <p className="text-[12px] leading-relaxed text-muted-foreground">
                     <span className="font-semibold text-foreground">
                       Worked well
                     </span>{" "}
@@ -1475,18 +1475,18 @@ export function CheckinAnalysis() {
             4. Frequently Reported Performance Factors
           </h3>
 
-          <p className="mt-1 text-[8px] text-muted-foreground">
+          <p className="mt-1 text-[12px] text-muted-foreground">
             Factors athletes say influenced their performance
           </p>
 
           <div className="mt-2.5 space-y-1.5">
             {factors.length === 0 && (
               <div className="rounded-lg border border-dashed border-border px-3 py-4 text-center">
-                <p className="text-[8px] font-semibold">
+                <p className="text-[12px] font-semibold">
                   No performance factors reported
                 </p>
 
-                <p className="mt-1 text-[7px] text-muted-foreground">
+                <p className="mt-1 text-[12px] text-muted-foreground">
                   Factors will appear here when athletes report them in check-ins.
                 </p>
               </div>
@@ -1501,7 +1501,7 @@ export function CheckinAnalysis() {
                   <Icon className="h-3 w-3 text-violet-600" />
                 </div>
 
-                <span className="text-[8px] font-medium">{label}</span>
+                <span className="text-[12px] font-medium">{label}</span>
 
                 <div className="h-1.5 rounded-full bg-violet-50">
                   <div
@@ -1513,7 +1513,7 @@ export function CheckinAnalysis() {
                 </div>
 
                 <span
-                  className="text-right text-[8px] font-semibold"
+                  className="text-right text-[12px] font-semibold"
                   title={`${count} sessions`}
                 >
                   {value}%
@@ -1522,7 +1522,7 @@ export function CheckinAnalysis() {
             ))}
           </div>
 
-          <p className="mt-3 text-[8px] font-semibold text-violet-600">
+          <p className="mt-3 text-[12px] font-semibold text-violet-600">
             Factor summary shown above
           </p>
         </section>
@@ -1532,7 +1532,7 @@ export function CheckinAnalysis() {
             5. Body & Mental Signals
           </h3>
 
-          <p className="mt-1 text-[8px] text-muted-foreground">
+          <p className="mt-1 text-[12px] text-muted-foreground">
             Important signals reported through check-ins
           </p>
 
@@ -1542,8 +1542,8 @@ export function CheckinAnalysis() {
               <p className="mt-2 text-lg font-bold">
                 {summary.painReports}
               </p>
-              <p className="text-[8px] font-semibold">Pain reports</p>
-              <p className="mt-1 text-[7px] text-muted-foreground">
+              <p className="text-[12px] font-semibold">Pain reports</p>
+              <p className="mt-1 text-[12px] text-muted-foreground">
                 {formatCountChange(
                   painChange,
                 )}
@@ -1555,8 +1555,8 @@ export function CheckinAnalysis() {
               <p className="mt-2 text-lg font-bold">
                 {summary.stressReports}
               </p>
-              <p className="text-[8px] font-semibold">Stress reports</p>
-              <p className="mt-1 text-[7px] text-muted-foreground">
+              <p className="text-[12px] font-semibold">Stress reports</p>
+              <p className="mt-1 text-[12px] text-muted-foreground">
                 {formatCountChange(
                   stressChange,
                 )}
@@ -1568,8 +1568,8 @@ export function CheckinAnalysis() {
               <p className="mt-2 text-sm font-bold">
                 {summary.mostReportedPainArea?.area ?? "—"}
               </p>
-              <p className="text-[8px] font-semibold">Most reported area</p>
-              <p className="mt-1 text-[7px] text-muted-foreground">
+              <p className="text-[12px] font-semibold">Most reported area</p>
+              <p className="mt-1 text-[12px] text-muted-foreground">
                 {summary.mostReportedPainArea
                   ? `${summary.mostReportedPainArea.count} reports`
                   : "No reports"}
@@ -1579,7 +1579,7 @@ export function CheckinAnalysis() {
 
           {(summary.painReports > 0 ||
             summary.stressReports > 0) && (
-            <div className="mt-1.5 rounded-lg border border-orange-100 bg-orange-50/50 p-1.5 text-[7px] text-orange-800">
+            <div className="mt-1.5 rounded-lg border border-orange-100 bg-orange-50/50 p-1.5 text-[12px] text-orange-800">
               {summary.painReports > 0 &&
               summary.stressReports > 0
                 ? `${summary.painReports} pain reports and ${summary.stressReports} stress-related reports were recorded during the current period.`
@@ -1600,22 +1600,23 @@ export function CheckinAnalysis() {
         </div>
 
         <div className="min-w-0 flex-1">
-          <p className="text-[10px] font-bold text-violet-700">
+          <p className="text-[14px] font-bold text-violet-700">
             AI Coach Insight
           </p>
 
-          <p className="mt-1 text-[8px] leading-relaxed text-muted-foreground">
+          <p className="mt-1 text-[12px] leading-relaxed text-muted-foreground">
             {checkinInsight}
           </p>
         </div>
 
-        <span className="rounded-xl border border-violet-200 bg-white px-3 py-2 text-[8px] font-semibold text-violet-700">
+        <span className="rounded-xl border border-violet-200 bg-white px-3 py-2 text-[12px] font-semibold text-violet-700">
           AI insight shown here
         </span>
       </section>
     </div>
   );
 }
+
 
 
 

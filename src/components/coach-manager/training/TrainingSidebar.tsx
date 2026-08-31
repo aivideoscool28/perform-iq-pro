@@ -121,14 +121,14 @@ export function TrainingSidebar({
               Training History
             </h3>
 
-            <p className="mt-1 text-[10px] text-muted-foreground">
+            <p className="mt-1 text-[14px] text-muted-foreground">
               Review previous sessions and reuse them when useful.
             </p>
           </div>
 
           <button
             type="button"
-            className="text-[9px] font-semibold text-orange-600"
+            className="text-[13px] font-semibold text-orange-600"
           >
             View all →
           </button>
@@ -151,16 +151,16 @@ export function TrainingSidebar({
                 </div>
 
                 <div className="min-w-0 flex-1">
-                  <p className="text-[10px] font-semibold">
+                  <p className="text-[14px] font-semibold">
                     {training.name}
                   </p>
 
-                  <p className="mt-0.5 text-[9px] text-muted-foreground">
+                  <p className="mt-0.5 text-[13px] text-muted-foreground">
                     {training.group}
                   </p>
                 </div>
 
-                <p className="text-[8px] text-muted-foreground">
+                <p className="text-[12px] text-muted-foreground">
                   {training.date}
                 </p>
 
@@ -172,7 +172,7 @@ export function TrainingSidebar({
 
         <button
           type="button"
-          className="mt-3 rounded-xl border border-border px-3 py-2 text-[9px] font-semibold"
+          className="mt-3 rounded-xl border border-border px-3 py-2 text-[13px] font-semibold"
         >
           Browse full training history →
         </button>
@@ -226,23 +226,23 @@ export function TrainingSidebar({
                       : "",
                   ].join(" ")}
                 >
-                  <p className="text-[8px] font-semibold text-muted-foreground">
+                  <p className="text-[12px] font-semibold text-muted-foreground">
                     {dayLabel}
                   </p>
 
                   <span className="h-2 w-2 rounded-full bg-orange-500" />
 
                   <div className="min-w-0">
-                    <p className="truncate text-[9px] font-semibold">
+                    <p className="truncate text-[13px] font-semibold">
                       {session.title}
                     </p>
 
-                    <p className="truncate text-[8px] text-muted-foreground">
+                    <p className="truncate text-[12px] text-muted-foreground">
                       {session.group_name ?? "No group"}
                     </p>
                   </div>
 
-                  <p className="text-[8px] font-semibold text-orange-600">
+                  <p className="text-[12px] font-semibold text-orange-600">
                     {session.start_time
                       ? session.start_time.slice(0, 5)
                       : "—"}
@@ -254,18 +254,18 @@ export function TrainingSidebar({
           {!upcomingLoading &&
             upcomingSessions.length === 0 && (
               <div className="py-4 text-center">
-                <p className="text-[9px] font-semibold">
+                <p className="text-[13px] font-semibold">
                   No upcoming training
                 </p>
 
-                <p className="mt-1 text-[8px] text-muted-foreground">
+                <p className="mt-1 text-[12px] text-muted-foreground">
                   Create a future session to see it here.
                 </p>
               </div>
             )}
 
           {upcomingError && (
-            <p className="py-2 text-[8px] font-semibold text-red-600">
+            <p className="py-2 text-[12px] font-semibold text-red-600">
               {upcomingError}
             </p>
           )}
@@ -274,7 +274,7 @@ export function TrainingSidebar({
         <button
           type="button"
           onClick={onOpenCalendar}
-          className="mt-2 text-[9px] font-semibold text-orange-600"
+          className="mt-2 text-[13px] font-semibold text-orange-600"
         >
           View full calendar →
         </button>
@@ -295,7 +295,7 @@ export function TrainingSidebar({
           <button
             type="button"
             onClick={() => onOpenIndividualPlans?.()}
-            className="text-[8px] font-semibold text-orange-600"
+            className="text-[12px] font-semibold text-orange-600"
           >
             View all →
           </button>
@@ -314,21 +314,21 @@ export function TrainingSidebar({
                 }
                 className="flex w-full items-center gap-2 rounded-xl px-1.5 py-2 text-left transition hover:bg-muted/20"
               >
-                <div className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-orange-50 text-[8px] font-bold text-orange-600">
+                <div className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-orange-50 text-[12px] font-bold text-orange-600">
                   {plan.initials}
                 </div>
 
                 <div className="min-w-0 flex-1">
-                  <p className="text-[9px] font-semibold">
+                  <p className="text-[13px] font-semibold">
                     {plan.name}
                   </p>
 
-                  <p className="text-[8px] text-muted-foreground">
+                  <p className="text-[12px] text-muted-foreground">
                     {plan.plan}
                   </p>
                 </div>
 
-                <p className="text-[7px] text-muted-foreground">
+                <p className="text-[12px] text-muted-foreground">
                   {plan.time}
                 </p>
 
@@ -345,6 +345,7 @@ export function TrainingSidebar({
     </aside>
   );
 }
+
 
 
 

@@ -1,4 +1,4 @@
-import { useNavigate } from "@tanstack/react-router";
+﻿import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 
 import type { CoachAthlete } from "@/hooks/useCoachAthletes";
@@ -833,7 +833,7 @@ export function RegenerationAnalysis({
                 </div>
 
                 <div className="min-w-0">
-                  <p className="text-[8px] font-semibold text-muted-foreground">
+                  <p className="text-[12px] font-semibold text-muted-foreground">
                     {label}
                   </p>
 
@@ -843,13 +843,13 @@ export function RegenerationAnalysis({
                     </p>
 
                     {suffix && (
-                      <span className="text-[9px] text-muted-foreground">
+                      <span className="text-[13px] text-muted-foreground">
                         {suffix}
                       </span>
                     )}
                   </div>
 
-                  <p className={`text-[7px] ${style.split(" ")[1]}`}>
+                  <p className={`text-[12px] ${style.split(" ")[1]}`}>
                     {detail}
                   </p>
                 </div>
@@ -863,7 +863,7 @@ export function RegenerationAnalysis({
         <section className="rounded-2xl border border-violet-100 bg-white p-3 shadow-sm">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <p className="text-[9px] font-bold uppercase tracking-wide text-violet-600">
+              <p className="text-[13px] font-bold uppercase tracking-wide text-violet-600">
                 Most Important
               </p>
 
@@ -871,7 +871,7 @@ export function RegenerationAnalysis({
                 Today vs each athlete's recent normal
               </h3>
 
-              <p className="mt-1 text-[8px] text-muted-foreground">
+              <p className="mt-1 text-[12px] text-muted-foreground">
                 Personal change matters more than a generic group threshold.
               </p>
             </div>
@@ -902,23 +902,23 @@ export function RegenerationAnalysis({
                       <Icon className="h-3.5 w-3.5" />
                     </div>
 
-                    <p className="text-[9px] font-semibold">
+                    <p className="text-[13px] font-semibold">
                       {label}
                     </p>
                   </div>
 
                   <p className="mt-2 text-lg font-bold">
                     {today}
-                    <span className="ml-1 text-[8px] font-normal text-muted-foreground">
+                    <span className="ml-1 text-[12px] font-normal text-muted-foreground">
                       /5
                     </span>
                   </p>
 
-                  <p className="mt-1 text-[7px] text-muted-foreground">
+                  <p className="mt-1 text-[12px] text-muted-foreground">
                     {normal}
                   </p>
 
-                  <p className={`mt-1 text-[7px] font-semibold ${style.split(" ")[1]}`}>
+                  <p className={`mt-1 text-[12px] font-semibold ${style.split(" ")[1]}`}>
                     {result}
                   </p>
                 </div>
@@ -927,11 +927,11 @@ export function RegenerationAnalysis({
           </div>
 
           <div className="mt-3 rounded-xl border border-violet-100 bg-violet-50/40 px-3 py-2">
-            <p className="text-[8px] font-semibold text-violet-700">
+            <p className="text-[12px] font-semibold text-violet-700">
               {notableChangesCount} athletes differ meaningfully from their own recent pattern.
             </p>
 
-            <p className="mt-0.5 text-[7px] text-muted-foreground">
+            <p className="mt-0.5 text-[12px] text-muted-foreground">
               A low absolute score alone is not enough to classify an athlete
               as needing attention.
             </p>
@@ -945,12 +945,12 @@ export function RegenerationAnalysis({
                 Athletes to check
               </h3>
 
-              <p className="mt-1 text-[8px] text-muted-foreground">
+              <p className="mt-1 text-[12px] text-muted-foreground">
                 Repeated or combined changes worth inspecting.
               </p>
             </div>
 
-            <span className="rounded-full bg-orange-50 px-2 py-1 text-[8px] font-bold text-orange-600">
+            <span className="rounded-full bg-orange-50 px-2 py-1 text-[12px] font-bold text-orange-600">
               {notableChangesCount} athletes
             </span>
           </div>
@@ -973,7 +973,7 @@ export function RegenerationAnalysis({
                 }
                 className="flex w-full items-center gap-2 py-2 text-left transition hover:bg-muted/20"
               >
-                <div className="relative grid h-8 w-8 shrink-0 place-items-center rounded-full bg-orange-50 text-[8px] font-bold text-orange-600">
+                <div className="relative grid h-8 w-8 shrink-0 place-items-center rounded-full bg-orange-50 text-[12px] font-bold text-orange-600">
                   {athlete.initials}
 
                   <span
@@ -982,19 +982,19 @@ export function RegenerationAnalysis({
                 </div>
 
                 <div className="min-w-0 flex-1">
-                  <p className="text-[9px] font-semibold">
+                  <p className="text-[13px] font-semibold">
                     {athlete.name}
                   </p>
 
-                  <p className="text-[8px] text-muted-foreground">
+                  <p className="text-[12px] text-muted-foreground">
                     {athlete.reason}
                   </p>
 
-                  <p className="text-[7px] text-muted-foreground">
+                  <p className="text-[12px] text-muted-foreground">
                     {athlete.detail}
                   </p>
 
-                  <p className="mt-0.5 text-[7px] font-medium text-green-700">
+                  <p className="mt-0.5 text-[12px] font-medium text-green-700">
                     {athlete.context}
                   </p>
                 </div>
@@ -1026,7 +1026,7 @@ export function RegenerationAnalysis({
 
           <button
             type="button"
-            className="mt-2 text-[8px] font-semibold text-violet-600"
+            className="mt-2 text-[12px] font-semibold text-violet-600"
           >
             View all {notableChangesCount} athletes →
           </button>
@@ -1041,7 +1041,7 @@ export function RegenerationAnalysis({
                 Regeneration over time
               </h3>
 
-              <p className="mt-1 text-[8px] text-muted-foreground">
+              <p className="mt-1 text-[12px] text-muted-foreground">
                 One trend view for the three athlete-reported signals.
               </p>
             </div>
@@ -1051,7 +1051,7 @@ export function RegenerationAnalysis({
                 type="button"
                 onClick={() => setMode("average")}
                 className={[
-                  "rounded-md px-2 py-1 text-[7px] font-semibold",
+                  "rounded-md px-2 py-1 text-[12px] font-semibold",
                   mode === "average"
                     ? "bg-white text-violet-700 shadow-sm"
                     : "text-muted-foreground",
@@ -1064,7 +1064,7 @@ export function RegenerationAnalysis({
                 type="button"
                 onClick={() => setMode("unusual")}
                 className={[
-                  "rounded-md px-2 py-1 text-[7px] font-semibold",
+                  "rounded-md px-2 py-1 text-[12px] font-semibold",
                   mode === "unusual"
                     ? "bg-white text-violet-700 shadow-sm"
                     : "text-muted-foreground",
@@ -1090,7 +1090,7 @@ export function RegenerationAnalysis({
                   )
                 }
                 className={[
-                  "rounded-lg border px-2.5 py-1 text-[7px] font-semibold",
+                  "rounded-lg border px-2.5 py-1 text-[12px] font-semibold",
                   metric === id
                     ? "border-violet-200 bg-violet-50 text-violet-700"
                     : "border-border text-muted-foreground",
@@ -1107,7 +1107,7 @@ export function RegenerationAnalysis({
                 <div className="absolute inset-x-0 top-0 bottom-5 flex flex-col justify-between">
                   {[5, 4, 3, 2, 1].map((value) => (
                     <div key={value} className="flex items-center gap-2">
-                      <span className="w-5 text-[7px] text-muted-foreground">
+                      <span className="w-5 text-[12px] text-muted-foreground">
                         {value}
                       </span>
 
@@ -1161,7 +1161,7 @@ export function RegenerationAnalysis({
                   )}
                 </svg>
 
-                <div className="absolute bottom-0 left-6 right-0 flex justify-between text-[7px] text-muted-foreground">
+                <div className="absolute bottom-0 left-6 right-0 flex justify-between text-[12px] text-muted-foreground">
                   {graphDateLabels.map((point, index) => (
                     <span key={`${point.date}-${index}`}>
                       {formatTrendDate(point.date)}
@@ -1170,7 +1170,7 @@ export function RegenerationAnalysis({
                 </div>
               </div>
 
-              <div className="mt-2 rounded-lg bg-violet-50/60 px-2.5 py-2 text-[8px] text-violet-700">
+              <div className="mt-2 rounded-lg bg-violet-50/60 px-2.5 py-2 text-[12px] text-violet-700">
                 Group trend is relatively stable. Individual changes are more
                 important than this average alone.
               </div>
@@ -1195,17 +1195,17 @@ export function RegenerationAnalysis({
                   className="flex w-full items-center justify-between rounded-xl border border-border px-3 py-2 text-left"
                 >
                   <div>
-                    <p className="text-[9px] font-semibold">
+                    <p className="text-[13px] font-semibold">
                       {athlete.name}
                     </p>
 
-                    <p className="text-[8px] text-muted-foreground">
+                    <p className="text-[12px] text-muted-foreground">
                       {athlete.reason}
                     </p>
                   </div>
 
                   <div className="flex items-center gap-2">
-                    <span className="rounded-full bg-orange-50 px-2 py-1 text-[7px] font-semibold text-orange-700">
+                    <span className="rounded-full bg-orange-50 px-2 py-1 text-[12px] font-semibold text-orange-700">
                       {athlete.detail}
                     </span>
 
@@ -1214,7 +1214,7 @@ export function RegenerationAnalysis({
                 </button>
               ))}
 
-              <p className="text-[7px] text-muted-foreground">
+              <p className="text-[12px] text-muted-foreground">
                 Layer 2 will calculate these against each athlete's valid
                 personal baseline rather than a universal threshold.
               </p>
@@ -1227,7 +1227,7 @@ export function RegenerationAnalysis({
             Recurring signals
           </h3>
 
-          <p className="mt-1 text-[8px] text-muted-foreground">
+          <p className="mt-1 text-[12px] text-muted-foreground">
             Repetition matters more than one unusual day.
           </p>
 
@@ -1251,11 +1251,11 @@ export function RegenerationAnalysis({
                   </div>
 
                   <div className="min-w-0 flex-1">
-                    <p className="text-[8px] font-semibold">
+                    <p className="text-[12px] font-semibold">
                       {label}
                     </p>
 
-                    <p className="text-[7px] text-muted-foreground">
+                    <p className="text-[12px] text-muted-foreground">
                       {detail}
                     </p>
                   </div>
@@ -1265,7 +1265,7 @@ export function RegenerationAnalysis({
                       {athletes}
                     </p>
 
-                    <p className="text-[6px] text-muted-foreground">
+                    <p className="text-[11px] text-muted-foreground">
                       athletes
                     </p>
                   </div>
@@ -1283,7 +1283,7 @@ export function RegenerationAnalysis({
             Signals appearing together
           </h3>
 
-          <p className="mt-1 text-[8px] text-muted-foreground">
+          <p className="mt-1 text-[12px] text-muted-foreground">
             Useful context — not a diagnosis or readiness score.
           </p>
 
@@ -1294,18 +1294,18 @@ export function RegenerationAnalysis({
                 className="flex w-full items-center justify-between rounded-xl border border-border/70 px-3 py-2 text-left"
               >
                 <div>
-                  <p className="text-[8px] font-semibold">
+                  <p className="text-[12px] font-semibold">
                     {item.label}
                   </p>
 
-                  <p className="mt-0.5 text-[7px] text-muted-foreground">
+                  <p className="mt-0.5 text-[12px] text-muted-foreground">
                     {item.detail}
                   </p>
                 </div>
 
                 <div className="flex items-center gap-2">
                   <span
-                    className={`rounded-full px-2 py-1 text-[7px] font-semibold ${item.style}`}
+                    className={`rounded-full px-2 py-1 text-[12px] font-semibold ${item.style}`}
                   >
                     {item.athletes} athletes
                   </span>
@@ -1321,18 +1321,18 @@ export function RegenerationAnalysis({
             Where were low regeneration signals reported?
           </h3>
 
-          <p className="mt-1 text-[8px] text-muted-foreground">
+          <p className="mt-1 text-[12px] text-muted-foreground">
             Shown alongside recent training types — association only.
           </p>
 
           <div className="mt-3 space-y-2.5">
             {trainingTypes.length === 0 ? (
               <div className="rounded-xl border border-dashed border-border px-3 py-4 text-center">
-                <p className="text-[8px] font-semibold">
+                <p className="text-[12px] font-semibold">
                   No matching training associations yet
                 </p>
 
-                <p className="mt-1 text-[7px] text-muted-foreground">
+                <p className="mt-1 text-[12px] text-muted-foreground">
                   Associations appear when athletes have both completed training
                   and following regeneration history.
                 </p>
@@ -1343,7 +1343,7 @@ export function RegenerationAnalysis({
                   key={item.label}
                   className="grid grid-cols-[110px_1fr_90px] items-center gap-3"
                 >
-                  <span className="truncate text-[8px] font-medium">
+                  <span className="truncate text-[12px] font-medium">
                     {item.label}
                   </span>
 
@@ -1357,11 +1357,11 @@ export function RegenerationAnalysis({
                   </div>
 
                   <div className="text-right">
-                    <p className="text-[7px] font-semibold">
+                    <p className="text-[12px] font-semibold">
                       {item.occurrences}×
                     </p>
 
-                    <p className="text-[6px] text-muted-foreground">
+                    <p className="text-[11px] text-muted-foreground">
                       {item.athletes}{" "}
                       {item.athletes === 1
                         ? "athlete"
@@ -1374,7 +1374,7 @@ export function RegenerationAnalysis({
           </div>
 
           <div className="mt-3 rounded-xl border border-slate-200 bg-slate-50/50 px-3 py-2">
-            <p className="text-[7px] leading-relaxed text-muted-foreground">
+            <p className="text-[12px] leading-relaxed text-muted-foreground">
               These lower regeneration responses were reported the morning after these completed training sessions.
               Athletic IQ should not claim the training type caused the
               regeneration change.
@@ -1389,18 +1389,18 @@ export function RegenerationAnalysis({
         </div>
 
         <div className="min-w-0 flex-1">
-          <p className="text-[10px] font-bold text-violet-700">
+          <p className="text-[14px] font-bold text-violet-700">
             Athletic IQ Interpretation
           </p>
 
-          <p className="mt-1 text-[8px] leading-relaxed text-muted-foreground">
+          <p className="mt-1 text-[12px] leading-relaxed text-muted-foreground">
             {regenerationInterpretation}
           </p>
         </div>
 
         <button
           type="button"
-          className="rounded-xl border border-violet-200 bg-white px-3 py-2 text-[8px] font-semibold text-violet-700"
+          className="rounded-xl border border-violet-200 bg-white px-3 py-2 text-[12px] font-semibold text-violet-700"
         >
           View evidence →
         </button>
@@ -1408,6 +1408,7 @@ export function RegenerationAnalysis({
     </div>
   );
 }
+
 
 
 

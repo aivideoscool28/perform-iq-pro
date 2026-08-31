@@ -1,4 +1,4 @@
-import {
+﻿import {
   CalendarDays,
   Clock3,
   Dumbbell,
@@ -79,7 +79,7 @@ export function TrainingOverview({
                 </div>
 
                 <div>
-                  <p className="text-[9px] font-semibold text-muted-foreground">
+                  <p className="text-[13px] font-semibold text-muted-foreground">
                     {label}
                   </p>
 
@@ -87,7 +87,7 @@ export function TrainingOverview({
                     {value}
                   </p>
 
-                  <p className={`text-[9px] font-medium ${detailColor}`}>
+                  <p className={`text-[13px] font-medium ${detailColor}`}>
                     {detail}
                   </p>
                 </div>
@@ -112,7 +112,7 @@ export function TrainingOverview({
               </div>
 
               <div>
-                <p className="text-[9px] font-bold uppercase tracking-[0.16em] text-orange-500">
+                <p className="text-[13px] font-bold uppercase tracking-[0.16em] text-orange-500">
                   Today's Training
                 </p>
 
@@ -120,7 +120,7 @@ export function TrainingOverview({
                   No training created for today
                 </h2>
 
-                <p className="mt-1 max-w-md text-[10px] text-muted-foreground">
+                <p className="mt-1 max-w-md text-[14px] text-muted-foreground">
                   Create today's session or use the planning tools for a future date.
                 </p>
               </div>
@@ -145,13 +145,13 @@ export function TrainingOverview({
 
                 <div>
                   <div className="flex items-center gap-2">
-                    <p className="text-[9px] font-bold uppercase tracking-[0.16em] text-orange-500">
+                    <p className="text-[13px] font-bold uppercase tracking-[0.16em] text-orange-500">
                       Today's Training
                     </p>
 
                     <span
                       className={[
-                        "rounded-full px-2 py-0.5 text-[8px] font-bold uppercase",
+                        "rounded-full px-2 py-0.5 text-[12px] font-bold uppercase",
                         session.status === "published"
                           ? "bg-emerald-50 text-emerald-700"
                           : "bg-slate-100 text-slate-600",
@@ -167,7 +167,7 @@ export function TrainingOverview({
                     {session.title}
                   </h2>
 
-                  <div className="mt-1 flex flex-wrap items-center gap-3 text-[10px] text-muted-foreground">
+                  <div className="mt-1 flex flex-wrap items-center gap-3 text-[14px] text-muted-foreground">
                     <span>
                       {session.group_name || "No group"}
                     </span>
@@ -191,13 +191,13 @@ export function TrainingOverview({
 
                   <div className="mt-2 flex flex-wrap gap-2">
                     {session.duration_minutes !== null && (
-                      <span className="rounded-lg border border-border px-2 py-1 text-[9px] font-medium">
+                      <span className="rounded-lg border border-border px-2 py-1 text-[13px] font-medium">
                         {session.duration_minutes} min
                       </span>
                     )}
 
                     {session.intensity && (
-                      <span className="rounded-lg border border-border px-2 py-1 text-[9px] font-medium text-orange-600">
+                      <span className="rounded-lg border border-border px-2 py-1 text-[13px] font-medium text-orange-600">
                         {session.intensity} Intensity
                       </span>
                     )}
@@ -233,14 +233,14 @@ export function TrainingOverview({
                 </div>
 
                 {publishedAthleteCount !== null && (
-                  <p className="text-[9px] font-semibold text-emerald-700">
+                  <p className="text-[13px] font-semibold text-emerald-700">
                     Published to {publishedAthleteCount} athlete
                     {publishedAthleteCount === 1 ? "" : "s"}.
                   </p>
                 )}
 
                 {publishError && (
-                  <p className="max-w-[320px] text-right text-[9px] font-semibold text-red-600">
+                  <p className="max-w-[320px] text-right text-[13px] font-semibold text-red-600">
                     {publishError}
                   </p>
                 )}
@@ -264,15 +264,15 @@ export function TrainingOverview({
                         <Dumbbell className="h-3 w-3" />
                       </div>
 
-                      <p className="text-[10px] font-semibold">
+                      <p className="text-[14px] font-semibold">
                         {exercise.name}
                       </p>
 
-                      <p className="text-[10px] text-muted-foreground">
+                      <p className="text-[14px] text-muted-foreground">
                         {exercise.details || "—"}
                       </p>
 
-                      <p className="text-[9px] text-muted-foreground">
+                      <p className="text-[13px] text-muted-foreground">
                         {exercise.rest || ""}
                       </p>
                     </div>
@@ -281,7 +281,7 @@ export function TrainingOverview({
               </div>
             ) : (
               <div className="mt-4 rounded-xl border border-dashed border-border p-4 text-center">
-                <p className="text-[9px] text-muted-foreground">
+                <p className="text-[13px] text-muted-foreground">
                   No exercises have been added yet.
                 </p>
               </div>
@@ -292,3 +292,4 @@ export function TrainingOverview({
     </div>
   );
 }
+

@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import {
   CircleHelp,
@@ -52,7 +52,7 @@ export function AthletesTable({
         </div>
       </div>
 
-      <div className="grid grid-cols-[1.2fr_1fr_1fr_1.2fr_auto] gap-3 bg-muted/20 px-3 py-2 text-[10px] font-semibold text-muted-foreground">
+      <div className="grid grid-cols-[1.2fr_1fr_1fr_1.2fr_auto] gap-3 bg-muted/20 px-3 py-2 text-[14px] font-semibold text-muted-foreground">
         <span>Athlete</span>
         <span>Discipline</span>
         <span>Age</span>
@@ -72,7 +72,7 @@ export function AthletesTable({
           <p className="mt-2 text-xs font-semibold text-red-600">
             Could not load athletes
           </p>
-          <p className="mt-1 text-[10px] text-muted-foreground">
+          <p className="mt-1 text-[14px] text-muted-foreground">
             {error}
           </p>
         </div>
@@ -84,7 +84,7 @@ export function AthletesTable({
           <p className="mt-2 text-xs font-semibold">
             No athletes linked yet
           </p>
-          <p className="mt-1 text-[10px] text-muted-foreground">
+          <p className="mt-1 text-[14px] text-muted-foreground">
             Athletes linked to this coach will appear here.
           </p>
         </div>
@@ -112,7 +112,7 @@ export function AthletesTable({
               className="grid w-full cursor-pointer grid-cols-[1.2fr_1fr_1fr_1.2fr_auto] items-center gap-3 border-t border-border/60 px-3 py-3 text-left transition hover:bg-muted/20 active:bg-orange-50/40"
             >
               <div className="flex items-center gap-2.5">
-                <div className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-orange-50 text-[10px] font-bold text-orange-600">
+                <div className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-orange-50 text-[14px] font-bold text-orange-600">
                   {getInitials(athlete.display_name)}
                 </div>
 
@@ -121,13 +121,13 @@ export function AthletesTable({
                     {athlete.display_name}
                   </p>
 
-                  <p className="text-[9px] text-muted-foreground">
+                  <p className="text-[13px] text-muted-foreground">
                     Linked athlete
                   </p>
                 </div>
               </div>
 
-              <span className="w-fit rounded-full bg-orange-50 px-2 py-1 text-[9px] font-semibold text-orange-600">
+              <span className="w-fit rounded-full bg-orange-50 px-2 py-1 text-[13px] font-semibold text-orange-600">
                 {disciplines}
               </span>
 
@@ -140,7 +140,7 @@ export function AthletesTable({
                   {athlete.current_focus ?? "Not set"}
                 </p>
 
-                <p className="text-[9px] text-muted-foreground">
+                <p className="text-[13px] text-muted-foreground">
                   Performance data connecting
                 </p>
               </div>
@@ -154,6 +154,7 @@ export function AthletesTable({
     </section>
   );
 }
+
 
 
 

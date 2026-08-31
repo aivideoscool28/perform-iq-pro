@@ -1,4 +1,4 @@
-import { useSearch } from "@tanstack/react-router";
+﻿import { useSearch } from "@tanstack/react-router";
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -347,7 +347,7 @@ export function TrainingPage() {
           <button
             type="button"
             onClick={() => setActiveView("today")}
-            className="text-[10px] font-semibold text-orange-600"
+            className="text-[14px] font-semibold text-orange-600"
           >
             ← Back to Training
           </button>
@@ -373,7 +373,7 @@ export function TrainingPage() {
             Could not save training
           </p>
 
-          <p className="mt-1 text-[10px] text-red-700">
+          <p className="mt-1 text-[14px] text-red-700">
             {saveError}
           </p>
         </div>
@@ -499,6 +499,7 @@ export function TrainingPage() {
     </div>
   );
 }
+
 
 
 

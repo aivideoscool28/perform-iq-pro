@@ -1,4 +1,4 @@
-import {
+﻿import {
   useEffect,
   useMemo,
   useState,
@@ -506,7 +506,7 @@ export function TrainingEditor({
       >
         <div className="flex items-start justify-between">
           <div>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-orange-600">
+            <p className="text-[14px] font-semibold uppercase tracking-[0.16em] text-orange-600">
               Training Session
             </p>
 
@@ -518,7 +518,7 @@ export function TrainingEditor({
                   : "Create Training"}
             </h2>
 
-            <p className="mt-1 text-[10px] text-muted-foreground">
+            <p className="mt-1 text-[14px] text-muted-foreground">
               Changes are saved to Supabase.
             </p>
           </div>
@@ -534,7 +534,7 @@ export function TrainingEditor({
 
         <div className="mt-5 grid grid-cols-2 gap-3">
           <label className="space-y-1">
-            <span className="text-[9px] font-semibold">
+            <span className="text-[13px] font-semibold">
               Training title
             </span>
 
@@ -548,7 +548,7 @@ export function TrainingEditor({
           </label>
 
           <label className="space-y-1">
-            <span className="text-[9px] font-semibold">
+            <span className="text-[13px] font-semibold">
               Group
             </span>
 
@@ -562,7 +562,7 @@ export function TrainingEditor({
           </label>
 
           <label className="space-y-1">
-            <span className="text-[9px] font-semibold">
+            <span className="text-[13px] font-semibold">
               Date
             </span>
 
@@ -583,7 +583,7 @@ export function TrainingEditor({
 
           <div className="grid grid-cols-2 gap-2">
             <label className="space-y-1">
-              <span className="text-[9px] font-semibold">
+              <span className="text-[13px] font-semibold">
                 Start
               </span>
 
@@ -598,7 +598,7 @@ export function TrainingEditor({
             </label>
 
             <label className="space-y-1">
-              <span className="text-[9px] font-semibold">
+              <span className="text-[13px] font-semibold">
                 End
               </span>
 
@@ -614,7 +614,7 @@ export function TrainingEditor({
           </div>
 
           <label className="space-y-1">
-            <span className="text-[9px] font-semibold">
+            <span className="text-[13px] font-semibold">
               Location
             </span>
 
@@ -628,7 +628,7 @@ export function TrainingEditor({
           </label>
 
           <label className="space-y-1">
-            <span className="text-[9px] font-semibold">
+            <span className="text-[13px] font-semibold">
               Discipline
             </span>
 
@@ -642,7 +642,7 @@ export function TrainingEditor({
           </label>
 
           <label className="space-y-1">
-            <span className="text-[9px] font-semibold">
+            <span className="text-[13px] font-semibold">
               Intensity
             </span>
 
@@ -666,7 +666,7 @@ export function TrainingEditor({
           </label>
 
           <label className="space-y-1">
-            <span className="text-[9px] font-semibold">
+            <span className="text-[13px] font-semibold">
               Duration (min)
             </span>
 
@@ -685,7 +685,7 @@ export function TrainingEditor({
 
         <div className="mt-4 grid grid-cols-2 gap-3">
           <label className="space-y-1">
-            <span className="text-[9px] font-semibold">
+            <span className="text-[13px] font-semibold">
               Session goal
             </span>
 
@@ -699,7 +699,7 @@ export function TrainingEditor({
           </label>
 
           <label className="space-y-1">
-            <span className="text-[9px] font-semibold">
+            <span className="text-[13px] font-semibold">
               Coach note
             </span>
 
@@ -720,7 +720,7 @@ export function TrainingEditor({
                 Exercises
               </h3>
 
-              <p className="text-[9px] text-muted-foreground">
+              <p className="text-[13px] text-muted-foreground">
                 Edit the structure of the session.
               </p>
             </div>
@@ -731,7 +731,7 @@ export function TrainingEditor({
                 onClick={() =>
                   setLibraryOpen(true)
                 }
-                className="flex items-center gap-1 rounded-lg border border-orange-200 bg-orange-50 px-2 py-1.5 text-[9px] font-semibold text-orange-700"
+                className="flex items-center gap-1 rounded-lg border border-orange-200 bg-orange-50 px-2 py-1.5 text-[13px] font-semibold text-orange-700"
               >
                 <BookOpen className="h-3 w-3" />
                 Add from Exercise Library
@@ -740,7 +740,7 @@ export function TrainingEditor({
               <button
                 type="button"
                 onClick={addExercise}
-                className="flex items-center gap-1 rounded-lg border border-border px-2 py-1.5 text-[9px] font-semibold"
+                className="flex items-center gap-1 rounded-lg border border-border px-2 py-1.5 text-[13px] font-semibold"
               >
                 <Plus className="h-3 w-3" />
                 Add Exercise
@@ -767,7 +767,7 @@ export function TrainingEditor({
                         event.target.value,
                       )
                     }
-                    className="rounded-lg border border-border px-2 py-1.5 text-[9px]"
+                    className="rounded-lg border border-border px-2 py-1.5 text-[13px]"
                   />
 
                   <input
@@ -780,7 +780,7 @@ export function TrainingEditor({
                         event.target.value,
                       )
                     }
-                    className="rounded-lg border border-border px-2 py-1.5 text-[9px]"
+                    className="rounded-lg border border-border px-2 py-1.5 text-[13px]"
                   />
 
                   <input
@@ -795,7 +795,7 @@ export function TrainingEditor({
                         event.target.value,
                       )
                     }
-                    className="rounded-lg border border-border px-2 py-1.5 text-[9px]"
+                    className="rounded-lg border border-border px-2 py-1.5 text-[13px]"
                   />
 
                   <input
@@ -810,7 +810,7 @@ export function TrainingEditor({
                         event.target.value,
                       )
                     }
-                    className="rounded-lg border border-border px-2 py-1.5 text-[9px]"
+                    className="rounded-lg border border-border px-2 py-1.5 text-[13px]"
                   />
 
                   <button
@@ -843,7 +843,7 @@ export function TrainingEditor({
             >
               <div className="flex items-start justify-between">
                 <div>
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-orange-600">
+                  <p className="text-[14px] font-semibold uppercase tracking-[0.16em] text-orange-600">
                     Exercise Library
                   </p>
 
@@ -851,7 +851,7 @@ export function TrainingEditor({
                     Add Exercises
                   </h3>
 
-                  <p className="mt-1 text-[9px] text-muted-foreground">
+                  <p className="mt-1 text-[13px] text-muted-foreground">
                     Choose an exercise and then adjust it freely inside this training.
                   </p>
                 </div>
@@ -899,7 +899,7 @@ export function TrainingEditor({
                       )
                     }
                     className={[
-                      "rounded-full px-2.5 py-1 text-[8px] font-semibold transition",
+                      "rounded-full px-2.5 py-1 text-[12px] font-semibold transition",
                       libraryCategory ===
                       category
                         ? "bg-orange-500 text-white"
@@ -913,7 +913,7 @@ export function TrainingEditor({
 
               {libraryError && (
                 <div className="mt-3 rounded-xl border border-red-100 bg-red-50 p-3">
-                  <p className="text-[9px] font-semibold text-red-700">
+                  <p className="text-[13px] font-semibold text-red-700">
                     {libraryError}
                   </p>
                 </div>
@@ -949,14 +949,14 @@ export function TrainingEditor({
                       >
                         <div className="flex items-start justify-between gap-2">
                           <div>
-                            <p className="text-[10px] font-bold">
+                            <p className="text-[14px] font-bold">
                               {
                                 exercise.name
                               }
                             </p>
 
                             <div className="mt-1 flex flex-wrap gap-1">
-                              <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[7px] font-semibold text-slate-600">
+                              <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[12px] font-semibold text-slate-600">
                                 {
                                   exercise.category
                                 }
@@ -964,7 +964,7 @@ export function TrainingEditor({
 
                               <span
                                 className={[
-                                  "rounded-full px-2 py-0.5 text-[7px] font-semibold",
+                                  "rounded-full px-2 py-0.5 text-[12px] font-semibold",
                                   exercise.source ===
                                   "system"
                                     ? "bg-violet-50 text-violet-700"
@@ -984,7 +984,7 @@ export function TrainingEditor({
 
                         {(exercise.default_details ||
                           exercise.default_rest) && (
-                          <p className="mt-2 text-[8px] text-muted-foreground">
+                          <p className="mt-2 text-[12px] text-muted-foreground">
                             {exercise.default_details ??
                               "No default details"}
 
@@ -1001,7 +1001,7 @@ export function TrainingEditor({
                   filteredLibraryExercises.length ===
                     0 && (
                     <div className="col-span-2 rounded-xl border border-dashed border-border p-6 text-center">
-                      <p className="text-[9px] font-semibold">
+                      <p className="text-[13px] font-semibold">
                         No exercises found
                       </p>
                     </div>
@@ -1014,7 +1014,7 @@ export function TrainingEditor({
                   onClick={() =>
                     setLibraryOpen(false)
                   }
-                  className="rounded-xl bg-slate-900 px-4 py-2 text-[9px] font-semibold text-white"
+                  className="rounded-xl bg-slate-900 px-4 py-2 text-[13px] font-semibold text-white"
                 >
                   Done
                 </button>
@@ -1026,13 +1026,13 @@ export function TrainingEditor({
         {(templateSaved || templateError) && (
           <div className="mt-4">
             {templateSaved && (
-              <p className="text-[10px] font-semibold text-emerald-600">
+              <p className="text-[14px] font-semibold text-emerald-600">
                 Saved to My Templates.
               </p>
             )}
 
             {templateError && (
-              <p className="text-[10px] font-semibold text-red-600">
+              <p className="text-[14px] font-semibold text-red-600">
                 Could not save template: {templateError}
               </p>
             )}
@@ -1087,6 +1087,7 @@ export function TrainingEditor({
     </div>
   );
 }
+
 
 
 

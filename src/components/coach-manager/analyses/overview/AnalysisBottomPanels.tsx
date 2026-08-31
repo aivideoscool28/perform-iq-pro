@@ -1,4 +1,4 @@
-import {
+﻿import {
   Activity,
   CalendarDays,
   CircleCheck,
@@ -24,7 +24,7 @@ export function AnalysisBottomPanels() {
             Pain & Soreness Distribution
           </h3>
 
-          <p className="mt-1 text-[8px] text-muted-foreground">
+          <p className="mt-1 text-[12px] text-muted-foreground">
             Last 4 weeks
           </p>
 
@@ -32,7 +32,7 @@ export function AnalysisBottomPanels() {
             <div className="relative grid h-28 w-28 shrink-0 place-items-center rounded-full bg-[conic-gradient(#ef4444_0deg_90deg,#f97316_90deg_180deg,#eab308_180deg_225deg,#22c55e_225deg_270deg,#cbd5e1_270deg_360deg)]">
               <div className="grid h-16 w-16 place-items-center rounded-full bg-white text-center">
                 <div>
-                  <p className="text-[8px] text-muted-foreground">
+                  <p className="text-[12px] text-muted-foreground">
                     Reports
                   </p>
                   <p className="text-xl font-bold">8</p>
@@ -48,12 +48,12 @@ export function AnalysisBottomPanels() {
                 >
                   <div className="flex items-center gap-2">
                     <span className={`h-2 w-2 rounded-full ${item.style}`} />
-                    <span className="text-[8px] font-medium">
+                    <span className="text-[12px] font-medium">
                       {item.label}
                     </span>
                   </div>
 
-                  <span className="text-[8px] text-muted-foreground">
+                  <span className="text-[12px] text-muted-foreground">
                     {item.value}
                   </span>
                 </div>
@@ -61,7 +61,7 @@ export function AnalysisBottomPanels() {
             </div>
           </div>
 
-          <div className="mt-3 rounded-xl bg-blue-50/60 p-2.5 text-[8px] text-blue-700">
+          <div className="mt-3 rounded-xl bg-blue-50/60 p-2.5 text-[12px] text-blue-700">
             Hamstring and knee are the most frequently reported areas.
           </div>
         </section>
@@ -69,7 +69,7 @@ export function AnalysisBottomPanels() {
         <section className="rounded-2xl border border-border bg-white p-3 shadow-sm">
           <h3 className="text-xs font-bold">Best & Worst Days</h3>
 
-          <p className="mt-1 text-[8px] text-muted-foreground">
+          <p className="mt-1 text-[12px] text-muted-foreground">
             Last 4 weeks · team averages
           </p>
 
@@ -78,7 +78,7 @@ export function AnalysisBottomPanels() {
               <CircleCheck className="h-4 w-4 text-green-600" />
 
               <div>
-                <p className="text-[8px] font-semibold text-green-700">
+                <p className="text-[12px] font-semibold text-green-700">
                   Best day
                 </p>
 
@@ -88,17 +88,17 @@ export function AnalysisBottomPanels() {
 
             <div className="mt-3 grid grid-cols-3 gap-2">
               <div>
-                <p className="text-[7px] text-muted-foreground">RPE</p>
+                <p className="text-[12px] text-muted-foreground">RPE</p>
                 <p className="text-sm font-bold">5.8</p>
               </div>
 
               <div>
-                <p className="text-[7px] text-muted-foreground">Sleep</p>
+                <p className="text-[12px] text-muted-foreground">Sleep</p>
                 <p className="text-sm font-bold">3.9</p>
               </div>
 
               <div>
-                <p className="text-[7px] text-muted-foreground">Energy</p>
+                <p className="text-[12px] text-muted-foreground">Energy</p>
                 <p className="text-sm font-bold">4.2</p>
               </div>
             </div>
@@ -109,7 +109,7 @@ export function AnalysisBottomPanels() {
               <HeartPulse className="h-4 w-4 text-red-500" />
 
               <div>
-                <p className="text-[8px] font-semibold text-red-600">
+                <p className="text-[12px] font-semibold text-red-600">
                   Most demanding day
                 </p>
 
@@ -119,17 +119,17 @@ export function AnalysisBottomPanels() {
 
             <div className="mt-3 grid grid-cols-3 gap-2">
               <div>
-                <p className="text-[7px] text-muted-foreground">RPE</p>
+                <p className="text-[12px] text-muted-foreground">RPE</p>
                 <p className="text-sm font-bold">7.2</p>
               </div>
 
               <div>
-                <p className="text-[7px] text-muted-foreground">Sleep</p>
+                <p className="text-[12px] text-muted-foreground">Sleep</p>
                 <p className="text-sm font-bold">2.8</p>
               </div>
 
               <div>
-                <p className="text-[7px] text-muted-foreground">Energy</p>
+                <p className="text-[12px] text-muted-foreground">Energy</p>
                 <p className="text-sm font-bold">3.1</p>
               </div>
             </div>
@@ -139,7 +139,7 @@ export function AnalysisBottomPanels() {
         <section className="rounded-2xl border border-border bg-white p-3 shadow-sm">
           <h3 className="text-xs font-bold">At a Glance</h3>
 
-          <p className="mt-1 text-[8px] text-muted-foreground">
+          <p className="mt-1 text-[12px] text-muted-foreground">
             Last 4 weeks
           </p>
 
@@ -180,8 +180,8 @@ export function AnalysisBottomPanels() {
                 </div>
 
                 <p className="mt-2 text-lg font-bold">{value}</p>
-                <p className="text-[8px] font-semibold">{label}</p>
-                <p className="text-[7px] text-muted-foreground">{detail}</p>
+                <p className="text-[12px] font-semibold">{label}</p>
+                <p className="text-[12px] text-muted-foreground">{detail}</p>
               </div>
             ))}
           </div>
@@ -194,11 +194,11 @@ export function AnalysisBottomPanels() {
         </div>
 
         <div className="min-w-0 flex-1">
-          <p className="text-[10px] font-bold text-violet-700">
+          <p className="text-[14px] font-bold text-violet-700">
             AI Coach Insight
           </p>
 
-          <p className="mt-1 text-[9px] leading-relaxed text-muted-foreground">
+          <p className="mt-1 text-[13px] leading-relaxed text-muted-foreground">
             Recovery is improving slightly while perceived training difficulty
             remains stable. Speed-endurance sessions may be worth reviewing
             more closely because athletes report more fatigue afterward.
@@ -207,7 +207,7 @@ export function AnalysisBottomPanels() {
 
         <button
           type="button"
-          className="rounded-xl border border-violet-200 bg-white px-3 py-2 text-[9px] font-semibold text-violet-600"
+          className="rounded-xl border border-violet-200 bg-white px-3 py-2 text-[13px] font-semibold text-violet-600"
         >
           Open AI report →
         </button>
@@ -215,3 +215,4 @@ export function AnalysisBottomPanels() {
     </div>
   );
 }
+

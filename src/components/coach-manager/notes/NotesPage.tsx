@@ -117,13 +117,13 @@ function NoteRow({
 
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
-            <p className="text-[9px] font-bold">
+            <p className="text-[13px] font-bold">
               {
                 athleteName
               }
             </p>
 
-            <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[6px] font-semibold text-slate-600">
+            <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-semibold text-slate-600">
               {
                 note.kind
               }
@@ -131,7 +131,7 @@ function NoteRow({
 
             {note.visibility !==
               "Private" && (
-              <span className="rounded-full bg-green-50 px-2 py-0.5 text-[6px] font-semibold text-green-700">
+              <span className="rounded-full bg-green-50 px-2 py-0.5 text-[11px] font-semibold text-green-700">
                 {
                   note.visibility
                 }
@@ -139,7 +139,7 @@ function NoteRow({
             )}
           </div>
 
-          <p className="mt-1 text-[8px] leading-relaxed">
+          <p className="mt-1 text-[12px] leading-relaxed">
             {
               note.content
             }
@@ -147,7 +147,7 @@ function NoteRow({
 
           {note.kind ===
             "measurement" && (
-            <div className="mt-2 flex gap-3 text-[7px] text-muted-foreground">
+            <div className="mt-2 flex gap-3 text-[12px] text-muted-foreground">
               {note.measurement_type && (
                 <span>
                   {
@@ -188,7 +188,7 @@ function NoteRow({
                   onToggleFollowUp
                 }
                 className={[
-                  "rounded-full px-2 py-1 text-[6px] font-semibold",
+                  "rounded-full px-2 py-1 text-[11px] font-semibold",
                   note.follow_up_completed
                     ? "bg-green-50 text-green-700"
                     : "bg-orange-50 text-orange-700",
@@ -202,7 +202,7 @@ function NoteRow({
               </button>
 
               {note.follow_up_when && (
-                <span className="text-[7px] text-muted-foreground">
+                <span className="text-[12px] text-muted-foreground">
                   {
                     note.follow_up_when
                   }
@@ -211,7 +211,7 @@ function NoteRow({
             </div>
           )}
 
-          <p className="mt-2 text-[6px] text-muted-foreground">
+          <p className="mt-2 text-[11px] text-muted-foreground">
             {formatDate(
               note.created_at,
             )}{" "}
@@ -738,7 +738,7 @@ export function NotesPage() {
               </div>
 
               <div>
-                <p className="text-[8px] font-semibold text-muted-foreground">
+                <p className="text-[12px] font-semibold text-muted-foreground">
                   {label}
                 </p>
 
@@ -784,7 +784,7 @@ export function NotesPage() {
                       )
                     }
                     className={[
-                      "border-b-2 px-1 py-3 text-[9px] font-semibold",
+                      "border-b-2 px-1 py-3 text-[13px] font-semibold",
                       mainTab ===
                       id
                         ? "border-violet-600 text-violet-700"
@@ -817,7 +817,7 @@ export function NotesPage() {
                     )
                   }
                   placeholder="Search notes..."
-                  className="w-full bg-transparent text-[8px] outline-none"
+                  className="w-full bg-transparent text-[12px] outline-none"
                 />
               </div>
             </div>
@@ -827,11 +827,11 @@ export function NotesPage() {
               <div className="px-4 py-10 text-center">
                 <FileText className="mx-auto h-6 w-6 text-muted-foreground" />
 
-                <p className="mt-2 text-[9px] font-semibold">
+                <p className="mt-2 text-[13px] font-semibold">
                   No notes yet
                 </p>
 
-                <p className="mt-1 text-[7px] text-muted-foreground">
+                <p className="mt-1 text-[12px] text-muted-foreground">
                   Add your first coach note, measurement or follow-up.
                 </p>
               </div>
@@ -883,7 +883,7 @@ export function NotesPage() {
           </div>
 
           <div className="p-3">
-            <p className="text-[9px] font-bold">
+            <p className="text-[13px] font-bold">
               Add New
             </p>
 
@@ -917,7 +917,7 @@ export function NotesPage() {
                       )
                     }
                     className={[
-                      "rounded-xl border px-3 py-2 text-[8px] font-semibold",
+                      "rounded-xl border px-3 py-2 text-[12px] font-semibold",
                       createMode ===
                       id
                         ? "border-violet-200 bg-violet-50 text-violet-700"
@@ -937,7 +937,7 @@ export function NotesPage() {
             <div className="mt-3">
               {visibility === "Athlete" ? (
                 <>
-                  <label className="text-[8px] font-semibold">
+                  <label className="text-[12px] font-semibold">
                     Publish to
                   </label>
 
@@ -948,7 +948,7 @@ export function NotesPage() {
                         setPublishMode("all")
                       }
                       className={[
-                        "rounded-xl border px-3 py-2 text-[8px] font-semibold",
+                        "rounded-xl border px-3 py-2 text-[12px] font-semibold",
                         publishMode === "all"
                           ? "border-violet-200 bg-violet-50 text-violet-700"
                           : "border-border text-muted-foreground",
@@ -963,7 +963,7 @@ export function NotesPage() {
                         setPublishMode("selected")
                       }
                       className={[
-                        "rounded-xl border px-3 py-2 text-[8px] font-semibold",
+                        "rounded-xl border px-3 py-2 text-[12px] font-semibold",
                         publishMode === "selected"
                           ? "border-violet-200 bg-violet-50 text-violet-700"
                           : "border-border text-muted-foreground",
@@ -975,7 +975,7 @@ export function NotesPage() {
 
                   {publishMode === "all" ? (
                     <div className="mt-2 rounded-xl border border-green-100 bg-green-50/40 px-3 py-2">
-                      <p className="text-[8px] font-semibold text-green-700">
+                      <p className="text-[12px] font-semibold text-green-700">
                         {athletes.length} linked athlete
                         {athletes.length === 1 ? "" : "s"} will receive this note
                       </p>
@@ -983,7 +983,7 @@ export function NotesPage() {
                   ) : (
                     <div className="mt-2 max-h-40 space-y-1 overflow-y-auto rounded-xl border border-border p-2">
                       {athletes.length === 0 ? (
-                        <p className="px-2 py-2 text-[8px] text-muted-foreground">
+                        <p className="px-2 py-2 text-[12px] text-muted-foreground">
                           No linked athletes
                         </p>
                       ) : (
@@ -1017,7 +1017,7 @@ export function NotesPage() {
                                 }
                               />
 
-                              <span className="text-[8px] font-medium">
+                              <span className="text-[12px] font-medium">
                                 {athlete.display_name}
                               </span>
                             </label>
@@ -1029,7 +1029,7 @@ export function NotesPage() {
                 </>
               ) : (
                 <>
-                  <label className="text-[8px] font-semibold">
+                  <label className="text-[12px] font-semibold">
                     Context athlete
                   </label>
 
@@ -1040,7 +1040,7 @@ export function NotesPage() {
                         event.target.value,
                       )
                     }
-                    className="mt-1.5 w-full rounded-xl border border-border bg-white px-3 py-2.5 text-[8px]"
+                    className="mt-1.5 w-full rounded-xl border border-border bg-white px-3 py-2.5 text-[12px]"
                   >
                     <option value="">
                       General / no athlete
@@ -1062,7 +1062,7 @@ export function NotesPage() {
             {createMode ===
               "note" && (
               <div className="mt-3">
-                <label className="text-[8px] font-semibold">
+                <label className="text-[12px] font-semibold">
                   Note type
                 </label>
 
@@ -1077,7 +1077,7 @@ export function NotesPage() {
                       event.target.value,
                     )
                   }
-                  className="mt-1.5 w-full rounded-xl border border-border bg-white px-3 py-2.5 text-[8px]"
+                  className="mt-1.5 w-full rounded-xl border border-border bg-white px-3 py-2.5 text-[12px]"
                 >
                   <option>
                     Technical Observation
@@ -1121,7 +1121,7 @@ export function NotesPage() {
                     )
                   }
                   placeholder="Measurement type"
-                  className="rounded-xl border border-border px-3 py-2.5 text-[8px]"
+                  className="rounded-xl border border-border px-3 py-2.5 text-[12px]"
                 />
 
                 <input
@@ -1138,7 +1138,7 @@ export function NotesPage() {
                     )
                   }
                   placeholder="Result"
-                  className="rounded-xl border border-border px-3 py-2.5 text-[8px]"
+                  className="rounded-xl border border-border px-3 py-2.5 text-[12px]"
                 />
 
                 <input
@@ -1153,7 +1153,7 @@ export function NotesPage() {
                     )
                   }
                   placeholder="Unit"
-                  className="rounded-xl border border-border px-3 py-2.5 text-[8px]"
+                  className="rounded-xl border border-border px-3 py-2.5 text-[12px]"
                 />
 
                 <select
@@ -1167,7 +1167,7 @@ export function NotesPage() {
                       event.target.value,
                     )
                   }
-                  className="rounded-xl border border-border bg-white px-3 py-2.5 text-[8px]"
+                  className="rounded-xl border border-border bg-white px-3 py-2.5 text-[12px]"
                 >
                   <option>
                     Hand timed
@@ -1187,7 +1187,7 @@ export function NotesPage() {
             {createMode ===
               "follow-up" && (
               <div className="mt-3">
-                <label className="text-[8px] font-semibold">
+                <label className="text-[12px] font-semibold">
                   When?
                 </label>
 
@@ -1202,7 +1202,7 @@ export function NotesPage() {
                       event.target.value,
                     )
                   }
-                  className="mt-1.5 w-full rounded-xl border border-border bg-white px-3 py-2.5 text-[8px]"
+                  className="mt-1.5 w-full rounded-xl border border-border bg-white px-3 py-2.5 text-[12px]"
                 >
                   <option>
                     Next training
@@ -1224,7 +1224,7 @@ export function NotesPage() {
             )}
 
             <div className="mt-3">
-              <label className="text-[8px] font-semibold">
+              <label className="text-[12px] font-semibold">
                 {createMode ===
                 "follow-up"
                   ? "Follow-up action"
@@ -1246,12 +1246,12 @@ export function NotesPage() {
                   )
                 }
                 placeholder="Add coaching context..."
-                className="mt-1.5 min-h-[100px] w-full resize-none rounded-xl border border-border p-3 text-[8px] outline-none"
+                className="mt-1.5 min-h-[100px] w-full resize-none rounded-xl border border-border p-3 text-[12px] outline-none"
               />
             </div>
 
             <div className="mt-3">
-              <label className="text-[8px] font-semibold">
+              <label className="text-[12px] font-semibold">
                 Visibility
               </label>
 
@@ -1269,7 +1269,7 @@ export function NotesPage() {
                       | "Staff",
                   )
                 }
-                className="mt-1.5 w-full rounded-xl border border-border bg-white px-3 py-2.5 text-[8px]"
+                className="mt-1.5 w-full rounded-xl border border-border bg-white px-3 py-2.5 text-[12px]"
               >
                 <option value="Private">
                   Private (Coach only)
@@ -1286,7 +1286,7 @@ export function NotesPage() {
             </div>
 
             {saveError && (
-              <p className="mt-2 text-[7px] text-red-600">
+              <p className="mt-2 text-[12px] text-red-600">
                 {
                   saveError
                 }
@@ -1301,7 +1301,7 @@ export function NotesPage() {
               onClick={() =>
                 void save()
               }
-              className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-violet-600 px-4 py-2.5 text-[8px] font-semibold text-white disabled:opacity-50"
+              className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-violet-600 px-4 py-2.5 text-[12px] font-semibold text-white disabled:opacity-50"
             >
               <Plus className="h-3.5 w-3.5" />
 
@@ -1319,12 +1319,13 @@ export function NotesPage() {
         </div>
       </section>
 
-      <p className="text-center text-[7px] text-muted-foreground">
+      <p className="text-center text-[12px] text-muted-foreground">
         Coach notes provide additional human context and remain separate from athlete-reported analysis data.
       </p>
     </div>
   );
 }
+
 
 
 

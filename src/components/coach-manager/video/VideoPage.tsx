@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+﻿import { useEffect, useMemo, useState } from "react";
 
 import {
   ChevronRight,
@@ -186,7 +186,7 @@ function ReviewButtons({
               onChange(option.id)
             }
             className={[
-              "rounded-lg border px-2 py-1.5 text-[7px] font-semibold transition",
+              "rounded-lg border px-2 py-1.5 text-[12px] font-semibold transition",
               value === option.id
                 ? option.active
                 : "border-border bg-white text-muted-foreground hover:bg-muted/20",
@@ -259,16 +259,16 @@ function SelectedVideoPanel({
                 "Video Analysis"}
             </h2>
 
-            <span className="rounded-full bg-violet-50 px-2 py-1 text-[7px] font-semibold text-violet-700">
+            <span className="rounded-full bg-violet-50 px-2 py-1 text-[12px] font-semibold text-violet-700">
               AI analyzed
             </span>
 
-            <span className="rounded-full bg-orange-50 px-2 py-1 text-[7px] font-semibold text-orange-700">
+            <span className="rounded-full bg-orange-50 px-2 py-1 text-[12px] font-semibold text-orange-700">
               Shared by athlete
             </span>
           </div>
 
-          <p className="mt-1 text-[9px] text-muted-foreground">
+          <p className="mt-1 text-[13px] text-muted-foreground">
             {athleteName}
             {" · "}
             {formatDate(
@@ -311,7 +311,7 @@ function SelectedVideoPanel({
 
       <div className="mt-3 grid grid-cols-[0.9fr_1.1fr] gap-2">
         <section className="rounded-xl border border-violet-100 bg-violet-50/30 p-3">
-          <p className="text-[8px] font-semibold text-muted-foreground">
+          <p className="text-[12px] font-semibold text-muted-foreground">
             Technical Score
           </p>
 
@@ -325,7 +325,7 @@ function SelectedVideoPanel({
                 : "—"}
             </p>
 
-            <span className="text-[8px] text-muted-foreground">
+            <span className="text-[12px] text-muted-foreground">
               /10
             </span>
           </div>
@@ -341,7 +341,7 @@ function SelectedVideoPanel({
                     }
                     className="rounded-lg border border-violet-100 bg-white p-2"
                   >
-                    <p className="text-[7px] text-muted-foreground">
+                    <p className="text-[12px] text-muted-foreground">
                       {
                         entry.label
                       }
@@ -356,7 +356,7 @@ function SelectedVideoPanel({
                 ),
               )
             ) : (
-              <p className="col-span-2 text-[8px] text-muted-foreground">
+              <p className="col-span-2 text-[12px] text-muted-foreground">
                 No score breakdown available.
               </p>
             )}
@@ -368,18 +368,18 @@ function SelectedVideoPanel({
             Aether Analysis
           </h3>
 
-          <p className="mt-2 text-[8px] leading-relaxed text-muted-foreground">
+          <p className="mt-2 text-[12px] leading-relaxed text-muted-foreground">
             {analysis.overall_reasoning ??
               "No overall reasoning available."}
           </p>
 
           {analysis.overall_recommendation && (
             <div className="mt-3 rounded-lg bg-orange-50 p-2">
-              <p className="text-[7px] font-bold text-orange-700">
+              <p className="text-[12px] font-bold text-orange-700">
                 Recommendation
               </p>
 
-              <p className="mt-1 text-[8px] leading-relaxed text-orange-900">
+              <p className="mt-1 text-[12px] leading-relaxed text-orange-900">
                 {
                   analysis.overall_recommendation
                 }
@@ -411,12 +411,12 @@ function SelectedVideoPanel({
                     key={`${finding.joint}-${index}`}
                     className="rounded-lg border border-green-100 bg-white p-2"
                   >
-                    <p className="text-[8px] font-semibold">
+                    <p className="text-[12px] font-semibold">
                       {finding.joint ??
                         "Finding"}
                     </p>
 
-                    <p className="mt-1 text-[7px] leading-relaxed text-muted-foreground">
+                    <p className="mt-1 text-[12px] leading-relaxed text-muted-foreground">
                       {finding.reasoning ??
                         "No explanation available."}
                     </p>
@@ -429,7 +429,7 @@ function SelectedVideoPanel({
                 finding.status ===
                 "ok",
             ).length === 0 && (
-              <p className="text-[8px] text-muted-foreground">
+              <p className="text-[12px] text-muted-foreground">
                 No positive finding was separately classified.
               </p>
             )}
@@ -457,23 +457,23 @@ function SelectedVideoPanel({
                     key={`${finding.joint}-${index}`}
                     className="rounded-lg border border-orange-100 bg-white p-2"
                   >
-                    <p className="text-[8px] font-semibold">
+                    <p className="text-[12px] font-semibold">
                       {finding.joint ??
                         "Finding"}
                     </p>
 
-                    <p className="mt-1 text-[7px] leading-relaxed text-muted-foreground">
+                    <p className="mt-1 text-[12px] leading-relaxed text-muted-foreground">
                       {finding.reasoning ??
                         "No explanation available."}
                     </p>
 
                     {finding.recommendation && (
                       <div className="mt-2 rounded-lg bg-violet-50/50 p-2">
-                        <p className="text-[7px] font-semibold text-violet-700">
+                        <p className="text-[12px] font-semibold text-violet-700">
                           How to work on it
                         </p>
 
-                        <p className="mt-0.5 text-[7px] text-muted-foreground">
+                        <p className="mt-0.5 text-[12px] text-muted-foreground">
                           {
                             finding.recommendation
                           }
@@ -489,7 +489,7 @@ function SelectedVideoPanel({
                 finding.status ===
                 "warn",
             ).length === 0 && (
-              <p className="text-[8px] text-muted-foreground">
+              <p className="text-[12px] text-muted-foreground">
                 No focus area was separately classified.
               </p>
             )}
@@ -504,12 +504,12 @@ function SelectedVideoPanel({
               Coach Review
             </h3>
 
-            <p className="mt-1 text-[7px] text-muted-foreground">
+            <p className="mt-1 text-[12px] text-muted-foreground">
               Does Aether Athlete IQ's analysis match what you observe?
             </p>
           </div>
 
-          <span className="rounded-full bg-violet-50 px-2 py-1 text-[7px] font-semibold text-violet-700">
+          <span className="rounded-full bg-violet-50 px-2 py-1 text-[12px] font-semibold text-violet-700">
             Help evaluate AI
           </span>
         </div>
@@ -528,7 +528,7 @@ function SelectedVideoPanel({
                   key={key}
                   className="grid grid-cols-[1fr_220px] items-center gap-3 rounded-lg border border-border/70 p-2"
                 >
-                  <p className="text-[8px] font-medium">
+                  <p className="text-[12px] font-medium">
                     {finding.joint ??
                       "Technical finding"}
                   </p>
@@ -559,17 +559,17 @@ function SelectedVideoPanel({
 
         {findings.length ===
           0 && (
-          <p className="mt-3 text-[8px] text-muted-foreground">
+          <p className="mt-3 text-[12px] text-muted-foreground">
             No individual AI findings available for review.
           </p>
         )}
 
         <textarea
           placeholder="Optional coach context — what did Aether Athlete IQ miss or misunderstand?"
-          className="mt-3 min-h-[64px] w-full resize-none rounded-xl border border-border bg-white p-2.5 text-[8px] outline-none"
+          className="mt-3 min-h-[64px] w-full resize-none rounded-xl border border-border bg-white p-2.5 text-[12px] outline-none"
         />
 
-        <p className="mt-2 text-[7px] text-muted-foreground">
+        <p className="mt-2 text-[12px] text-muted-foreground">
           Coach feedback does not overwrite the athlete's original analysis.
         </p>
       </section>
@@ -864,7 +864,7 @@ export function VideoPage() {
                 </div>
 
                 <div>
-                  <p className="text-[8px] font-semibold text-muted-foreground">
+                  <p className="text-[12px] font-semibold text-muted-foreground">
                     {label}
                   </p>
 
@@ -872,7 +872,7 @@ export function VideoPage() {
                     {value}
                   </p>
 
-                  <p className="text-[7px] text-muted-foreground">
+                  <p className="text-[12px] text-muted-foreground">
                     {detail}
                   </p>
                 </div>
@@ -891,7 +891,7 @@ export function VideoPage() {
                   Shared Videos
                 </h2>
 
-                <p className="mt-1 text-[8px] text-muted-foreground">
+                <p className="mt-1 text-[12px] text-muted-foreground">
                   Athlete videos shared with this coach.
                 </p>
               </div>
@@ -907,7 +907,7 @@ export function VideoPage() {
                     )
                   }
                   placeholder="Search videos..."
-                  className="w-32 bg-transparent text-[8px] outline-none"
+                  className="w-32 bg-transparent text-[12px] outline-none"
                 />
               </div>
             </div>
@@ -959,7 +959,7 @@ export function VideoPage() {
                     <div className="relative grid h-[64px] w-[104px] shrink-0 place-items-center overflow-hidden rounded-xl bg-slate-900">
                       <Play className="h-5 w-5 fill-white text-white" />
 
-                      <span className="absolute left-1 top-1 rounded bg-black/60 px-1 py-0.5 text-[6px] text-white">
+                      <span className="absolute left-1 top-1 rounded bg-black/60 px-1 py-0.5 text-[11px] text-white">
                         {initials(
                           athlete,
                         )}
@@ -967,12 +967,12 @@ export function VideoPage() {
                     </div>
 
                     <div className="min-w-0 flex-1">
-                      <p className="text-[10px] font-bold">
+                      <p className="text-[14px] font-bold">
                         {analysis.detected_movement ??
                           "Video Analysis"}
                       </p>
 
-                      <p className="mt-1 text-[7px] text-muted-foreground">
+                      <p className="mt-1 text-[12px] text-muted-foreground">
                         {athlete}
                         {" · "}
                         {formatDate(
@@ -981,19 +981,19 @@ export function VideoPage() {
                       </p>
 
                       <div className="mt-2 flex gap-1">
-                        <span className="rounded-full bg-green-50 px-2 py-0.5 text-[6px] font-semibold text-green-700">
+                        <span className="rounded-full bg-green-50 px-2 py-0.5 text-[11px] font-semibold text-green-700">
                           {analysis.discipline ??
                             "Training"}
                         </span>
 
-                        <span className="rounded-full bg-violet-50 px-2 py-0.5 text-[6px] font-semibold text-violet-700">
+                        <span className="rounded-full bg-violet-50 px-2 py-0.5 text-[11px] font-semibold text-violet-700">
                           Shared
                         </span>
                       </div>
                     </div>
 
                     <div className="w-14">
-                      <p className="text-[7px] text-muted-foreground">
+                      <p className="text-[12px] text-muted-foreground">
                         Score
                       </p>
 
@@ -1008,7 +1008,7 @@ export function VideoPage() {
                     </div>
 
                     <div className="w-14">
-                      <p className="text-[7px] text-muted-foreground">
+                      <p className="text-[12px] text-muted-foreground">
                         Findings
                       </p>
 
@@ -1047,3 +1047,4 @@ export function VideoPage() {
     </div>
   );
 }
+

@@ -1,4 +1,4 @@
-import { Sparkles } from "lucide-react";
+﻿import { Sparkles } from "lucide-react";
 
 export function AIAthleteBrief() {
   return (
@@ -9,7 +9,7 @@ export function AIAthleteBrief() {
         </div>
 
         <div>
-          <p className="text-[10px] font-semibold uppercase tracking-wide text-violet-600">
+          <p className="text-[14px] font-semibold uppercase tracking-wide text-violet-600">
             AI Athlete Brief
           </p>
 
@@ -28,10 +28,11 @@ export function AIAthleteBrief() {
 
       <button
         type="button"
-        className="mt-3 text-[10px] font-semibold text-violet-600"
+        className="mt-3 text-[14px] font-semibold text-violet-600"
       >
         View deeper athlete insights →
       </button>
     </section>
   );
 }
+

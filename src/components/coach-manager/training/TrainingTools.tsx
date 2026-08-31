@@ -1,4 +1,4 @@
-import {
+﻿import {
   BookOpen,
   Copy,
   Dumbbell,
@@ -163,7 +163,7 @@ export function TrainingTools({
           Create Training
         </h3>
 
-        <p className="mt-1 text-[9px] text-muted-foreground">
+        <p className="mt-1 text-[13px] text-muted-foreground">
           Build a new training session in a few clicks.
         </p>
 
@@ -211,11 +211,11 @@ export function TrainingTools({
                 </div>
 
                 <div>
-                  <p className="text-[9px] font-semibold">
+                  <p className="text-[13px] font-semibold">
                     {label}
                   </p>
 
-                  <p className="text-[8px] text-muted-foreground">
+                  <p className="text-[12px] text-muted-foreground">
                     {detail}
                   </p>
                 </div>
@@ -232,7 +232,7 @@ export function TrainingTools({
               Exercise Library
             </h3>
 
-            <p className="mt-1 text-[9px] text-muted-foreground">
+            <p className="mt-1 text-[13px] text-muted-foreground">
               Reuse Aether exercises and your own saved exercises.
             </p>
           </div>
@@ -241,7 +241,7 @@ export function TrainingTools({
             <button
               type="button"
               onClick={() => setAddExerciseOpen(true)}
-              className="flex items-center gap-1 rounded-lg border border-border px-2.5 py-1.5 text-[9px] font-semibold"
+              className="flex items-center gap-1 rounded-lg border border-border px-2.5 py-1.5 text-[13px] font-semibold"
             >
               <Plus className="h-3 w-3" />
               Add Exercise
@@ -262,7 +262,7 @@ export function TrainingTools({
               )
             }
             placeholder="Search exercises..."
-            className="w-full bg-transparent text-[9px] outline-none"
+            className="w-full bg-transparent text-[13px] outline-none"
           />
         </div>
 
@@ -278,7 +278,7 @@ export function TrainingTools({
                   )
                 }
                 className={[
-                  "rounded-full px-2.5 py-1 text-[8px] font-semibold transition",
+                  "rounded-full px-2.5 py-1 text-[12px] font-semibold transition",
                   selectedCategory === category
                     ? "bg-orange-500 text-white"
                     : "bg-slate-100 text-slate-600 hover:bg-slate-200",
@@ -292,7 +292,7 @@ export function TrainingTools({
 
         {error && (
           <div className="mt-3 rounded-xl border border-red-100 bg-red-50 p-3">
-            <p className="text-[9px] font-semibold text-red-700">
+            <p className="text-[13px] font-semibold text-red-700">
               {error}
             </p>
           </div>
@@ -318,21 +318,21 @@ export function TrainingTools({
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
-                      <p className="truncate text-[10px] font-bold">
+                      <p className="truncate text-[14px] font-bold">
                         {
                           exercise.name
                         }
                       </p>
 
                       <div className="mt-1 flex flex-wrap items-center gap-1">
-                        <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[7px] font-semibold text-slate-600">
+                        <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[12px] font-semibold text-slate-600">
                           {
                             exercise.category
                           }
                         </span>
 
                         {exercise.discipline && (
-                          <span className="rounded-full bg-orange-50 px-2 py-0.5 text-[7px] font-semibold text-orange-600">
+                          <span className="rounded-full bg-orange-50 px-2 py-0.5 text-[12px] font-semibold text-orange-600">
                             {
                               exercise.discipline
                             }
@@ -341,7 +341,7 @@ export function TrainingTools({
 
                         <span
                           className={[
-                            "rounded-full px-2 py-0.5 text-[7px] font-semibold",
+                            "rounded-full px-2 py-0.5 text-[12px] font-semibold",
                             exercise.source ===
                             "system"
                               ? "bg-violet-50 text-violet-700"
@@ -361,7 +361,7 @@ export function TrainingTools({
 
                   {(exercise.default_details ||
                     exercise.default_rest) && (
-                    <div className="mt-2 flex flex-wrap gap-2 text-[8px] text-muted-foreground">
+                    <div className="mt-2 flex flex-wrap gap-2 text-[12px] text-muted-foreground">
                       {exercise.default_details && (
                         <span>
                           {
@@ -382,7 +382,7 @@ export function TrainingTools({
                   )}
 
                   {exercise.description && (
-                    <p className="mt-2 line-clamp-2 text-[8px] leading-relaxed text-muted-foreground">
+                    <p className="mt-2 line-clamp-2 text-[12px] leading-relaxed text-muted-foreground">
                       {
                         exercise.description
                       }
@@ -396,11 +396,11 @@ export function TrainingTools({
             filteredExercises.length ===
               0 && (
               <div className="col-span-2 rounded-xl border border-dashed border-border p-6 text-center">
-                <p className="text-[9px] font-semibold">
+                <p className="text-[13px] font-semibold">
                   No exercises found
                 </p>
 
-                <p className="mt-1 text-[8px] text-muted-foreground">
+                <p className="mt-1 text-[12px] text-muted-foreground">
                   Try another search or category.
                 </p>
               </div>
@@ -419,7 +419,7 @@ export function TrainingTools({
           >
             <div className="flex items-start justify-between">
               <div>
-                <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-orange-600">
+                <p className="text-[14px] font-semibold uppercase tracking-[0.16em] text-orange-600">
                   Exercise Library
                 </p>
 
@@ -427,7 +427,7 @@ export function TrainingTools({
                   Add Exercise
                 </h3>
 
-                <p className="mt-1 text-[9px] text-muted-foreground">
+                <p className="mt-1 text-[13px] text-muted-foreground">
                   Save a reusable exercise to your own library.
                 </p>
               </div>
@@ -443,7 +443,7 @@ export function TrainingTools({
 
             <div className="mt-4 grid grid-cols-2 gap-3">
               <label className="space-y-1">
-                <span className="text-[9px] font-semibold">
+                <span className="text-[13px] font-semibold">
                   Exercise name
                 </span>
 
@@ -456,7 +456,7 @@ export function TrainingTools({
               </label>
 
               <label className="space-y-1">
-                <span className="text-[9px] font-semibold">
+                <span className="text-[13px] font-semibold">
                   Category
                 </span>
 
@@ -473,7 +473,7 @@ export function TrainingTools({
               </label>
 
               <label className="space-y-1">
-                <span className="text-[9px] font-semibold">
+                <span className="text-[13px] font-semibold">
                   Discipline
                 </span>
 
@@ -486,7 +486,7 @@ export function TrainingTools({
               </label>
 
               <label className="space-y-1">
-                <span className="text-[9px] font-semibold">
+                <span className="text-[13px] font-semibold">
                   Default details
                 </span>
 
@@ -499,7 +499,7 @@ export function TrainingTools({
               </label>
 
               <label className="space-y-1">
-                <span className="text-[9px] font-semibold">
+                <span className="text-[13px] font-semibold">
                   Default rest
                 </span>
 
@@ -512,7 +512,7 @@ export function TrainingTools({
               </label>
 
               <label className="space-y-1 col-span-2">
-                <span className="text-[9px] font-semibold">
+                <span className="text-[13px] font-semibold">
                   Description
                 </span>
 
@@ -527,7 +527,7 @@ export function TrainingTools({
 
             {mutationError && (
               <div className="mt-3 rounded-xl border border-red-100 bg-red-50 p-3">
-                <p className="text-[9px] font-semibold text-red-700">
+                <p className="text-[13px] font-semibold text-red-700">
                   {mutationError}
                 </p>
               </div>
@@ -538,7 +538,7 @@ export function TrainingTools({
                 type="button"
                 disabled={saving}
                 onClick={() => setAddExerciseOpen(false)}
-                className="rounded-xl border border-border px-3 py-2 text-[9px] font-semibold"
+                className="rounded-xl border border-border px-3 py-2 text-[13px] font-semibold"
               >
                 Cancel
               </button>
@@ -547,7 +547,7 @@ export function TrainingTools({
                 type="button"
                 disabled={saving || !newName.trim()}
                 onClick={handleCreateExercise}
-                className="rounded-xl bg-orange-500 px-4 py-2 text-[9px] font-semibold text-white disabled:opacity-50"
+                className="rounded-xl bg-orange-500 px-4 py-2 text-[13px] font-semibold text-white disabled:opacity-50"
               >
                 {saving ? "Saving..." : "Save Exercise"}
               </button>
@@ -558,6 +558,7 @@ export function TrainingTools({
     </div>
   );
 }
+
 
 
 

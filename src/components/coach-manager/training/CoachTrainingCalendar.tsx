@@ -222,7 +222,7 @@ export function CoachTrainingCalendar() {
               </h2>
             </div>
 
-            <p className="mt-1 text-[9px] text-muted-foreground">
+            <p className="mt-1 text-[13px] text-muted-foreground">
               Training sessions and important coach dates in one place.
             </p>
           </div>
@@ -230,7 +230,7 @@ export function CoachTrainingCalendar() {
           <button
             type="button"
             onClick={() => openCreate()}
-            className="flex items-center gap-2 rounded-xl bg-orange-500 px-3 py-2 text-[10px] font-semibold text-white transition hover:bg-orange-600"
+            className="flex items-center gap-2 rounded-xl bg-orange-500 px-3 py-2 text-[14px] font-semibold text-white transition hover:bg-orange-600"
           >
             <Plus className="h-3.5 w-3.5" />
             Add Important Date
@@ -258,7 +258,7 @@ export function CoachTrainingCalendar() {
             <button
               type="button"
               onClick={today}
-              className="rounded-lg border border-border px-3 py-2 text-[9px] font-semibold"
+              className="rounded-lg border border-border px-3 py-2 text-[13px] font-semibold"
             >
               Today
             </button>
@@ -268,7 +268,7 @@ export function CoachTrainingCalendar() {
             {monthLabel}
           </h3>
 
-          <div className="flex items-center gap-3 text-[8px] text-muted-foreground">
+          <div className="flex items-center gap-3 text-[12px] text-muted-foreground">
             <span className="flex items-center gap-1">
               <span className="h-2 w-2 rounded-full bg-orange-500" />
               Training
@@ -288,7 +288,7 @@ export function CoachTrainingCalendar() {
 
         {error && (
           <div className="border-b border-red-100 bg-red-50 px-4 py-2">
-            <p className="text-[9px] font-semibold text-red-700">
+            <p className="text-[13px] font-semibold text-red-700">
               Could not load calendar: {error}
             </p>
           </div>
@@ -306,7 +306,7 @@ export function CoachTrainingCalendar() {
           ].map((day) => (
             <div
               key={day}
-              className="border-r border-border px-2 py-2 text-center text-[8px] font-bold uppercase tracking-[0.12em] text-muted-foreground last:border-r-0"
+              className="border-r border-border px-2 py-2 text-center text-[12px] font-bold uppercase tracking-[0.12em] text-muted-foreground last:border-r-0"
             >
               {day}
             </div>
@@ -358,7 +358,7 @@ export function CoachTrainingCalendar() {
                 <div className="flex items-center justify-between">
                   <span
                     className={[
-                      "grid h-6 w-6 place-items-center rounded-full text-[9px] font-semibold",
+                      "grid h-6 w-6 place-items-center rounded-full text-[13px] font-semibold",
                       isToday
                         ? "bg-orange-500 text-white"
                         : currentMonth
@@ -387,11 +387,11 @@ export function CoachTrainingCalendar() {
                         key={session.id}
                         className="rounded-md border border-orange-100 bg-orange-50 px-1.5 py-0.5"
                       >
-                        <p className="truncate text-[8px] font-bold text-orange-700">
+                        <p className="truncate text-[12px] font-bold text-orange-700">
                           {session.title}
                         </p>
 
-                        <p className="mt-0.5 text-[7px] text-orange-700/70">
+                        <p className="mt-0.5 text-[12px] text-orange-700/70">
                           {session.start_time
                             ? session.start_time.slice(
                                 0,
@@ -417,11 +417,11 @@ export function CoachTrainingCalendar() {
                         ),
                       ].join(" ")}
                     >
-                      <p className="truncate text-[8px] font-bold">
+                      <p className="truncate text-[12px] font-bold">
                         {event.title}
                       </p>
 
-                      <p className="mt-0.5 text-[7px] opacity-70">
+                      <p className="mt-0.5 text-[12px] opacity-70">
                         {eventLabel(
                           event.event_type,
                         )}
@@ -565,7 +565,7 @@ function CalendarEventEditor({
                 : "Add Important Date"}
             </h3>
 
-            <p className="mt-1 text-[9px] text-muted-foreground">
+            <p className="mt-1 text-[13px] text-muted-foreground">
               Competition, testing, camp, meeting or reminder.
             </p>
           </div>
@@ -581,7 +581,7 @@ function CalendarEventEditor({
 
         <div className="mt-4 space-y-3">
           <div>
-            <label className="text-[9px] font-semibold">
+            <label className="text-[13px] font-semibold">
               Title
             </label>
 
@@ -597,7 +597,7 @@ function CalendarEventEditor({
 
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <label className="text-[9px] font-semibold">
+              <label className="text-[13px] font-semibold">
                 Date
               </label>
 
@@ -614,7 +614,7 @@ function CalendarEventEditor({
             </div>
 
             <div>
-              <label className="text-[9px] font-semibold">
+              <label className="text-[13px] font-semibold">
                 Type
               </label>
 
@@ -652,7 +652,7 @@ function CalendarEventEditor({
 
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <label className="text-[9px] font-semibold">
+              <label className="text-[13px] font-semibold">
                 Start Time
               </label>
 
@@ -669,7 +669,7 @@ function CalendarEventEditor({
             </div>
 
             <div>
-              <label className="text-[9px] font-semibold">
+              <label className="text-[13px] font-semibold">
                 End Time
               </label>
 
@@ -687,7 +687,7 @@ function CalendarEventEditor({
           </div>
 
           <div>
-            <label className="text-[9px] font-semibold">
+            <label className="text-[13px] font-semibold">
               Location
             </label>
 
@@ -708,7 +708,7 @@ function CalendarEventEditor({
           </div>
 
           <div>
-            <label className="text-[9px] font-semibold">
+            <label className="text-[13px] font-semibold">
               Notes
             </label>
 
@@ -725,7 +725,7 @@ function CalendarEventEditor({
 
         {error && (
           <div className="mt-3 rounded-xl border border-red-100 bg-red-50 px-3 py-2">
-            <p className="text-[9px] font-semibold text-red-700">
+            <p className="text-[13px] font-semibold text-red-700">
               {error}
             </p>
           </div>
@@ -738,7 +738,7 @@ function CalendarEventEditor({
                 type="button"
                 disabled={saving}
                 onClick={remove}
-                className="text-[9px] font-semibold text-red-600"
+                className="text-[13px] font-semibold text-red-600"
               >
                 Delete Event
               </button>
@@ -750,7 +750,7 @@ function CalendarEventEditor({
               type="button"
               onClick={onClose}
               disabled={saving}
-              className="rounded-xl border border-border px-3 py-2 text-[9px] font-semibold"
+              className="rounded-xl border border-border px-3 py-2 text-[13px] font-semibold"
             >
               Cancel
             </button>
@@ -762,7 +762,7 @@ function CalendarEventEditor({
                 saving ||
                 !title.trim()
               }
-              className="rounded-xl bg-orange-500 px-4 py-2 text-[9px] font-semibold text-white disabled:opacity-50"
+              className="rounded-xl bg-orange-500 px-4 py-2 text-[13px] font-semibold text-white disabled:opacity-50"
             >
               {saving
                 ? "Saving..."
@@ -776,6 +776,7 @@ function CalendarEventEditor({
     </div>
   );
 }
+
 
 
 

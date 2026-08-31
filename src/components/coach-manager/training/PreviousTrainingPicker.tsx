@@ -83,7 +83,7 @@ export function PreviousTrainingPicker({
       >
         <div className="flex items-start justify-between">
           <div>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-blue-600">
+            <p className="text-[14px] font-semibold uppercase tracking-[0.16em] text-blue-600">
               Previous Training
             </p>
 
@@ -91,7 +91,7 @@ export function PreviousTrainingPicker({
               Reuse a Session
             </h3>
 
-            <p className="mt-1 text-[9px] text-muted-foreground">
+            <p className="mt-1 text-[13px] text-muted-foreground">
               Choose an older training, copy it and adapt it for a new date.
             </p>
           </div>
@@ -122,7 +122,7 @@ export function PreviousTrainingPicker({
 
         {error && (
           <div className="mt-3 rounded-xl border border-red-100 bg-red-50 p-3">
-            <p className="text-[9px] font-semibold text-red-700">
+            <p className="text-[13px] font-semibold text-red-700">
               {error}
             </p>
           </div>
@@ -155,21 +155,21 @@ export function PreviousTrainingPicker({
                   className="flex w-full items-center justify-between gap-4 rounded-xl border border-border p-3 text-left transition hover:border-blue-200 hover:bg-blue-50/30"
                 >
                   <div className="min-w-0">
-                    <p className="truncate text-[10px] font-bold">
+                    <p className="truncate text-[14px] font-bold">
                       {
                         session.title
                       }
                     </p>
 
                     <div className="mt-1 flex flex-wrap items-center gap-1.5">
-                      <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[7px] font-semibold text-slate-600">
+                      <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[12px] font-semibold text-slate-600">
                         {
                           session.session_date
                         }
                       </span>
 
                       {session.group_name && (
-                        <span className="rounded-full bg-orange-50 px-2 py-0.5 text-[7px] font-semibold text-orange-600">
+                        <span className="rounded-full bg-orange-50 px-2 py-0.5 text-[12px] font-semibold text-orange-600">
                           {
                             session.group_name
                           }
@@ -177,7 +177,7 @@ export function PreviousTrainingPicker({
                       )}
 
                       {session.discipline && (
-                        <span className="rounded-full bg-violet-50 px-2 py-0.5 text-[7px] font-semibold text-violet-600">
+                        <span className="rounded-full bg-violet-50 px-2 py-0.5 text-[12px] font-semibold text-violet-600">
                           {
                             session.discipline
                           }
@@ -186,7 +186,7 @@ export function PreviousTrainingPicker({
                     </div>
 
                     {session.session_goal && (
-                      <p className="mt-2 line-clamp-1 text-[8px] text-muted-foreground">
+                      <p className="mt-2 line-clamp-1 text-[12px] text-muted-foreground">
                         {
                           session.session_goal
                         }
@@ -194,7 +194,7 @@ export function PreviousTrainingPicker({
                     )}
                   </div>
 
-                  <div className="flex shrink-0 items-center gap-1 rounded-lg bg-blue-50 px-2 py-1 text-[8px] font-semibold text-blue-700">
+                  <div className="flex shrink-0 items-center gap-1 rounded-lg bg-blue-50 px-2 py-1 text-[12px] font-semibold text-blue-700">
                     <Copy className="h-3 w-3" />
                     Reuse
                   </div>
@@ -205,11 +205,11 @@ export function PreviousTrainingPicker({
           {!loading &&
             filteredSessions.length === 0 && (
               <div className="rounded-xl border border-dashed border-border p-6 text-center">
-                <p className="text-[9px] font-semibold">
+                <p className="text-[13px] font-semibold">
                   No previous training found
                 </p>
 
-                <p className="mt-1 text-[8px] text-muted-foreground">
+                <p className="mt-1 text-[12px] text-muted-foreground">
                   Older saved sessions will appear here.
                 </p>
               </div>
@@ -219,3 +219,4 @@ export function PreviousTrainingPicker({
     </div>
   );
 }
+

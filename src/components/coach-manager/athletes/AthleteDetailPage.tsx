@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import {
   Link,
   useParams,
@@ -135,13 +135,13 @@ function DataItem({
 }) {
   return (
     <div className="flex items-center justify-between gap-3">
-      <span className="text-[8px] text-muted-foreground">
+      <span className="text-[12px] text-muted-foreground">
         {label}
       </span>
 
       <span
         className={[
-          "text-right text-[9px]",
+          "text-right text-[13px]",
           emphasis
             ? "font-bold text-foreground"
             : "font-medium text-foreground",
@@ -159,7 +159,7 @@ function EmptyData({
   text: string;
 }) {
   return (
-    <p className="text-[9px] leading-relaxed text-muted-foreground">
+    <p className="text-[13px] leading-relaxed text-muted-foreground">
       {text}
     </p>
   );
@@ -437,7 +437,7 @@ const [athlete, setAthlete] =
                     ? { tab: "session-comparison" }
                     : undefined
           }
-        className="inline-flex items-center gap-2 text-[10px] font-semibold text-muted-foreground transition hover:text-orange-600"
+        className="inline-flex items-center gap-2 text-[14px] font-semibold text-muted-foreground transition hover:text-orange-600"
       >
         <ArrowLeft className="h-3.5 w-3.5" />
         {backLabel}
@@ -464,12 +464,12 @@ const [athlete, setAthlete] =
                 {athlete.display_name}
               </h1>
 
-              <span className="rounded-full bg-slate-100 px-2 py-1 text-[8px] font-bold text-slate-600">
+              <span className="rounded-full bg-slate-100 px-2 py-1 text-[12px] font-bold text-slate-600">
                 ASSESSMENT PENDING
               </span>
             </div>
 
-            <p className="mt-1 text-[10px] text-muted-foreground">
+            <p className="mt-1 text-[14px] text-muted-foreground">
               {discipline}
               {athlete.age
                 ? ` · Age ${athlete.age}`
@@ -484,11 +484,11 @@ const [athlete, setAthlete] =
 
       {dataError && !accessDenied && (
         <section className="rounded-xl border border-orange-100 bg-orange-50/40 px-3 py-2">
-          <p className="text-[9px] font-semibold text-orange-700">
+          <p className="text-[13px] font-semibold text-orange-700">
             Some athlete data could not be loaded
           </p>
 
-          <p className="mt-0.5 text-[8px] text-orange-700/80">
+          <p className="mt-0.5 text-[12px] text-orange-700/80">
             {dataError}
           </p>
         </section>
@@ -503,7 +503,7 @@ const [athlete, setAthlete] =
             </div>
 
             <div>
-              <p className="text-[8px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+              <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                 Current Status
               </p>
 
@@ -513,7 +513,7 @@ const [athlete, setAthlete] =
             </div>
           </div>
 
-          <p className="mt-3 text-[9px] leading-relaxed text-muted-foreground">
+          <p className="mt-3 text-[13px] leading-relaxed text-muted-foreground">
             Real athlete data is connected.
             Needs Review, Worth Watching or On Track
             will be calculated only after we define the
@@ -528,7 +528,7 @@ const [athlete, setAthlete] =
             </div>
 
             <div>
-              <p className="text-[8px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+              <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                 Latest Athlete Context
               </p>
 
@@ -546,7 +546,7 @@ const [athlete, setAthlete] =
             </div>
           </div>
 
-          <p className="mt-3 text-[9px] leading-relaxed text-muted-foreground">
+          <p className="mt-3 text-[13px] leading-relaxed text-muted-foreground">
             {latestCheckin?.context_summary ??
               latestCheckin?.ai_summary ??
               latestWorkout?.summary ??
@@ -568,14 +568,14 @@ const [athlete, setAthlete] =
                 </h2>
               </div>
 
-              <p className="mt-1 text-[9px] text-muted-foreground">
+              <p className="mt-1 text-[13px] text-muted-foreground">
                 Real athlete information currently available
                 to the coach.
               </p>
             </div>
 
             {dataLoading && (
-              <span className="text-[8px] text-muted-foreground">
+              <span className="text-[12px] text-muted-foreground">
                 Loading…
               </span>
             )}
@@ -583,46 +583,46 @@ const [athlete, setAthlete] =
 
           <div className="mt-3 grid grid-cols-2 gap-2">
             <div className="rounded-xl border border-blue-100 bg-blue-50/30 p-3">
-              <p className="text-[9px] font-bold">
+              <p className="text-[13px] font-bold">
                 Check-In Evidence
               </p>
 
-              <p className="mt-2 text-[9px] leading-relaxed text-muted-foreground">
+              <p className="mt-2 text-[13px] leading-relaxed text-muted-foreground">
                 {checkinEvidence}
               </p>
             </div>
 
             <div className="rounded-xl border border-orange-100 bg-orange-50/30 p-3">
-              <p className="text-[9px] font-bold">
+              <p className="text-[13px] font-bold">
                 Regeneration Evidence
               </p>
 
-              <p className="mt-2 text-[9px] leading-relaxed text-muted-foreground">
+              <p className="mt-2 text-[13px] leading-relaxed text-muted-foreground">
                 {regenerationEvidence}
               </p>
 
-              <p className="mt-2 text-[7px] text-muted-foreground">
+              <p className="mt-2 text-[12px] text-muted-foreground">
                 Soreness and energy are not stored
                 in the current schema yet.
               </p>
             </div>
 
             <div className="rounded-xl border border-green-100 bg-green-50/30 p-3">
-              <p className="text-[9px] font-bold">
+              <p className="text-[13px] font-bold">
                 Training Evidence
               </p>
 
-              <p className="mt-2 text-[9px] leading-relaxed text-muted-foreground">
+              <p className="mt-2 text-[13px] leading-relaxed text-muted-foreground">
                 {trainingEvidence}
               </p>
             </div>
 
             <div className="rounded-xl border border-violet-100 bg-violet-50/30 p-3">
-              <p className="text-[9px] font-bold">
+              <p className="text-[13px] font-bold">
                 Analysis Evidence
               </p>
 
-              <p className="mt-2 text-[9px] leading-relaxed text-muted-foreground">
+              <p className="mt-2 text-[13px] leading-relaxed text-muted-foreground">
                 {analysisEvidence}
               </p>
             </div>
@@ -633,12 +633,12 @@ const [athlete, setAthlete] =
               <div className="flex items-center gap-2">
                 <Video className="h-3.5 w-3.5 text-slate-600" />
 
-                <p className="text-[9px] font-bold">
+                <p className="text-[13px] font-bold">
                   Latest Video Analysis
                 </p>
               </div>
 
-              <p className="mt-2 text-[9px] leading-relaxed text-muted-foreground">
+              <p className="mt-2 text-[13px] leading-relaxed text-muted-foreground">
                 {videoEvidence}
               </p>
             </div>
@@ -657,7 +657,7 @@ const [athlete, setAthlete] =
                 Aether Coaching Considerations
               </h2>
 
-              <p className="mt-1 text-[9px] leading-relaxed text-muted-foreground">
+              <p className="mt-1 text-[13px] leading-relaxed text-muted-foreground">
                 Short coaching options will appear
                 after the attention-state logic is defined.
               </p>
@@ -665,18 +665,18 @@ const [athlete, setAthlete] =
           </div>
 
           <div className="mt-3 rounded-xl border border-dashed border-violet-200 bg-white/70 p-3">
-            <p className="text-[9px] font-semibold">
+            <p className="text-[13px] font-semibold">
               No recommendation calculated yet
             </p>
 
-            <p className="mt-1 text-[8px] leading-relaxed text-muted-foreground">
+            <p className="mt-1 text-[12px] leading-relaxed text-muted-foreground">
               We will not generate a coaching recommendation
               until the evidence rules are connected.
             </p>
           </div>
 
           <div className="mt-3 rounded-xl border border-violet-100 bg-white/70 px-3 py-2">
-            <p className="text-[8px] font-medium text-violet-700">
+            <p className="text-[12px] font-medium text-violet-700">
               Suggestions only — the coach decides.
             </p>
           </div>
@@ -690,7 +690,7 @@ const [athlete, setAthlete] =
             Today at a Glance
           </h2>
 
-          <p className="mt-1 text-[9px] text-muted-foreground">
+          <p className="mt-1 text-[13px] text-muted-foreground">
             Latest real athlete information from Supabase.
           </p>
         </div>
@@ -700,7 +700,7 @@ const [athlete, setAthlete] =
             <div className="flex items-center gap-2">
               <Brain className="h-3.5 w-3.5 text-blue-600" />
 
-              <p className="text-[9px] font-bold">
+              <p className="text-[13px] font-bold">
                 Check-In
               </p>
             </div>
@@ -758,7 +758,7 @@ const [athlete, setAthlete] =
             <div className="flex items-center gap-2">
               <MoonStar className="h-3.5 w-3.5 text-orange-600" />
 
-              <p className="text-[9px] font-bold">
+              <p className="text-[13px] font-bold">
                 Regeneration
               </p>
             </div>
@@ -792,7 +792,7 @@ const [athlete, setAthlete] =
                     }
                   />
 
-                  <p className="pt-1 text-[7px] text-muted-foreground">
+                  <p className="pt-1 text-[12px] text-muted-foreground">
                     Energy + soreness fields still need
                     schema support.
                   </p>
@@ -807,7 +807,7 @@ const [athlete, setAthlete] =
             <div className="flex items-center gap-2">
               <Dumbbell className="h-3.5 w-3.5 text-green-600" />
 
-              <p className="text-[9px] font-bold">
+              <p className="text-[13px] font-bold">
                 Training
               </p>
             </div>
@@ -858,7 +858,7 @@ const [athlete, setAthlete] =
             <div className="flex items-center gap-2">
               <Zap className="h-3.5 w-3.5 text-violet-600" />
 
-              <p className="text-[9px] font-bold">
+              <p className="text-[13px] font-bold">
                 Workout Analysis
               </p>
             </div>
@@ -867,11 +867,11 @@ const [athlete, setAthlete] =
               {latestAnalysis ? (
                 <>
                   <div>
-                    <p className="text-[7px] text-muted-foreground">
+                    <p className="text-[12px] text-muted-foreground">
                       Improvement
                     </p>
 
-                    <p className="mt-1 text-[8px] font-medium leading-relaxed">
+                    <p className="mt-1 text-[12px] font-medium leading-relaxed">
                       {formatJsonSummary(
                         latestAnalysis.improvements,
                         "No improvement recorded",
@@ -880,11 +880,11 @@ const [athlete, setAthlete] =
                   </div>
 
                   <div>
-                    <p className="text-[7px] text-muted-foreground">
+                    <p className="text-[12px] text-muted-foreground">
                       Attention
                     </p>
 
-                    <p className="mt-1 text-[8px] font-medium leading-relaxed">
+                    <p className="mt-1 text-[12px] font-medium leading-relaxed">
                       {formatJsonSummary(
                         latestAnalysis.negatives,
                         "No negative finding recorded",
@@ -892,7 +892,7 @@ const [athlete, setAthlete] =
                     </p>
                   </div>
 
-                  <p className="text-[7px] text-muted-foreground">
+                  <p className="text-[12px] text-muted-foreground">
                     {latestAnalysis.is_ai_generated
                       ? "AI-generated analysis"
                       : "Coach/manual analysis"}
@@ -917,7 +917,7 @@ const [athlete, setAthlete] =
                 Coach Validation
               </h2>
 
-              <p className="mt-0.5 text-[9px] text-muted-foreground">
+              <p className="mt-0.5 text-[13px] text-muted-foreground">
                 Validation activates after Aether
                 creates an attention assessment.
               </p>
@@ -934,7 +934,7 @@ const [athlete, setAthlete] =
                 key={label}
                 type="button"
                 disabled
-                className="rounded-xl border border-border bg-slate-50 px-2 py-2 text-[8px] font-semibold text-muted-foreground opacity-60"
+                className="rounded-xl border border-border bg-slate-50 px-2 py-2 text-[12px] font-semibold text-muted-foreground opacity-60"
               >
                 {label}
               </button>
@@ -944,7 +944,7 @@ const [athlete, setAthlete] =
           <button
             type="button"
             disabled
-            className="mt-3 w-full rounded-xl bg-slate-200 px-3 py-2 text-[9px] font-semibold text-slate-500"
+            className="mt-3 w-full rounded-xl bg-slate-200 px-3 py-2 text-[13px] font-semibold text-slate-500"
           >
             Mark as Reviewed
           </button>
@@ -959,7 +959,7 @@ const [athlete, setAthlete] =
                 Recent Assessments
               </h2>
 
-              <p className="mt-0.5 text-[9px] text-muted-foreground">
+              <p className="mt-0.5 text-[13px] text-muted-foreground">
                 Reviewed attention signals will remain
                 visible here.
               </p>
@@ -967,11 +967,11 @@ const [athlete, setAthlete] =
           </div>
 
           <div className="mt-3 rounded-xl border border-dashed border-border bg-slate-50/40 px-3 py-3">
-            <p className="text-[9px] font-semibold">
+            <p className="text-[13px] font-semibold">
               No reviewed assessments yet
             </p>
 
-            <p className="mt-1 text-[8px] text-muted-foreground">
+            <p className="mt-1 text-[12px] text-muted-foreground">
               Assessment history persistence is the next
               validation step.
             </p>
@@ -981,6 +981,7 @@ const [athlete, setAthlete] =
     </div>
   );
 }
+
 
 
 

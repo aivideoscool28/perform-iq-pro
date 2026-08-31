@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import {
   Activity,
   AlertTriangle,
@@ -185,7 +185,7 @@ function TrainingTypeResponseTable() {
     <section className="rounded-2xl border border-border bg-white p-3 shadow-sm">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <p className="text-[9px] font-bold uppercase tracking-wide text-violet-600">
+          <p className="text-[13px] font-bold uppercase tracking-wide text-violet-600">
             Main comparison
           </p>
 
@@ -193,7 +193,7 @@ function TrainingTypeResponseTable() {
             Which training types stand out?
           </h3>
 
-          <p className="mt-1 text-[8px] text-muted-foreground">
+          <p className="mt-1 text-[12px] text-muted-foreground">
             Compare goal achievement, athlete-reported performance quality
             and RPE with recent similar sessions.
           </p>
@@ -201,13 +201,13 @@ function TrainingTypeResponseTable() {
 
         <button
           type="button"
-          className="text-[8px] font-semibold text-violet-600"
+          className="text-[12px] font-semibold text-violet-600"
         >
           View detailed comparison →
         </button>
       </div>
 
-      <div className="mt-3 grid grid-cols-[160px_130px_165px_85px_1fr] gap-3 border-b border-border pb-2 text-[7px] font-semibold text-muted-foreground">
+      <div className="mt-3 grid grid-cols-[160px_130px_165px_85px_1fr] gap-3 border-b border-border pb-2 text-[12px] font-semibold text-muted-foreground">
         <span>Training type</span>
         <span>Goal achievement</span>
         <span>Performance quality</span>
@@ -227,7 +227,7 @@ function TrainingTypeResponseTable() {
                 <Activity className="h-3.5 w-3.5 text-violet-600" />
               </div>
 
-              <span className="text-[8px] font-semibold">
+              <span className="text-[12px] font-semibold">
                 {item.label}
               </span>
             </div>
@@ -249,23 +249,23 @@ function TrainingTypeResponseTable() {
                 />
               </div>
 
-              <span className="text-[8px] font-bold">
+              <span className="text-[12px] font-bold">
                 {item.goal}%
               </span>
             </div>
 
             <span
-              className={`w-fit rounded-full px-2 py-1 text-[7px] font-semibold ${item.qualityStyle}`}
+              className={`w-fit rounded-full px-2 py-1 text-[12px] font-semibold ${item.qualityStyle}`}
             >
               {item.quality}
             </span>
 
-            <span className="text-[8px] font-semibold">
+            <span className="text-[12px] font-semibold">
               {item.rpe}
             </span>
 
             <div className="flex items-center justify-between gap-2">
-              <span className={`text-[7px] font-medium ${item.deltaStyle}`}>
+              <span className={`text-[12px] font-medium ${item.deltaStyle}`}>
                 {item.delta}
               </span>
 
@@ -277,11 +277,11 @@ function TrainingTypeResponseTable() {
 
       <div className="mt-3 flex items-center justify-between rounded-xl border border-orange-100 bg-orange-50/40 px-3 py-2">
         <div>
-          <p className="text-[8px] font-semibold text-orange-800">
+          <p className="text-[12px] font-semibold text-orange-800">
             Speed Endurance currently stands out
           </p>
 
-          <p className="mt-0.5 text-[7px] text-muted-foreground">
+          <p className="mt-0.5 text-[12px] text-muted-foreground">
             Recent comparable sessions show lower goal achievement,
             higher RPE and more declining performance responses.
           </p>
@@ -289,7 +289,7 @@ function TrainingTypeResponseTable() {
 
         <button
           type="button"
-          className="text-[8px] font-semibold text-orange-700"
+          className="text-[12px] font-semibold text-orange-700"
         >
           Review sessions →
         </button>
@@ -319,7 +319,7 @@ export function TrainingResponse() {
               </div>
 
               <div className="min-w-0">
-                <p className="text-[8px] font-semibold text-muted-foreground">
+                <p className="text-[12px] font-semibold text-muted-foreground">
                   {label}
                 </p>
 
@@ -327,13 +327,13 @@ export function TrainingResponse() {
                   <p className="text-xl font-bold">{value}</p>
 
                   {suffix && (
-                    <span className="text-[9px] text-muted-foreground">
+                    <span className="text-[13px] text-muted-foreground">
                       {suffix}
                     </span>
                   )}
                 </div>
 
-                <p className={`mt-0.5 text-[7px] ${style.split(" ")[1]}`}>
+                <p className={`mt-0.5 text-[12px] ${style.split(" ")[1]}`}>
                   {detail}
                 </p>
               </div>
@@ -350,7 +350,7 @@ export function TrainingResponse() {
             1. How are training responses changing over time?
           </h3>
 
-          <p className="mt-1 text-[8px] text-muted-foreground">
+          <p className="mt-1 text-[12px] text-muted-foreground">
             Athlete-reported response over the selected period
           </p>
 
@@ -367,7 +367,7 @@ export function TrainingResponse() {
                   setMetric(id as "goal" | "quality" | "rpe")
                 }
                 className={[
-                  "rounded-lg border px-2.5 py-1 text-[7px] font-semibold",
+                  "rounded-lg border px-2.5 py-1 text-[12px] font-semibold",
                   metric === id
                     ? "border-violet-200 bg-violet-50 text-violet-700"
                     : "border-border text-muted-foreground",
@@ -382,7 +382,7 @@ export function TrainingResponse() {
             <div className="absolute inset-x-0 top-0 bottom-5 flex flex-col justify-between">
               {[100, 75, 50, 25, 0].map((value) => (
                 <div key={value} className="flex items-center gap-2">
-                  <span className="w-7 text-[7px] text-muted-foreground">
+                  <span className="w-7 text-[12px] text-muted-foreground">
                     {value}%
                   </span>
                   <div className="h-px flex-1 bg-border/50" />
@@ -440,7 +440,7 @@ export function TrainingResponse() {
               ))}
             </svg>
 
-            <div className="absolute bottom-0 left-8 right-0 flex justify-between text-[7px] text-muted-foreground">
+            <div className="absolute bottom-0 left-8 right-0 flex justify-between text-[12px] text-muted-foreground">
               <span>May 13</span>
               <span>May 20</span>
               <span>May 27</span>
@@ -449,7 +449,7 @@ export function TrainingResponse() {
             </div>
           </div>
 
-          <div className="mt-2 flex gap-4 text-[7px] text-muted-foreground">
+          <div className="mt-2 flex gap-4 text-[12px] text-muted-foreground">
             <span className="flex items-center gap-1">
               <span className="h-0.5 w-4 bg-violet-600" />
               Current 4 weeks
@@ -464,12 +464,12 @@ export function TrainingResponse() {
           <div className="mt-2 flex items-center justify-between rounded-lg border border-violet-100 bg-violet-50/50 px-2.5 py-2">
             <button
               type="button"
-              className="text-[8px] font-semibold text-violet-700"
+              className="text-[12px] font-semibold text-violet-700"
             >
               View response distribution →
             </button>
 
-            <div className="flex gap-2 text-[7px]">
+            <div className="flex gap-2 text-[12px]">
               <span className="text-green-600">Improved 26%</span>
               <span className="text-muted-foreground">Stable 52%</span>
               <span className="text-red-500">Declined 22%</span>
@@ -480,7 +480,7 @@ export function TrainingResponse() {
         <section className="rounded-2xl border border-border bg-white p-3 shadow-sm">
           <h3 className="text-xs font-bold">2. Sessions worth investigating</h3>
 
-          <p className="mt-1 text-[8px] text-muted-foreground">
+          <p className="mt-1 text-[12px] text-muted-foreground">
             Different goal or performance responses compared with the recent pattern
           </p>
 
@@ -496,19 +496,19 @@ export function TrainingResponse() {
                 </div>
 
                 <div className="min-w-0 flex-1">
-                  <p className="text-[8px] font-semibold">{session.name}</p>
-                  <p className="text-[7px] text-muted-foreground">
+                  <p className="text-[12px] font-semibold">{session.name}</p>
+                  <p className="text-[12px] text-muted-foreground">
                     {session.date}
                   </p>
                 </div>
 
                 <div className="text-right">
-                  <p className="text-[7px] text-muted-foreground">
+                  <p className="text-[12px] text-muted-foreground">
                     Goal {session.goal} · RPE {session.rpe}
                   </p>
 
                   <span
-                    className={`mt-1 inline-flex rounded-full px-2 py-0.5 text-[7px] font-semibold ${session.qualityStyle}`}
+                    className={`mt-1 inline-flex rounded-full px-2 py-0.5 text-[12px] font-semibold ${session.qualityStyle}`}
                   >
                     {session.quality}
                   </span>
@@ -521,7 +521,7 @@ export function TrainingResponse() {
 
           <button
             type="button"
-            className="mt-2 text-[8px] font-semibold text-violet-600"
+            className="mt-2 text-[12px] font-semibold text-violet-600"
           >
             View all 5 sessions →
           </button>
@@ -532,7 +532,7 @@ export function TrainingResponse() {
             3. Context reported with these responses
           </h3>
 
-          <p className="mt-1 text-[8px] text-muted-foreground">
+          <p className="mt-1 text-[12px] text-muted-foreground">
             Athlete-reported context, not proven causes
           </p>
 
@@ -547,8 +547,8 @@ export function TrainingResponse() {
                 </div>
 
                 <div>
-                  <p className="text-[8px] font-semibold">{label}</p>
-                  <p className="mt-0.5 text-[7px] leading-relaxed text-muted-foreground">
+                  <p className="text-[12px] font-semibold">{label}</p>
+                  <p className="mt-0.5 text-[12px] leading-relaxed text-muted-foreground">
                     {detail}
                   </p>
                 </div>
@@ -558,7 +558,7 @@ export function TrainingResponse() {
 
           <button
             type="button"
-            className="mt-2 text-[8px] font-semibold text-violet-600"
+            className="mt-2 text-[12px] font-semibold text-violet-600"
           >
             View all context factors →
           </button>
@@ -571,17 +571,17 @@ export function TrainingResponse() {
         </div>
 
         <div className="min-w-0 flex-1">
-          <p className="text-[10px] font-bold text-violet-700">
+          <p className="text-[14px] font-bold text-violet-700">
             Athletic IQ Interpretation
           </p>
 
-          <p className="mt-1 text-[8px] leading-relaxed text-muted-foreground">
+          <p className="mt-1 text-[12px] leading-relaxed text-muted-foreground">
             Speed Endurance shows the clearest difference from recent
             comparable sessions: higher RPE, lower goal achievement and
             more declining performance responses.
           </p>
 
-          <p className="mt-1 text-[7px] text-muted-foreground">
+          <p className="mt-1 text-[12px] text-muted-foreground">
             This is a pattern to investigate, not evidence that the training
             type caused the response.
           </p>
@@ -589,18 +589,19 @@ export function TrainingResponse() {
 
         <button
           type="button"
-          className="rounded-xl border border-violet-200 bg-white px-3 py-2 text-[8px] font-semibold text-violet-700"
+          className="rounded-xl border border-violet-200 bg-white px-3 py-2 text-[12px] font-semibold text-violet-700"
         >
           View evidence →
         </button>
       </section>
-      <p className="text-center text-[7px] text-muted-foreground">
+      <p className="text-center text-[12px] text-muted-foreground">
         Athletic IQ uses athlete-reported responses. Review individual athletes
         and session context before making training changes.
       </p>
     </div>
   );
 }
+
 
 
 

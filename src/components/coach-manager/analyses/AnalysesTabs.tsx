@@ -1,4 +1,4 @@
-import {
+﻿import {
   Activity,
   CalendarCheck,
   GitCompareArrows,
@@ -97,11 +97,11 @@ export function AnalysesTabs({
             </div>
 
             <div className="min-w-0">
-              <p className="truncate text-[10px] font-semibold">
+              <p className="truncate text-[14px] font-semibold">
                 {label}
               </p>
 
-              <p className="mt-0.5 truncate text-[8px] text-muted-foreground">
+              <p className="mt-0.5 truncate text-[12px] text-muted-foreground">
                 {detail}
               </p>
             </div>
@@ -111,3 +111,4 @@ export function AnalysesTabs({
     </nav>
   );
 }
+

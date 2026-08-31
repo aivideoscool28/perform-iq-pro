@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+﻿import { Link } from "@tanstack/react-router";
 import {
   Clock,
   Dumbbell,
@@ -108,7 +108,7 @@ export function TodaysTrainingCard({
               </p>
 
               <span
-                className={`rounded-full px-2 py-0.5 text-[8px] font-bold uppercase ${statusStyle}`}
+                className={`rounded-full px-2 py-0.5 text-[12px] font-bold uppercase ${statusStyle}`}
               >
                 {session.status}
               </span>
@@ -142,7 +142,7 @@ export function TodaysTrainingCard({
             </div>
 
             {time && (
-              <p className="mt-1 text-[10px] text-muted-foreground">
+              <p className="mt-1 text-[14px] text-muted-foreground">
                 {time}
               </p>
             )}
@@ -187,6 +187,7 @@ export function TodaysTrainingCard({
     </section>
   );
 }
+
 
 
 

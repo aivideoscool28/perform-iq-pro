@@ -1,4 +1,4 @@
-import {
+﻿import {
   useMemo,
   useState,
 } from "react";
@@ -75,7 +75,7 @@ export function TrainingTemplatePicker({
       <div className="max-h-[88vh] w-full max-w-4xl overflow-hidden rounded-3xl border border-border bg-white shadow-2xl">
         <div className="flex items-start justify-between border-b border-border px-6 py-5">
           <div>
-            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-orange-500">
+            <p className="text-[14px] font-bold uppercase tracking-[0.18em] text-orange-500">
               Training Templates
             </p>
 
@@ -154,7 +154,7 @@ export function TrainingTemplatePicker({
                 Could not load templates
               </p>
 
-              <p className="mt-1 text-[10px] text-red-600">
+              <p className="mt-1 text-[14px] text-red-600">
                 {error}
               </p>
             </div>
@@ -209,7 +209,7 @@ export function TrainingTemplatePicker({
                           <Dumbbell className="h-4 w-4 text-orange-500" />
                         </div>
 
-                        <span className="rounded-full bg-muted/50 px-2 py-1 text-[8px] font-bold text-muted-foreground">
+                        <span className="rounded-full bg-muted/50 px-2 py-1 text-[12px] font-bold text-muted-foreground">
                           {
                             template.category
                           }
@@ -222,14 +222,14 @@ export function TrainingTemplatePicker({
                         }
                       </h3>
 
-                      <p className="mt-1 min-h-10 text-[10px] leading-relaxed text-muted-foreground">
+                      <p className="mt-1 min-h-10 text-[14px] leading-relaxed text-muted-foreground">
                         {template.description ??
                           "Reusable training template."}
                       </p>
 
                       <div className="mt-3 flex flex-wrap items-center gap-2">
                         {template.discipline && (
-                          <span className="rounded-lg bg-orange-50 px-2 py-1 text-[8px] font-semibold text-orange-600">
+                          <span className="rounded-lg bg-orange-50 px-2 py-1 text-[12px] font-semibold text-orange-600">
                             {
                               template.discipline
                             }
@@ -237,7 +237,7 @@ export function TrainingTemplatePicker({
                         )}
 
                         {template.intensity && (
-                          <span className="rounded-lg bg-slate-50 px-2 py-1 text-[8px] font-semibold text-slate-600">
+                          <span className="rounded-lg bg-slate-50 px-2 py-1 text-[12px] font-semibold text-slate-600">
                             {
                               template.intensity
                             }
@@ -246,7 +246,7 @@ export function TrainingTemplatePicker({
 
                         {template.duration_minutes !==
                           null && (
-                          <span className="flex items-center gap-1 rounded-lg bg-slate-50 px-2 py-1 text-[8px] font-semibold text-slate-600">
+                          <span className="flex items-center gap-1 rounded-lg bg-slate-50 px-2 py-1 text-[12px] font-semibold text-slate-600">
                             <Clock className="h-3 w-3" />
                             {
                               template.duration_minutes
@@ -257,7 +257,7 @@ export function TrainingTemplatePicker({
                       </div>
 
                       <div className="mt-3 flex items-center justify-between border-t border-border/60 pt-3">
-                        <span className="text-[9px] text-muted-foreground">
+                        <span className="text-[13px] text-muted-foreground">
                           {
                             template.exercises
                               .length
@@ -265,7 +265,7 @@ export function TrainingTemplatePicker({
                           exercises
                         </span>
 
-                        <span className="text-[9px] font-bold text-orange-600">
+                        <span className="text-[13px] font-bold text-orange-600">
                           Use template →
                         </span>
                       </div>
@@ -279,3 +279,4 @@ export function TrainingTemplatePicker({
     </div>
   );
 }
+

@@ -1,4 +1,4 @@
-import {
+﻿import {
   useNavigate,
   useSearch,
 } from "@tanstack/react-router";
@@ -103,14 +103,14 @@ export function AnalysesPage() {
         </div>
 
         <div className="flex items-center gap-2">
-          <div className="flex items-center gap-2 rounded-xl border border-border bg-white px-3 py-2 text-[10px] font-semibold">
+          <div className="flex items-center gap-2 rounded-xl border border-border bg-white px-3 py-2 text-[14px] font-semibold">
             <CalendarDays className="h-3.5 w-3.5 text-blue-600" />
             Last 4 weeks
           </div>
 
           <button
             type="button"
-            className="flex items-center gap-2 rounded-xl bg-slate-900 px-3 py-2 text-[10px] font-semibold text-white"
+            className="flex items-center gap-2 rounded-xl bg-slate-900 px-3 py-2 text-[14px] font-semibold text-white"
           >
             <Sparkles className="h-3.5 w-3.5" />
             AI Insights
@@ -149,4 +149,5 @@ export function AnalysesPage() {
     </div>
   );
 }
+
 

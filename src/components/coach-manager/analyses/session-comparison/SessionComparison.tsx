@@ -1,4 +1,4 @@
-import {
+﻿import {
   useEffect,
   useMemo,
   useState,
@@ -36,7 +36,7 @@ function AthleteDistribution({
     !distribution
   ) {
     return (
-      <span className="text-[8px] text-muted-foreground">
+      <span className="text-[12px] text-muted-foreground">
         —
       </span>
     );
@@ -44,7 +44,7 @@ function AthleteDistribution({
 
   return (
     <div
-      className="flex items-center gap-2 text-[8px] font-semibold"
+      className="flex items-center gap-2 text-[12px] font-semibold"
     >
       <span className="text-green-600">
         {
@@ -128,7 +128,7 @@ function SessionCard({
         }
       </p>
 
-      <p className="mt-1 text-[9px] text-muted-foreground">
+      <p className="mt-1 text-[13px] text-muted-foreground">
         {
           session.athletes
         }{" "}
@@ -139,7 +139,7 @@ function SessionCard({
           : "s"}
       </p>
 
-      <p className="mt-2 text-[8px] text-muted-foreground">
+      <p className="mt-2 text-[12px] text-muted-foreground">
         Goal{" "}
         {session.goalAchievementPercentage !==
         null
@@ -367,11 +367,11 @@ export function SessionComparison() {
     <div className="space-y-3">
       <section className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-2">
-          <span className="text-[9px] font-semibold text-muted-foreground">
+          <span className="text-[13px] font-semibold text-muted-foreground">
             Comparing
           </span>
 
-          <div className="flex items-center gap-2 rounded-xl border border-border bg-white px-3 py-2 text-[9px] font-semibold shadow-sm">
+          <div className="flex items-center gap-2 rounded-xl border border-border bg-white px-3 py-2 text-[13px] font-semibold shadow-sm">
             <Users className="h-3.5 w-3.5 text-violet-600" />
 
             {
@@ -379,7 +379,7 @@ export function SessionComparison() {
             }
           </div>
 
-          <span className="rounded-full bg-violet-50 px-2.5 py-1 text-[8px] font-semibold text-violet-700">
+          <span className="rounded-full bg-violet-50 px-2.5 py-1 text-[12px] font-semibold text-violet-700">
             {
               comparison.athleteOverlap
             }{" "}
@@ -397,7 +397,7 @@ export function SessionComparison() {
                 !current,
             )
           }
-          className="flex items-center gap-2 rounded-xl border border-violet-200 bg-white px-3 py-2 text-[9px] font-semibold text-violet-700"
+          className="flex items-center gap-2 rounded-xl border border-violet-200 bg-white px-3 py-2 text-[13px] font-semibold text-violet-700"
         >
           <ArrowRightLeft className="h-3.5 w-3.5" />
           Swap sessions
@@ -411,11 +411,11 @@ export function SessionComparison() {
               <Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-violet-600" />
 
               <div>
-                <p className="text-[9px] font-bold text-violet-700">
+                <p className="text-[13px] font-bold text-violet-700">
                   Comparable sessions selected from real data
                 </p>
 
-                <p className="mt-0.5 text-[8px] text-muted-foreground">
+                <p className="mt-0.5 text-[12px] text-muted-foreground">
                   Athletic IQ compares sessions with the same recorded training type and prefers pairs with overlapping athletes.
                 </p>
               </div>
@@ -443,7 +443,7 @@ export function SessionComparison() {
           </div>
 
           <section className="overflow-hidden rounded-2xl border border-border bg-white shadow-sm">
-            <div className="grid grid-cols-[1.35fr_0.8fr_0.8fr_0.62fr_0.82fr] gap-3 border-b border-border bg-muted/10 px-4 py-2.5 text-[8px] font-semibold text-muted-foreground">
+            <div className="grid grid-cols-[1.35fr_0.8fr_0.8fr_0.62fr_0.82fr] gap-3 border-b border-border bg-muted/10 px-4 py-2.5 text-[12px] font-semibold text-muted-foreground">
               <span>
                 Metric
               </span>
@@ -469,7 +469,7 @@ export function SessionComparison() {
                   Athlete distribution
                 </p>
 
-                <p className="mt-0.5 text-[6px] font-normal">
+                <p className="mt-0.5 text-[11px] font-normal">
                   improved / similar / declined
                 </p>
               </div>
@@ -488,7 +488,7 @@ export function SessionComparison() {
                     <div className="flex items-center gap-2">
                       <p
                         className={[
-                          "text-[8px] font-bold",
+                          "text-[12px] font-bold",
                           section.tone ===
                           "orange"
                             ? "text-orange-600"
@@ -505,7 +505,7 @@ export function SessionComparison() {
                         }
                       </p>
 
-                      <p className="text-[8px] text-muted-foreground">
+                      <p className="text-[12px] text-muted-foreground">
                         {
                           section.subtitle
                         }
@@ -524,7 +524,7 @@ export function SessionComparison() {
                         className="grid w-full grid-cols-[1.35fr_0.8fr_0.8fr_0.62fr_0.82fr] items-center gap-3 border-b border-border/60 px-4 py-3 text-left last:border-b-0"
                       >
                         <div className="flex items-center gap-1.5">
-                          <span className="text-[9px] font-semibold">
+                          <span className="text-[13px] font-semibold">
                             {
                               row.metric
                             }
@@ -534,14 +534,14 @@ export function SessionComparison() {
                         </div>
 
                         <div>
-                          <p className="text-[10px] font-bold text-violet-700">
+                          <p className="text-[14px] font-bold text-violet-700">
                             {
                               row.sessionA
                             }
                           </p>
 
                           {row.sessionADetail && (
-                            <p className="mt-0.5 text-[8px] text-muted-foreground">
+                            <p className="mt-0.5 text-[12px] text-muted-foreground">
                               {
                                 row.sessionADetail
                               }
@@ -550,14 +550,14 @@ export function SessionComparison() {
                         </div>
 
                         <div>
-                          <p className="text-[10px] font-bold text-green-700">
+                          <p className="text-[14px] font-bold text-green-700">
                             {
                               row.sessionB
                             }
                           </p>
 
                           {row.sessionBDetail && (
-                            <p className="mt-0.5 text-[8px] text-muted-foreground">
+                            <p className="mt-0.5 text-[12px] text-muted-foreground">
                               {
                                 row.sessionBDetail
                               }
@@ -566,7 +566,7 @@ export function SessionComparison() {
                         </div>
 
                         <span
-                          className={`text-[8px] font-semibold ${row.changeStyle}`}
+                          className={`text-[12px] font-semibold ${row.changeStyle}`}
                         >
                           {
                             row.change
@@ -588,7 +588,7 @@ export function SessionComparison() {
             <div className="flex items-start gap-2 bg-violet-50/30 px-4 py-2">
               <CircleHelp className="mt-0.5 h-3.5 w-3.5 shrink-0 text-violet-600" />
 
-              <p className="text-[7px] leading-relaxed text-muted-foreground">
+              <p className="text-[12px] leading-relaxed text-muted-foreground">
                 All values come from athlete-reported post-training check-ins. Differences describe association between sessions, not proof that one factor caused another.
               </p>
             </div>
@@ -600,22 +600,22 @@ export function SessionComparison() {
             </div>
 
             <div className="min-w-0 flex-1">
-              <p className="text-[10px] font-bold text-violet-700">
+              <p className="text-[14px] font-bold text-violet-700">
                 Athletic IQ Insight
               </p>
 
-              <p className="mt-1 text-[8px] leading-relaxed text-muted-foreground">
+              <p className="mt-1 text-[12px] leading-relaxed text-muted-foreground">
                 {
                   comparison.interpretation
                 }
               </p>
 
-              <p className="mt-1 text-[8px] font-medium text-slate-700">
+              <p className="mt-1 text-[12px] font-medium text-slate-700">
                 Worth reviewing: whether the response difference was consistent across the overlapping athletes and whether relevant session context differed.
               </p>
             </div>
 
-            <span className="shrink-0 rounded-xl border border-violet-200 bg-white px-3 py-2 text-[8px] font-semibold text-violet-700">Evidence shown above</span>
+            <span className="shrink-0 rounded-xl border border-violet-200 bg-white px-3 py-2 text-[12px] font-semibold text-violet-700">Evidence shown above</span>
           </section>
         </main>
 
@@ -626,7 +626,7 @@ export function SessionComparison() {
                 Session Context
               </h3>
 
-              <span className="rounded-full bg-green-50 px-2 py-1 text-[7px] font-semibold text-green-700">
+              <span className="rounded-full bg-green-50 px-2 py-1 text-[12px] font-semibold text-green-700">
                 Comparable type
               </span>
             </div>
@@ -643,18 +643,18 @@ export function SessionComparison() {
                     className="flex items-start justify-between gap-3"
                   >
                     <div className="flex items-start gap-2">
-                      <span className="mt-0.5 text-[9px] font-bold text-green-600">
+                      <span className="mt-0.5 text-[13px] font-bold text-green-600">
                         ✓
                       </span>
 
-                      <span className="text-[8px] font-medium">
+                      <span className="text-[12px] font-medium">
                         {
                           item.label
                         }
                       </span>
                     </div>
 
-                    <span className="max-w-[110px] text-right text-[8px] text-muted-foreground">
+                    <span className="max-w-[110px] text-right text-[12px] text-muted-foreground">
                       {
                         item.value
                       }
@@ -672,11 +672,11 @@ export function SessionComparison() {
 
             <div className="mt-4 space-y-3">
               <div className="rounded-xl border border-violet-100 bg-violet-50/40 p-3">
-                <p className="text-[9px] font-bold text-violet-700">
+                <p className="text-[13px] font-bold text-violet-700">
                   Outcome
                 </p>
 
-                <p className="mt-1 text-[8px] text-muted-foreground">
+                <p className="mt-1 text-[12px] text-muted-foreground">
                   {
                     comparison.summary.outcome
                   }
@@ -684,11 +684,11 @@ export function SessionComparison() {
               </div>
 
               <div className="rounded-xl border border-orange-100 bg-orange-50/40 p-3">
-                <p className="text-[9px] font-bold text-orange-700">
+                <p className="text-[13px] font-bold text-orange-700">
                   Training response
                 </p>
 
-                <p className="mt-1 text-[8px] text-muted-foreground">
+                <p className="mt-1 text-[12px] text-muted-foreground">
                   {
                     comparison.summary.demand
                   }
@@ -696,11 +696,11 @@ export function SessionComparison() {
               </div>
 
               <div className="rounded-xl border border-green-100 bg-green-50/40 p-3">
-                <p className="text-[9px] font-bold text-green-700">
+                <p className="text-[13px] font-bold text-green-700">
                   Reported context
                 </p>
 
-                <p className="mt-1 text-[8px] text-muted-foreground">
+                <p className="mt-1 text-[12px] text-muted-foreground">
                   {
                     comparison.summary.context
                   }
@@ -710,11 +710,11 @@ export function SessionComparison() {
           </section>
 
           <section className="rounded-2xl border border-violet-100 bg-violet-50/25 p-3 shadow-sm">
-            <p className="text-[9px] font-bold text-violet-700">
+            <p className="text-[13px] font-bold text-violet-700">
               Evidence rule
             </p>
 
-            <p className="mt-1 text-[8px] leading-relaxed text-muted-foreground">
+            <p className="mt-1 text-[12px] leading-relaxed text-muted-foreground">
               Athletic IQ compares recorded responses only. Coach context is still required before changing training.
             </p>
           </section>
@@ -723,3 +723,4 @@ export function SessionComparison() {
     </div>
   );
 }
+

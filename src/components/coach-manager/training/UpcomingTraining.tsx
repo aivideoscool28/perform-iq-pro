@@ -46,7 +46,7 @@ export function UpcomingTraining() {
             Upcoming Training
           </h3>
 
-          <p className="text-[9px] text-muted-foreground">
+          <p className="text-[13px] text-muted-foreground">
             Your next planned sessions.
           </p>
         </div>
@@ -54,7 +54,7 @@ export function UpcomingTraining() {
 
       {error && (
         <div className="mt-3 rounded-xl border border-red-100 bg-red-50 p-3">
-          <p className="text-[9px] font-semibold text-red-700">
+          <p className="text-[13px] font-semibold text-red-700">
             {error}
           </p>
         </div>
@@ -86,13 +86,13 @@ export function UpcomingTraining() {
               >
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <p className="text-[10px] font-bold">
+                    <p className="text-[14px] font-bold">
                       {
                         session.title
                       }
                     </p>
 
-                    <p className="mt-0.5 text-[8px] text-muted-foreground">
+                    <p className="mt-0.5 text-[12px] text-muted-foreground">
                       {
                         session.group_name ??
                         "No group"
@@ -100,14 +100,14 @@ export function UpcomingTraining() {
                     </p>
                   </div>
 
-                  <span className="rounded-full bg-orange-50 px-2 py-0.5 text-[7px] font-semibold text-orange-600">
+                  <span className="rounded-full bg-orange-50 px-2 py-0.5 text-[12px] font-semibold text-orange-600">
                     {formatDate(
                       session.session_date,
                     )}
                   </span>
                 </div>
 
-                <div className="mt-2 flex flex-wrap gap-3 text-[8px] text-muted-foreground">
+                <div className="mt-2 flex flex-wrap gap-3 text-[12px] text-muted-foreground">
                   {session.start_time && (
                     <span className="flex items-center gap-1">
                       <Clock3 className="h-3 w-3" />
@@ -139,11 +139,11 @@ export function UpcomingTraining() {
           sessions.length ===
             0 && (
             <div className="rounded-xl border border-dashed border-border p-4 text-center">
-              <p className="text-[9px] font-semibold">
+              <p className="text-[13px] font-semibold">
                 No upcoming training
               </p>
 
-              <p className="mt-1 text-[8px] text-muted-foreground">
+              <p className="mt-1 text-[12px] text-muted-foreground">
                 Create a session to see it here.
               </p>
             </div>
@@ -152,3 +152,4 @@ export function UpcomingTraining() {
     </section>
   );
 }
+

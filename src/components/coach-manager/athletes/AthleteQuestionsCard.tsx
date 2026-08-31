@@ -1,4 +1,4 @@
-import { MessageCircleQuestion } from "lucide-react";
+﻿import { MessageCircleQuestion } from "lucide-react";
 
 const questions = [
   {
@@ -20,7 +20,7 @@ export function AthleteQuestionsCard() {
             Athlete Questions to You
           </p>
 
-          <p className="mt-1 text-[10px] text-muted-foreground">
+          <p className="mt-1 text-[14px] text-muted-foreground">
             Questions that currently need your response.
           </p>
         </div>
@@ -39,7 +39,7 @@ export function AthleteQuestionsCard() {
           >
             <div>
               <p className="text-[11px] font-semibold">{item.athlete}</p>
-              <p className="text-[9px] text-muted-foreground">
+              <p className="text-[13px] text-muted-foreground">
                 {item.question}
               </p>
             </div>
@@ -51,3 +51,4 @@ export function AthleteQuestionsCard() {
     </section>
   );
 }
+

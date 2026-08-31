@@ -1,4 +1,4 @@
-import {
+﻿import {
   BatteryCharging,
   CircleCheck,
   HeartPulse,
@@ -89,7 +89,7 @@ export function AnalysisSummaryCards() {
               </div>
 
               <div className="min-w-0">
-                <p className="text-[8px] font-semibold leading-tight text-muted-foreground">
+                <p className="text-[12px] font-semibold leading-tight text-muted-foreground">
                   {label}
                 </p>
 
@@ -97,7 +97,7 @@ export function AnalysisSummaryCards() {
                   {value}
                 </p>
 
-                <p className={`mt-1 text-[8px] font-medium ${iconColor}`}>
+                <p className={`mt-1 text-[12px] font-medium ${iconColor}`}>
                   {detail}
                 </p>
               </div>
@@ -112,3 +112,4 @@ export function AnalysisSummaryCards() {
     </div>
   );
 }
+

@@ -63,7 +63,7 @@ export function AnalysisOverviewPanels({
     <div className="space-y-3">
       <section className="rounded-2xl border border-border bg-white p-4 shadow-sm">
         <div>
-          <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-violet-600">
+          <p className="text-[14px] font-semibold uppercase tracking-[0.14em] text-violet-600">
             Analysis Overview
           </p>
 
@@ -71,7 +71,7 @@ export function AnalysisOverviewPanels({
             Choose what you want to investigate
           </h2>
 
-          <p className="mt-1 max-w-2xl text-[10px] leading-relaxed text-muted-foreground">
+          <p className="mt-1 max-w-2xl text-[14px] leading-relaxed text-muted-foreground">
             Open a focused analysis to understand athlete responses,
             regeneration patterns or differences between training sessions.
           </p>
@@ -102,7 +102,7 @@ export function AnalysisOverviewPanels({
               </div>
 
               <p
-                className={`mt-4 text-[9px] font-bold tracking-wide ${signal.actionColor}`}
+                className={`mt-4 text-[13px] font-bold tracking-wide ${signal.actionColor}`}
               >
                 {signal.eyebrow}
               </p>
@@ -111,7 +111,7 @@ export function AnalysisOverviewPanels({
                 {signal.title}
               </h3>
 
-              <p className="mt-2 text-[9px] leading-relaxed text-muted-foreground">
+              <p className="mt-2 text-[13px] leading-relaxed text-muted-foreground">
                 {signal.description}
               </p>
 
@@ -119,7 +119,7 @@ export function AnalysisOverviewPanels({
                 className={`mt-auto rounded-xl border border-white/50 px-3 py-2 ${signal.tint}`}
               >
                 <span
-                  className={`text-[8px] font-semibold ${signal.actionColor}`}
+                  className={`text-[12px] font-semibold ${signal.actionColor}`}
                 >
                   {signal.action} →
                 </span>
@@ -130,7 +130,7 @@ export function AnalysisOverviewPanels({
       </div>
 
       <section className="rounded-2xl border border-border bg-white px-4 py-3">
-        <p className="text-[9px] text-muted-foreground">
+        <p className="text-[13px] text-muted-foreground">
           Analysis findings are based on available athlete data. Open the
           relevant analysis to inspect the underlying evidence before making
           coaching decisions.
@@ -139,3 +139,4 @@ export function AnalysisOverviewPanels({
     </div>
   );
 }
+
