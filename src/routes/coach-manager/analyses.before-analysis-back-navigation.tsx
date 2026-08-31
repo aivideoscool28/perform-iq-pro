@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AnalysesPage } from "@/components/coach-manager/analyses/AnalysesPage";
 
-export const Route = createFileRoute("/coach-manager/analyses")({
+export const Route = createFileRoute("/coach-manager/analyses/before-analysis-back-navigation")({
   component: AnalysesPage,
 });

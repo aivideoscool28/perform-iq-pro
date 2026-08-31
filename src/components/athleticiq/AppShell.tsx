@@ -2,6 +2,7 @@
 import { Link } from "@tanstack/react-router";
 import { Sidebar } from "./Sidebar";
 import { Bell, Search, Settings, ChevronRight } from "lucide-react";
+import { LanguageSwitcher } from "@/components/common/LanguageSwitcher";
 
 export type Crumb = { label: string; to?: string };
 
@@ -69,6 +70,7 @@ export function AppShell({ title, subtitle, breadcrumbs, children, userInitials 
               <h1 className="text-xl md:text-2xl font-bold tracking-tight mt-0.5">{title}</h1>
             </div>
             <div className="flex items-center gap-1.5 md:gap-2">
+              <LanguageSwitcher />
               <button className="glass h-10 w-10 rounded-xl grid place-items-center text-muted-foreground hover:text-foreground hover:border-neon-cyan/40 transition btn-light-sweep">
                 <Search className="h-4 w-4" />
               </button>
@@ -124,6 +126,7 @@ export function AppShell({ title, subtitle, breadcrumbs, children, userInitials 
     </div>
   );
 }
+
 
 
 

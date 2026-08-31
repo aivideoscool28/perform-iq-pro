@@ -1,21 +1,28 @@
-import {
+﻿import {
   BrainCircuit,
   LockKeyhole,
   Target,
   UsersRound,
 } from "lucide-react";
 
+import { useTranslation } from "react-i18next";
+
 export function TrustStrip() {
+  const { t } = useTranslation();
+
   return (
-    <section className="trust-strip" aria-label="Athletic IQ principles">
+    <section
+      className="trust-strip"
+      aria-label={t("trust.aria")}
+    >
       <div className="trust-strip__item">
         <span className="trust-strip__icon">
           <Target size={28} strokeWidth={2} />
         </span>
 
         <div>
-          <span>Built for</span>
-          <strong>Track & Field</strong>
+          <span>{t("trust.builtForTop")}</span>
+          <strong>{t("trust.builtForBottom")}</strong>
         </div>
       </div>
 
@@ -25,8 +32,8 @@ export function TrustStrip() {
         </span>
 
         <div>
-          <span>AI Built for</span>
-          <strong>Athletics</strong>
+          <span>{t("trust.aiTop")}</span>
+          <strong>{t("trust.aiBottom")}</strong>
         </div>
       </div>
 
@@ -36,8 +43,8 @@ export function TrustStrip() {
         </span>
 
         <div>
-          <span>Better together</span>
-          <strong>Athletes & Coaches</strong>
+          <span>{t("trust.togetherTop")}</span>
+          <strong>{t("trust.togetherBottom")}</strong>
         </div>
       </div>
 
@@ -47,8 +54,8 @@ export function TrustStrip() {
         </span>
 
         <div>
-          <span>Privacy first</span>
-          <strong>Your Data. Your Control.</strong>
+          <span>{t("trust.privacyTop")}</span>
+          <strong>{t("trust.privacyBottom")}</strong>
         </div>
       </div>
     </section>

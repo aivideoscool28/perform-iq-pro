@@ -1,4 +1,4 @@
-import {
+﻿import {
   ArrowRight,
   BarChart3,
   BrainCircuit,
@@ -10,6 +10,8 @@ import {
   Target,
   UsersRound,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
+
 import trainingImage from "../../assets/athletics/Trainings_Plan.jpeg";
 import checkinImage from "../../assets/athletics/Daily_Checkin.jpeg";
 import workoutAnalysisImage from "../../assets/athletics/Workout_Analysis.jpeg";
@@ -31,23 +33,23 @@ function Tick({ children }: TickProps) {
 }
 
 export function AthleteExperience() {
+  const { t } = useTranslation();
+
   return (
     <section className="athlete-experience" id="athletes">
       <div className="athlete-experience__intro">
         <p className="athlete-experience__eyebrow">
-          BUILT FOR TRACK & FIELD ATHLETES
+          {t("athlete.eyebrow")}
         </p>
 
         <h2>
-          What if you understood more
+          {t("athlete.title1")}
           <br />
-          from <span>every training?</span>
+          <span>{t("athlete.title2")}</span>
         </h2>
 
         <p className="athlete-experience__lead">
-          Athletic IQ connects your training, feedback and AI-powered analysis
-          in one Track & Field experience. So you can train with purpose,
-          reflect, understand and keep improving.
+          {t("athlete.lead")}
         </p>
       </div>
 
@@ -65,21 +67,18 @@ export function AthleteExperience() {
               </div>
 
               <p className="cycle-step">
-                TRAIN <ArrowRight size={17} />
+                {t("athlete.trainStep")} <ArrowRight size={17} />
               </p>
             </div>
 
-            <h3>Follow your plan.</h3>
+            <h3>{t("athlete.trainTitle")}</h3>
 
-            <p>
-              See what to do, why it matters and execute every session with
-              purpose.
-            </p>
+            <p>{t("athlete.trainText")}</p>
 
             <ul>
-              <Tick>Planned workouts & drills</Tick>
-              <Tick>Clear purpose for every session</Tick>
-              <Tick>Stay on track, every day</Tick>
+              <Tick>{t("athlete.train1")}</Tick>
+              <Tick>{t("athlete.train2")}</Tick>
+              <Tick>{t("athlete.train3")}</Tick>
             </ul>
           </div>
 
@@ -104,20 +103,18 @@ export function AthleteExperience() {
               </div>
 
               <p className="cycle-step">
-                REFLECT <ArrowRight size={17} />
+                {t("athlete.reflectStep")} <ArrowRight size={17} />
               </p>
             </div>
 
-            <h3>Check-in after training.</h3>
+            <h3>{t("athlete.reflectTitle")}</h3>
 
-            <p>
-              Capture how your session felt so nothing important gets missed.
-            </p>
+            <p>{t("athlete.reflectText")}</p>
 
             <ul>
-              <Tick>RPE, recovery, pain & sleep</Tick>
-              <Tick>Hydration, mood & notes</Tick>
-              <Tick>Honest feedback in seconds</Tick>
+              <Tick>{t("athlete.reflect1")}</Tick>
+              <Tick>{t("athlete.reflect2")}</Tick>
+              <Tick>{t("athlete.reflect3")}</Tick>
             </ul>
           </div>
 
@@ -142,28 +139,25 @@ export function AthleteExperience() {
               </div>
 
               <p className="cycle-step">
-                UNDERSTAND <ArrowRight size={17} />
+                {t("athlete.understandStep")} <ArrowRight size={17} />
               </p>
             </div>
 
-            <h3>Understand what really happened.</h3>
+            <h3>{t("athlete.understandTitle")}</h3>
 
-            <p>
-              Workout and video analysis turn your training, feedback and
-              technique into clear insights.
-            </p>
+            <p>{t("athlete.understandText")}</p>
 
             <ul>
-              <Tick>See what happened and why</Tick>
-              <Tick>Understand what went well and what to improve</Tick>
-              <Tick>Know what to carry into your next session</Tick>
+              <Tick>{t("athlete.understand1")}</Tick>
+              <Tick>{t("athlete.understand2")}</Tick>
+              <Tick>{t("athlete.understand3")}</Tick>
             </ul>
           </div>
 
           <div className="understand-previews">
             <div className="product-placeholder product-placeholder--mini">
-              <strong>Video Analysis</strong>
-              <span>Real Video Analysis screenshot coming here</span>
+              <strong>{t("athlete.videoAnalysis")}</strong>
+              <span>{t("athlete.screenshotComing")}</span>
             </div>
 
             <div className="product-placeholder product-placeholder--mini product-placeholder--image">
@@ -188,21 +182,18 @@ export function AthleteExperience() {
               </div>
 
               <p className="cycle-step">
-                GET SUPPORT <ArrowRight size={17} />
+                {t("athlete.supportStep")} <ArrowRight size={17} />
               </p>
             </div>
 
-            <h3>Ask. Get answers. Keep improving.</h3>
+            <h3>{t("athlete.supportTitle")}</h3>
 
-            <p>
-              Your AI Coach is ready when you have questions — using relevant
-              training context to support you.
-            </p>
+            <p>{t("athlete.supportText")}</p>
 
             <ul>
-              <Tick>Athletics-focused answers</Tick>
-              <Tick>Uses your training & feedback</Tick>
-              <Tick>Supports you when your coach isn't around</Tick>
+              <Tick>{t("athlete.support1")}</Tick>
+              <Tick>{t("athlete.support2")}</Tick>
+              <Tick>{t("athlete.support3")}</Tick>
             </ul>
           </div>
 
@@ -215,8 +206,13 @@ export function AthleteExperience() {
           </div>
         </article>
 
-        <div className="cycle-center" aria-label="One connected cycle">
-                                                                                                              <svg
+        <div
+          className="cycle-center"
+          aria-label={t("athlete.cycleAria", {
+            defaultValue: "One connected cycle",
+          })}
+        >
+          <svg
             className="cycle-wheel"
             viewBox="0 0 200 200"
             aria-hidden="true"
@@ -285,9 +281,9 @@ export function AthleteExperience() {
           </svg>
 
           <div className="cycle-center__text">
-            <strong>ONE</strong>
-            <span>CONNECTED</span>
-            <strong>CYCLE</strong>
+            <strong>{t("athlete.cycleOne")}</strong>
+            <span>{t("athlete.cycleConnected")}</span>
+            <strong>{t("athlete.cycleCycle")}</strong>
           </div>
         </div>
       </div>
@@ -299,8 +295,8 @@ export function AthleteExperience() {
           </span>
 
           <div>
-            <strong>SPECIALIZED</strong>
-            <span>Built specifically for Track & Field.</span>
+            <strong>{t("athlete.specialized")}</strong>
+            <span>{t("athlete.specializedText")}</span>
           </div>
         </div>
 
@@ -310,10 +306,8 @@ export function AthleteExperience() {
           </span>
 
           <div>
-            <strong>CONNECTED</strong>
-            <span>
-              Training, feedback, analysis and coaching work together.
-            </span>
+            <strong>{t("athlete.connected")}</strong>
+            <span>{t("athlete.connectedText")}</span>
           </div>
         </div>
 
@@ -323,10 +317,8 @@ export function AthleteExperience() {
           </span>
 
           <div>
-            <strong>INTELLIGENT</strong>
-            <span>
-              AI solves real athletics problems — not AI for the sake of AI.
-            </span>
+            <strong>{t("athlete.intelligent")}</strong>
+            <span>{t("athlete.intelligentText")}</span>
           </div>
         </div>
 
@@ -336,44 +328,25 @@ export function AthleteExperience() {
           </span>
 
           <div>
-            <strong>HUMAN-CENTERED</strong>
-            <span>
-              AI supports athletes and coaches. It doesn't replace them.
-            </span>
+            <strong>{t("athlete.human")}</strong>
+            <span>{t("athlete.humanText")}</span>
           </div>
         </div>
       </div>
 
       <div className="athlete-more">
         <div>
-          <h3>And much more in the app.</h3>
-          <p>Daily check-ins, regeneration, friends, streaks and more.</p>
+          <h3>{t("athlete.moreTitle")}</h3>
+          <p>{t("athlete.moreText")}</p>
         </div>
 
-        <a href="https://aether-athlete-iq.netlify.app" className="athlete-more__button">
-          Explore Aether Athlete IQ →
+        <a
+          href="https://aether-athlete-iq.netlify.app"
+          className="athlete-more__button"
+        >
+          {t("athlete.explore")}
         </a>
       </div>
     </section>
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

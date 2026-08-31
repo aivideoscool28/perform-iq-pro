@@ -1,58 +1,59 @@
+﻿import { useTranslation } from "react-i18next";
+
 import { PrimaryButton } from "../ui/PrimaryButton";
 
 import athleteDashboard from "../../assets/athletics/new_athlete_dashboard.jpeg";
 import coachDashboard from "../../assets/athletics/coach_dashboard.jpeg";
 
 export function HeroSection() {
+  const { t } = useTranslation();
+
   return (
     <main id="top" className="hero hero-final">
       <section className="hero__content">
         <div className="hero__eyebrow">
           <span className="hero__eyebrow-dot" />
-          AI-POWERED · BUILT FOR ATHLETICS
+          {t("hero.eyebrow")}
         </div>
 
         <h1 className="hero__title">
-          Where Track &amp; Field
+          {t("hero.title1")}
           <br />
-          Meets <span>Intelligence.</span>
+          <span>{t("hero.title2")}</span>
         </h1>
 
         <p className="hero__description">
-          Built specifically for track &amp; field, Aether Athlete IQ connects
-          training, athlete feedback and AI-powered analysis — helping athletes
-          understand their development and coaches make better-informed
-          decisions.
+          {t("hero.description")}
         </p>
 
         <div className="hero__actions">
           <PrimaryButton href="https://aether-athlete-iq.netlify.app">
-            Try Aether Athlete IQ →
+            {t("hero.try")}
           </PrimaryButton>
 
           <PrimaryButton href="#athletes" variant="secondary">
-            See how it works ↓
+            {t("hero.seeHow")}
           </PrimaryButton>
 
           <div className="hero__trial">
-            <strong>2 weeks free</strong>
-            <span>for coaches &amp; clubs</span>
+            <strong>{t("hero.trialStrong")}</strong>
+            <span>{t("hero.trialSmall")}</span>
           </div>
         </div>
 
         <div className="hero__specialization">
-          <strong>Built for Track &amp; Field.</strong>
-          <span>Starting with Sprint &amp; Hurdles.</span>
+          <strong>{t("hero.specializationStrong")}</strong>
+          <span>{t("hero.specializationSmall")}</span>
         </div>
       </section>
 
       <section
         className="hero__visual hero-product-stack"
-        aria-label="Aether Athlete IQ product preview"
+        aria-label={t("hero.productPreview")}
       >
         <div className="hero-product hero-product--athlete">
           <div className="hero-product__label">
-            ATHLETE HUB
+            {t("hero.athleteHub")}
           </div>
 
           <div className="hero-product__frame">
@@ -72,7 +73,7 @@ export function HeroSection() {
           </div>
 
           <div className="hero-product__label hero-product__label--coach">
-            COACH MANAGER
+            {t("hero.coachManager")}
           </div>
         </div>
       </section>

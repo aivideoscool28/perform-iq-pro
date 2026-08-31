@@ -9,6 +9,10 @@ import {
 } from "@tanstack/react-router";
 
 import {
+  useTranslation,
+} from "react-i18next";
+
+import {
   supabase,
 } from "@/integrations/supabase/client";
 
@@ -17,13 +21,21 @@ import {
 } from "@/lib/auth-session";
 
 import {
+  LanguageSwitcher,
+} from "@/components/common/LanguageSwitcher";
+
+import {
   toast,
 } from "sonner";
-
 
 export function CoachTopBar() {
   const navigate =
     useNavigate();
+
+  const {
+    t,
+  } =
+    useTranslation();
 
   async function handleLogout() {
     try {
@@ -40,7 +52,7 @@ export function CoachTopBar() {
       clearAuthFlags();
 
       toast.success(
-        "Erfolgreich abgemeldet.",
+        t("coach.logoutSuccess"),
       );
 
       await navigate({
@@ -55,7 +67,7 @@ export function CoachTopBar() {
       );
 
       toast.error(
-        "Abmelden fehlgeschlagen. Bitte versuche es erneut.",
+        t("coach.logoutError"),
       );
     }
   }
@@ -64,15 +76,17 @@ export function CoachTopBar() {
     <header className="flex min-h-20 items-center justify-between border-b border-border bg-background px-5 lg:px-8">
       <div>
         <p className="text-sm text-muted-foreground">
-          Coach Manager
+          {t("coach.manager")}
         </p>
 
         <h1 className="text-xl font-bold tracking-tight">
-          Good morning, Coach
+          {t("coach.greeting")}
         </h1>
       </div>
 
       <div className="flex items-center gap-2">
+        <LanguageSwitcher />
+
         <button
           type="button"
           className="hidden items-center gap-2 rounded-xl border border-border bg-background px-3 py-2 text-sm font-medium sm:flex"
@@ -85,7 +99,8 @@ export function CoachTopBar() {
         <button
           type="button"
           className="grid h-10 w-10 place-items-center rounded-xl border border-border bg-background"
-          aria-label="Notifications"
+          aria-label={t("coach.notifications")}
+          title={t("coach.notifications")}
         >
           <Bell className="h-4 w-4" />
         </button>
@@ -100,7 +115,7 @@ export function CoachTopBar() {
           <LogOut className="h-4 w-4" />
 
           <span className="hidden sm:inline">
-            Abmelden
+            {t("coach.logout")}
           </span>
         </button>
       </div>
