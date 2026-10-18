@@ -6,6 +6,9 @@
 // You can pass additional config via defineConfig({ vite: { ... } }) if needed.
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
+// Detect GitHub Codespaces
+const isCodespace = !!process.env.CODESPACE_NAME;
+
 // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
 // @cloudflare/vite-plugin builds from this — wrangler.jsonc main alone is insufficient.
 export default defineConfig({
@@ -15,6 +18,20 @@ export default defineConfig({
 
   vite: {
     server: {
+      // Override Lovable's sandbox detection for GitHub Codespaces
+      host: true,          // listen on 0.0.0.0 so Codespaces can forward the port
+      port: 5173,          // standard Vite port
+      strictPort: false,   // fall back to next free port if 5173 is taken
+
+      // HMR needs to point at the public Codespaces URL, not localhost
+      hmr: isCodespace
+        ? {
+            protocol: "wss",
+            host: `${process.env.CODESPACE_NAME}-5173.app.github.dev`,
+            clientPort: 443,
+          }
+        : undefined,
+
       warmup: {
         clientFiles: [
           "./src/routes/index.tsx",

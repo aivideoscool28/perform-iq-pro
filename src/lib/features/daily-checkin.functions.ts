@@ -112,8 +112,26 @@ export const saveDailyCheckin = createServerFn({ method: "POST" })
       .from("daily_checkins")
       .upsert(
         {
-          ...data,
+          // ===== CHECK-IN LITE FIELDS =====
+          discipline: data.discipline,
+          is_rest_day: data.is_rest_day,
+          workout_type: data.workout_type,
+          session_details: data.session_details,
           performance_results: data.performance_results as Json | null,
+          rpe: data.rpe,
+          expected_difficulty: data.expected_difficulty,
+          performance_quality: data.performance_quality,
+          physical_feeling: data.physical_feeling,
+          mental_state: data.mental_state,
+          has_pain: data.has_pain,
+          pain_note: data.pain_note,
+          pain_area: data.pain_area,
+          pain_severity: data.pain_severity,
+          performance_factors: data.performance_factors,
+          session_goal_achieved: data.session_goal_achieved,
+          session_goal_note: data.session_goal_note,
+          extra_note: data.extra_note,
+          // ===== SYSTEM FIELDS =====
           user_id: userId,
           checkin_date: today,
           context_summary,
@@ -127,7 +145,7 @@ export const saveDailyCheckin = createServerFn({ method: "POST" })
 
     // Auto-create workout + analysis board for training days
     let boardId: string | null = null;
-    if (!data.is_rest_day && data.discipline) {
+    if (!data.is_rest_day) {
       try {
         // Resolve athlete name for personal touch
         const { data: profile } = await supabase
@@ -136,14 +154,20 @@ export const saveDailyCheckin = createServerFn({ method: "POST" })
 
         const intensity: "low" | "moderate" | "high" =
           (data.rpe ?? 0) >= 8 ? "high" : (data.rpe ?? 0) >= 5 ? "moderate" : "low";
-        const summary = `${data.discipline}-Training`;
+        const resolvedDiscipline =
+        data.discipline ??
+        data.workout_type ??
+        "Training";
+      const summary = `${resolvedDiscipline}-Training`;
 
         // Keep only one auto check-in workout per day
         await supabase.from("workouts")
           .delete().eq("user_id", userId).eq("workout_date", today)
-          .eq("raw_input", `Daily check-in: ${data.discipline}`);
+          .eq("raw_input", `Daily check-in: ${resolvedDiscipline}`);
 
-        const { data: workout } = await supabase
+        console.log("[CheckInAnalysis] Creating workout for", resolvedDiscipline);
+
+        const { data: workout, error: workoutError } = await supabase
           .from("workouts")
           .insert({
             user_id: userId,
@@ -151,10 +175,16 @@ export const saveDailyCheckin = createServerFn({ method: "POST" })
             summary,
             duration_minutes: data.duration_min,
             intensity,
-            raw_input: `Daily check-in: ${data.discipline}`,
+            raw_input: `Daily check-in: ${resolvedDiscipline}`,
           })
           .select()
           .single();
+
+        if (workoutError) {
+          console.error("[CheckInAnalysis] Workout insert failed:", workoutError);
+        }
+
+        console.log("[CheckInAnalysis] Workout created:", workout?.id ?? "none");
 
         if (workout) {
           /*

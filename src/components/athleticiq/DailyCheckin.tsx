@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useNavigate } from "@tanstack/react-router";
@@ -6,13 +6,11 @@ import { saveDailyCheckin } from "@/lib/features/daily-checkin.functions";
 import {
   fetchTodayPlannedWorkout,
   updatePlannedWorkoutStatus,
-  type PlannedWorkout,
 } from "@/lib/planned-workouts.functions";
-import { X, ArrowLeft } from "lucide-react";
+import { X, ArrowLeft, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { createPortal } from "react-dom";
-import { TrainingQuestionPage, PerformanceQuestionPage } from "@/components/daily-checkin/Checkin12Training";
-import { BodyMindQuestionPage, ContextQuestionPage } from "@/components/daily-checkin/Checkin34BodyContext";
+import { Grid, RateBar } from "@/components/daily-checkin/CheckinButtons";
 import { CheckinSuccess } from "@/components/daily-checkin/CheckinSuccess";
 import { Button } from "@/components/ui/button";
 
@@ -24,38 +22,22 @@ interface Props {
 type Answers = {
   discipline: string | null;
   is_rest_day: boolean;
-
-  // New Athletic IQ Daily Check-In fields
   workout_type: string | null;
   session_details: string | null;
   performance_results: Record<string, unknown> | null;
   rpe: number | null;
-
-  // Adds context to RPE:
-  // Was today's difficulty actually expected?
   expected_difficulty: string | null;
-
-  // Describes whether performance quality held up across the session.
   performance_quality: string | null;
-
-  physical_feeling: number | null;
-  mental_state: string | null;
   has_pain: boolean | null;
-  pain_note: string | null;
   pain_area: string | null;
   pain_severity: string | null;
+  pain_note: string | null;
+  mental_state: string | null;
   performance_factors: string[];
-
-  // Did the athlete achieve the main purpose of today's workout?
   session_goal_achieved: string | null;
-
-  // Optional explanation when the goal was only partly or not achieved.
   session_goal_note: string | null;
-
   extra_note: string | null;
-
-  // Temporary legacy fields.
-  // Keep these until the old UI/save logic has been fully replaced.
+  physical_feeling: number | null;
   duration_min: number | null;
   satisfaction: number | null;
   last_meal_before: string | null;
@@ -71,25 +53,22 @@ type Answers = {
 const empty: Answers = {
   discipline: null,
   is_rest_day: false,
-
   workout_type: null,
   session_details: null,
   performance_results: null,
   rpe: null,
   expected_difficulty: null,
   performance_quality: null,
-  physical_feeling: null,
-  mental_state: null,
   has_pain: null,
-  pain_note: null,
   pain_area: null,
   pain_severity: null,
+  pain_note: null,
+  mental_state: null,
   performance_factors: [],
   session_goal_achieved: null,
   session_goal_note: null,
   extra_note: null,
-
-  // Legacy values kept temporarily during migration.
+  physical_feeling: null,
   duration_min: null,
   satisfaction: null,
   last_meal_before: null,
@@ -102,174 +81,164 @@ const empty: Answers = {
   overall_feeling: null,
 };
 
+const disciplines = ["Sprint", "Hürden"];
+
+const sprintWorkoutTypes = [
+  "Blockstarts",
+  "Beschleunigung",
+  "Maximalgeschwindigkeit",
+  "Schnelligkeitsausdauer",
+  "Kraft",
+  "Regeneration",
+  "Sonstiges",
+];
+
+const hurdleWorkoutTypes = [
+  "Start bis erste Hürde",
+  "Hürdentechnik",
+  "Hürdenrhythmus",
+  "Beschleunigung",
+  "Sprint",
+  "Kraft",
+  "Regeneration",
+  "Sonstiges",
+];
+
+const expectedDifficultyOptions = [
+  "Leichter als erwartet",
+  "Wie erwartet",
+  "Schwerer als erwartet",
+];
+
+const performanceQualityOptions = [
+  "Besser geworden",
+  "Stabil geblieben",
+  "Etwas abgefallen",
+  "Stark abgefallen",
+];
+
+const mentalStateOptions = [
+  "Fokussiert & selbstbewusst",
+  "Normal",
+  "Abgelenkt",
+  "Gestresst / unter Druck",
+  "Wenig Motivation",
+  "Sonstiges",
+];
+
+const painAreaOptions = [
+  "Oberschenkel vorne",
+  "Oberschenkel hinten",
+  "Knie",
+  "Wade",
+  "Achillessehne",
+  "Sprunggelenk",
+  "Fuß",
+  "Hüfte / Leiste",
+  "Rücken",
+  "Sonstiges",
+];
+
+const painSeverityOptions = ["Leicht", "Mittel", "Stark"];
+
+const performanceFactorOptions = [
+  "Schlechter Schlaf",
+  "Stress / Druck",
+  "Wetter",
+  "Schule / Arbeit",
+  "Wettkampfnervosität",
+  "Trainingsbedingungen",
+  "Sonstiges",
+];
+
+const goalOptions = ["Ja", "Teilweise", "Nein"];
+
+const notCompletedReasons = [
+  "Schmerzen / Beschwerden",
+  "Zeit / Schule",
+  "Coach hat geändert / abgesagt",
+  "Erholung / Müdigkeit",
+  "Sonstiges",
+];
+
 export function DailyCheckin({ name, onClose }: Props) {
   const qc = useQueryClient();
   const navigate = useNavigate();
   const saveFn = useServerFn(saveDailyCheckin);
-  const fetchTodayPlannedWorkoutFn =
-    useServerFn(fetchTodayPlannedWorkout);
-  const updatePlannedWorkoutStatusFn =
-    useServerFn(updatePlannedWorkoutStatus);
+  const fetchTodayPlannedWorkoutFn = useServerFn(fetchTodayPlannedWorkout);
+  const updatePlannedWorkoutStatusFn = useServerFn(updatePlannedWorkoutStatus);
 
   const { data: plannedWorkout } = useQuery({
     queryKey: ["today-planned-workout"],
     queryFn: () => fetchTodayPlannedWorkoutFn(),
   });
 
+  const [page, setPage] = useState(1);
+  const [a, setA] = useState<Answers>(empty);
+  const [aiSummary, setAiSummary] = useState<string | null>(null);
+
   const [plannedCompletionStatus, setPlannedCompletionStatus] =
     useState<"completed" | "changed" | null>(null);
+  const [notCompletedReason, setNotCompletedReason] = useState<string | null>(null);
+  const [notCompletedNote, setNotCompletedNote] = useState("");
+  const [sessionText, setSessionText] = useState("");
+  const [performanceText, setPerformanceText] = useState("");
+  const [painText, setPainText] = useState("");
 
-  /*
-  ==========================================================================
-                         DAILY CHECK-IN PORTAL
-  ==========================================================================
+  const [mentalOtherText, setMentalOtherText] = useState("");
+  const [factorOtherText, setFactorOtherText] = useState("");
+  const [extraText, setExtraText] = useState("");
+  const [sessionGoalText, setSessionGoalText] = useState("");
 
-  The Daily Check-In is a full-screen modal.
-
-  createPortal() renders it directly inside document.body instead of inside
-  the Dashboard component tree. This prevents Dashboard stacking contexts
-  from appearing above or through the Daily Check-In.
-
-  Background scrolling is also disabled while the Check-In is open.
-  ==========================================================================
-  */
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
-
-    const previousOverflow = document.body.style.overflow;
+    const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-
     return () => {
-      document.body.style.overflow = previousOverflow;
+      document.body.style.overflow = prev;
     };
   }, []);
 
-  // Daily Check-In navigation:
-  // 1 = Training
-  // 2 = Leistung
-  // 3 = K?rper & Kopf
-  // 4 = Kontext
-  // 5 = saved confirmation screen
-  const [page, setPage] = useState(1);
-
-  const [a, setA] = useState<Answers>(empty);
-  const [aiSummary, setAiSummary] = useState<string | null>(null);
-
-  // Free-text fields that only appear when useful.
-  const [sessionText, setSessionText] = useState("");
-  const [performanceText, setPerformanceText] = useState("");
-  const [painText, setPainText] = useState("");
-  const [mentalOtherText, setMentalOtherText] = useState("");
-  const [factorOtherText, setFactorOtherText] = useState("");
-  const [extraText, setExtraText] = useState("");
-  const [notCompletedReason, setNotCompletedReason] = useState<string | null>(null);
-  const [notCompletedNote, setNotCompletedNote] = useState("");
-
-
-  // Only used when the athlete says the session goal was
-  // partly achieved or not achieved.
-  const [sessionGoalText, setSessionGoalText] = useState("");
-
   const mutate = useMutation({
-    mutationFn: async (payload: Answers) =>
-      saveFn({ data: payload }),
-
+    mutationFn: async (payload: Answers) => saveFn({ data: payload }),
     onSuccess: (res) => {
       setAiSummary(
         (res as { checkin: { ai_summary: string | null } })
           .checkin.ai_summary ?? null,
       );
-
-      qc.invalidateQueries({
-        queryKey: ["today-checkin"],
-      });
-
-      qc.invalidateQueries({
-        queryKey: ["dashboard"],
-      });
+      qc.invalidateQueries({ queryKey: ["today-checkin"] });
+      qc.invalidateQueries({ queryKey: ["dashboard"] });
     },
-
-    onError: (e: Error) => {
-      toast.error(e.message);
-    },
+    onError: (e: Error) => toast.error(e.message),
   });
 
-  function update<K extends keyof Answers>(
-    key: K,
-    value: Answers[K],
-  ) {
-    setA((current) => ({
-      ...current,
-      [key]: value,
-    }));
+  function update<K extends keyof Answers>(key: K, value: Answers[K]) {
+    setA((current) => ({ ...current, [key]: value }));
   }
 
-  function togglePerformanceFactor(value: string) {
-    setA((current) => {
-      // "Nichts Besonderes" should stand alone.
-      if (value === "Nichts Besonderes") {
-        return {
-          ...current,
-          performance_factors: ["Nichts Besonderes"],
-        };
-      }
-
-      const withoutNothing =
-        current.performance_factors.filter(
-          (item) => item !== "Nichts Besonderes",
-        );
-
-      const alreadySelected =
-        withoutNothing.includes(value);
-
-      return {
-        ...current,
-        performance_factors: alreadySelected
-          ? withoutNothing.filter(
-              (item) => item !== value,
-            )
-          : [...withoutNothing, value],
-      };
-    });
-  }
-
-  function usePlannedWorkout(
-    status: "completed" | "changed",
-  ) {
+  function usePlannedWorkout(status: "completed" | "changed") {
     if (!plannedWorkout) return;
-
     const plannedSession = plannedWorkout.exercises
-      .map((exercise) =>
-        [
-          exercise.name,
-          exercise.details,
-          exercise.rest
-            ? `Pause: ${exercise.rest}`
-            : null,
-        ]
+      .map((ex) =>
+        [ex.name, ex.details, ex.rest ? `Pause: ${ex.rest}` : null]
           .filter(Boolean)
           .join(" · "),
       )
       .join("\n");
-
     setPlannedCompletionStatus(status);
-
     setA((current) => ({
       ...current,
-      discipline:
-        plannedWorkout.discipline ?? current.discipline,
+      discipline: plannedWorkout.discipline ?? current.discipline,
       workout_type: plannedWorkout.title,
       is_rest_day: false,
     }));
-
     setSessionText(plannedSession);
   }
 
-  async function markPlannedWorkoutNotCompleted() {
+  async function markNotCompleted() {
     if (!plannedWorkout || !notCompletedReason) return;
-
     const payload: Answers = {
       ...empty,
       discipline: plannedWorkout.discipline,
@@ -282,90 +251,15 @@ export function DailyCheckin({ name, onClose }: Props) {
         .filter(Boolean)
         .join("\n"),
     };
-
     setA(payload);
-
     await mutate.mutateAsync(payload);
-
     await updatePlannedWorkoutStatusFn({
-      data: {
-        workoutId: plannedWorkout.id,
-        status: "not_completed",
-      },
+      data: { workoutId: plannedWorkout.id, status: "not_completed" },
     });
-
-    await qc.invalidateQueries({
-      queryKey: ["today-planned-workout"],
-    });
-
-    await qc.invalidateQueries({
-      queryKey: ["planned-workouts"],
-    });
-
-    await qc.invalidateQueries({
-      queryKey: ["dashboard"],
-    });
-
-    setPage(5);
-  }
-
-  async function finishCheckin() {
-    const payload: Answers = {
-      ...a,
-
-      session_details:
-        sessionText.trim() || null,
-
-      performance_results:
-        performanceText.trim()
-          ? {
-              raw: performanceText.trim(),
-            }
-          : null,
-
-      pain_note:
-        painText.trim() || null,
-
-      session_goal_note:
-        sessionGoalText.trim() || null,
-
-      extra_note: [
-        mentalOtherText.trim()
-          ? `Mental: ${mentalOtherText.trim()}`
-          : null,
-
-        factorOtherText.trim()
-          ? `Einflussfaktor: ${factorOtherText.trim()}`
-          : null,
-
-        extraText.trim() || null,
-      ]
-        .filter(Boolean)
-        .join("\n") || null,
-    };
-
-    setA(payload);
-
-    await mutate.mutateAsync(payload);
-
-    if (plannedWorkout && plannedCompletionStatus) {
-      await updatePlannedWorkoutStatusFn({
-        data: {
-          workoutId: plannedWorkout.id,
-          status: plannedCompletionStatus,
-        },
-      });
-
-      await qc.invalidateQueries({
-        queryKey: ["today-planned-workout"],
-      });
-
-      await qc.invalidateQueries({
-        queryKey: ["planned-workouts"],
-      });
-    }
-
-    setPage(5);
+    await qc.invalidateQueries({ queryKey: ["today-planned-workout"] });
+    await qc.invalidateQueries({ queryKey: ["planned-workouts"] });
+    await qc.invalidateQueries({ queryKey: ["dashboard"] });
+    setPage(3);
   }
 
   async function saveRestDay() {
@@ -374,53 +268,73 @@ export function DailyCheckin({ name, onClose }: Props) {
       discipline: "Ruhetag",
       is_rest_day: true,
     };
-
     setA(payload);
-
     await mutate.mutateAsync(payload);
-
-    setPage(5);
+    setPage(3);
   }
 
-  const pageTitle =
-    page === 1
-      ? "Training"
-      : page === 2
-        ? "Leistung"
-        : page === 3
-          ? "K?rper & Kopf"
-          : page === 4
-            ? "Wichtiger Kontext"
-            : "";
-
-  const progress =
-    page >= 1 && page <= 4
-      ? (page / 4) * 100
-      : 0;
-
-  // document.body only exists after mounting in the browser.
-  if (!mounted) {
-    return null;
+  async function finishCheckin() {
+    const payload: Answers = {
+      ...a,
+      session_details: sessionText.trim() || null,
+      performance_results: performanceText.trim()
+        ? { raw: performanceText.trim() }
+        : null,
+      pain_note: painText.trim() || null,
+      session_goal_note: sessionGoalText.trim() || null,
+      extra_note:
+        [
+          mentalOtherText.trim() ? `Mental: ${mentalOtherText.trim()}` : null,
+          factorOtherText.trim()
+            ? `Einflussfaktor: ${factorOtherText.trim()}`
+            : null,
+          extraText.trim() || null,
+        ]
+          .filter(Boolean)
+          .join("\n") || null,
+    };
+    setA(payload);
+    await mutate.mutateAsync(payload);
+    if (plannedWorkout && plannedCompletionStatus) {
+      await updatePlannedWorkoutStatusFn({
+        data: {
+          workoutId: plannedWorkout.id,
+          status: plannedCompletionStatus,
+        },
+      });
+      await qc.invalidateQueries({ queryKey: ["today-planned-workout"] });
+      await qc.invalidateQueries({ queryKey: ["planned-workouts"] });
+    }
+    setPage(3);
   }
+
+  const isPlannedRestDay =
+    plannedWorkout?.title.trim().toLowerCase() === "ruhetag";
+  const hasPlannedWorkout = !!plannedWorkout && !isPlannedRestDay;
+
+  const page1Valid =
+    (hasPlannedWorkout
+      ? !!plannedCompletionStatus
+      : !!a.discipline && !!a.workout_type) &&
+    a.rpe !== null &&
+    !!a.expected_difficulty &&
+    !!a.performance_quality &&
+    a.has_pain !== null &&
+    (a.has_pain === false || (!!a.pain_area && !!a.pain_severity));
+
+  if (!mounted) return null;
 
   return createPortal(
-    (
     <div
       className="fixed inset-0 z-[9999] bg-white text-slate-950 flex flex-col overflow-hidden overscroll-none"
       style={{ isolation: "isolate" }}
     >
-
       {/* HEADER */}
       <div className="border-b border-border bg-card/70 backdrop-blur-xl">
         <div className="max-w-3xl mx-auto w-full px-5 py-4 flex items-center gap-4">
-
-          {page >= 1 && page <= 4 ? (
+          {page === 2 ? (
             <button
-              onClick={() =>
-                setPage((current) =>
-                  Math.max(1, current - 1)
-                )
-              }
+              onClick={() => setPage(1)}
               className="p-2 rounded-xl hover:bg-muted transition"
               aria-label="Zurück"
             >
@@ -431,24 +345,20 @@ export function DailyCheckin({ name, onClose }: Props) {
           )}
 
           <div className="flex-1">
-            {page >= 1 && page <= 4 && (
+            {page <= 2 && (
               <>
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-sm font-semibold">
-                    {pageTitle}
+                    {page === 1 ? "Session" : "Zusätzliche Details"}
                   </span>
-
                   <span className="text-xs text-muted-foreground">
-                    {page} / 4
+                    {page} / 2
                   </span>
                 </div>
-
                 <div className="h-1.5 rounded-full bg-muted overflow-hidden">
                   <div
                     className="h-full bg-accent transition-all duration-300"
-                    style={{
-                      width: `${progress}%`,
-                    }}
+                    style={{ width: `${(page / 2) * 100}%` }}
                   />
                 </div>
               </>
@@ -470,121 +380,523 @@ export function DailyCheckin({ name, onClose }: Props) {
         className="flex-1 max-w-3xl w-full mx-auto px-5 py-6 flex flex-col overflow-y-auto overscroll-contain bg-white"
         style={{ WebkitOverflowScrolling: "touch" }}
       >
+        {page === 1 && (
+          <div className="space-y-5">
+            {isPlannedRestDay ? (
+              <section className="rounded-2xl border border-border bg-card p-5">
+                <h2 className="text-xl font-semibold">Heute ist Ruhetag.</h2>
+                <p className="text-sm text-muted-foreground mt-1 mb-4">
+                  Hast du den Ruhetag eingehalten?
+                </p>
+                <div className="grid gap-2 sm:grid-cols-2">
+                  <button
+                    type="button"
+                    onClick={() => void saveRestDay()}
+                    className="min-h-[52px] rounded-2xl border border-border bg-background px-4 py-3 text-sm font-semibold transition hover:border-accent/40 hover:bg-accent/5"
+                  >
+                    Ja, Ruhetag eingehalten
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => update("is_rest_day", false)}
+                    className="min-h-[52px] rounded-2xl border border-border bg-background px-4 py-3 text-sm font-semibold transition hover:border-accent/40"
+                  >
+                    Nein, ich habe trainiert
+                  </button>
+                </div>
+              </section>
+            ) : (
+              <>
+                <section className="rounded-2xl border border-border bg-card p-5">
+                  <div className="text-xs font-semibold text-accent mb-1">
+                    FRAGE 1
+                  </div>
 
-        {/* GREETING */}
-        {page === 0 && (
-          <div className="flex-1 flex flex-col justify-center">
-            <div className="rounded-3xl border border-border bg-card p-7 shadow-sm">
+                  {hasPlannedWorkout ? (
+                    <>
+                      <h2 className="text-xl font-semibold">
+                        Hast du das heutige Training wie geplant absolviert?
+                      </h2>
+                      <p className="text-sm text-muted-foreground mt-1 mb-4">
+                        Dein Trainingsplan ist hinterlegt.
+                      </p>
 
-              <div className="text-sm font-medium text-accent mb-2">
-                Athletic IQ Daily Check-In
-              </div>
+                      <div className="rounded-2xl border border-accent/20 bg-accent/5 p-4 mb-4">
+                        <div className="font-semibold">
+                          {plannedWorkout!.title}
+                        </div>
+                        <div className="mt-1 text-sm text-muted-foreground">
+                          {[
+                            plannedWorkout!.discipline,
+                            plannedWorkout!.duration_minutes
+                              ? `ca. ${plannedWorkout!.duration_minutes} Min`
+                              : null,
+                          ]
+                            .filter(Boolean)
+                            .join(" · ")}
+                        </div>
+                        {plannedWorkout!.exercises.length > 0 && (
+                          <div className="mt-3 space-y-1 text-sm">
+                            {plannedWorkout!.exercises.map((ex, i) => (
+                              <div key={`${ex.name}-${i}`}>
+                                <span className="font-medium">{ex.name}</span>
+                                {ex.details && (
+                                  <span className="text-muted-foreground">
+                                    {" · "}
+                                    {ex.details}
+                                  </span>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
 
-              <h1 className="text-3xl font-bold tracking-tight">
-                Hey {name} 👋
-              </h1>
+                      <div className="grid gap-2 sm:grid-cols-3">
+                        <button
+                          type="button"
+                          onClick={() => usePlannedWorkout("completed")}
+                          className={`min-h-[52px] rounded-2xl border px-4 py-3 text-sm font-semibold transition ${
+                            plannedCompletionStatus === "completed"
+                              ? "border-accent bg-accent text-accent-foreground"
+                              : "border-border bg-background hover:border-accent/40"
+                          }`}
+                        >
+                          Wie geplant
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => usePlannedWorkout("changed")}
+                          className={`min-h-[52px] rounded-2xl border px-4 py-3 text-sm font-semibold transition ${
+                            plannedCompletionStatus === "changed"
+                              ? "border-accent bg-accent text-accent-foreground"
+                              : "border-border bg-background hover:border-accent/40"
+                          }`}
+                        >
+                          Geändert
+                        </button>
+                        {notCompletedReason === null ? (
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setNotCompletedReason("Auswahl offen")
+                            }
+                            className="min-h-[52px] rounded-2xl border border-border bg-background px-4 py-3 text-sm font-semibold transition hover:border-destructive/50 hover:text-destructive"
+                          >
+                            Nicht absolviert
+                          </button>
+                        ) : (
+                          <div className="sm:col-span-3 rounded-2xl border border-border bg-background p-4">
+                            <div className="text-sm font-semibold mb-3">
+                              Warum nicht?
+                            </div>
+                            <div className="grid gap-2 sm:grid-cols-2">
+                              {notCompletedReasons.map((reason) => (
+                                <button
+                                  key={reason}
+                                  type="button"
+                                  onClick={() =>
+                                    setNotCompletedReason(reason)
+                                  }
+                                  className={`min-h-[46px] rounded-xl border px-3 py-2 text-sm font-medium transition ${
+                                    notCompletedReason === reason
+                                      ? "border-accent bg-accent text-accent-foreground"
+                                      : "border-border bg-background hover:border-accent/40"
+                                  }`}
+                                >
+                                  {reason}
+                                </button>
+                              ))}
+                            </div>
+                            {notCompletedReason === "Sonstiges" && (
+                              <textarea
+                                value={notCompletedNote}
+                                onChange={(e) =>
+                                  setNotCompletedNote(e.target.value)
+                                }
+                                placeholder="Kurz beschreiben..."
+                                rows={2}
+                                className="w-full mt-3 rounded-xl border border-border bg-background p-3 text-sm outline-none focus:ring-2 focus:ring-accent"
+                              />
+                            )}
+                            <Button
+                              type="button"
+                              className="w-full mt-4 rounded-xl"
+                              disabled={
+                                notCompletedReason === "Auswahl offen" ||
+                                (notCompletedReason === "Sonstiges" &&
+                                  !notCompletedNote.trim())
+                              }
+                              onClick={() => void markNotCompleted()}
+                            >
+                              {mutate.isPending ? (
+                                <>
+                                  <Loader2 className="h-4 w-4 animate-spin" />
+                                  Wird gespeichert...
+                                </>
+                              ) : (
+                                "Check-In speichern"
+                              )}
+                            </Button>
+                          </div>
+                        )}
+                      </div>
 
-              <p className="text-muted-foreground mt-3 mb-7">
-                Vier kurze Bereiche. Ziel: unter einer Minute.
-              </p>
+                      {plannedCompletionStatus === "changed" && (
+                        <div className="mt-4">
+                          <div className="mb-2 text-sm font-medium">
+                            Was hast du tatsächlich gemacht?
+                          </div>
+                          <textarea
+                            value={sessionText}
+                            onChange={(e) => setSessionText(e.target.value)}
+                            placeholder="Beschreibe kurz die geänderte Session..."
+                            rows={3}
+                            className="w-full rounded-xl border border-border bg-background p-3 text-sm outline-none focus:ring-2 focus:ring-accent"
+                          />
+                        </div>
+                      )}
 
-              <Button
-                size="lg"
-                className="w-full bg-[#ff6b35] hover:bg-[#ff6b35]/90 text-white rounded-2xl font-semibold"
-                onClick={() => setPage(1)}
-              >
-                Check-In starten
-              </Button>
-            </div>
+                      {plannedCompletionStatus && (
+                        <div className="mt-4">
+                          <div className="mb-2 text-sm font-medium">
+                            Ergebnisse · optional
+                          </div>
+                          <textarea
+                            value={performanceText}
+                            onChange={(e) =>
+                              setPerformanceText(e.target.value)
+                            }
+                            placeholder="z. B. 4,18 · 4,15 · 4,20"
+                            rows={2}
+                            className="w-full rounded-xl border border-border bg-background p-3 text-sm outline-none focus:ring-2 focus:ring-accent"
+                          />
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      <h2 className="text-xl font-semibold">
+                        Was hast du heute trainiert?
+                      </h2>
+                      <p className="text-sm text-muted-foreground mt-1 mb-4">
+                        Kein Plan hinterlegt — gib deine Session kurz an.
+                      </p>
+
+                      <div className="mb-4">
+                        <div className="text-sm font-medium mb-2">Disziplin</div>
+                        <Grid
+                          options={disciplines}
+                          value={a.discipline}
+                          onSelect={(v) => update("discipline", v)}
+                        />
+                      </div>
+
+                      {a.discipline && (
+                        <>
+                          <div className="mb-4">
+                            <div className="text-sm font-medium mb-2">
+                              Trainingsart
+                            </div>
+                            <Grid
+                              options={
+                                a.discipline === "Hürden"
+                                  ? hurdleWorkoutTypes
+                                  : sprintWorkoutTypes
+                              }
+                              value={a.workout_type}
+                              onSelect={(v) => update("workout_type", v)}
+                            />
+                          </div>
+                          <div className="grid gap-3 md:grid-cols-2">
+                            <textarea
+                              value={sessionText}
+                              onChange={(e) =>
+                                setSessionText(e.target.value)
+                              }
+                              placeholder="Session, z. B. 4 × 30 m + 3 × 60 m"
+                              rows={3}
+                              className="w-full rounded-xl border border-border bg-background p-3 text-sm outline-none focus:ring-2 focus:ring-accent"
+                            />
+                            <textarea
+                              value={performanceText}
+                              onChange={(e) =>
+                                setPerformanceText(e.target.value)
+                              }
+                              placeholder="Ergebnisse, z. B. 4,18 · 4,15"
+                              rows={3}
+                              className="w-full rounded-xl border border-border bg-background p-3 text-sm outline-none focus:ring-2 focus:ring-accent"
+                            />
+                          </div>
+                        </>
+                      )}
+                    </>
+                  )}
+                </section>
+
+                <section className="rounded-2xl border border-border bg-card p-5">
+                  <div className="text-xs font-semibold text-accent mb-1">
+                    FRAGE 2
+                  </div>
+                  <h2 className="text-xl font-semibold mb-1">
+                    Wie hart war die Einheit?
+                  </h2>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    1 = sehr leicht · 10 = maximal
+                  </p>
+                  <RateBar
+                    max={10}
+                    value={a.rpe}
+                    onSelect={(v) => update("rpe", v)}
+                  />
+                </section>
+
+                <section className="rounded-2xl border border-border bg-card p-5">
+                  <div className="text-xs font-semibold text-accent mb-1">
+                    FRAGE 3
+                  </div>
+                  <h2 className="text-xl font-semibold mb-1">
+                    Im Vergleich zu deiner Erwartung?
+                  </h2>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Damit Aether geplante von überraschender Belastung unterscheiden kann.
+                  </p>
+                  <Grid
+                    options={expectedDifficultyOptions}
+                    value={a.expected_difficulty}
+                    onSelect={(v) => update("expected_difficulty", v)}
+                  />
+                </section>
+
+                <section className="rounded-2xl border border-border bg-card p-5">
+                  <div className="text-xs font-semibold text-accent mb-1">
+                    FRAGE 4
+                  </div>
+                  <h2 className="text-xl font-semibold mb-1">
+                    Wie hat sich deine Leistungsqualität entwickelt?
+                  </h2>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Nicht wie anstrengend — sondern ob deine Leistung stabil blieb.
+                  </p>
+                  <Grid
+                    options={performanceQualityOptions}
+                    value={a.performance_quality}
+                    onSelect={(v) => update("performance_quality", v)}
+                  />
+                </section>
+
+                <section className="rounded-2xl border border-border bg-card p-5">
+                  <div className="text-xs font-semibold text-accent mb-1">
+                    FRAGE 5
+                  </div>
+                  <h2 className="text-xl font-semibold mb-3">
+                    Schmerzen oder ungewöhnliche Beschwerden?
+                  </h2>
+                  <Grid
+                    options={["Nein", "Ja"]}
+                    value={
+                      a.has_pain === null ? null : a.has_pain ? "Ja" : "Nein"
+                    }
+                    onSelect={(v) => {
+                      const pain = v === "Ja";
+                      update("has_pain", pain);
+                      if (!pain) {
+                        update("pain_area", null);
+                        update("pain_severity", null);
+                        setPainText("");
+                      }
+                    }}
+                  />
+                  {a.has_pain && (
+                    <div className="mt-4 space-y-3">
+                      <div>
+                        <div className="text-sm font-medium mb-2">Wo?</div>
+                        <Grid
+                          options={painAreaOptions}
+                          value={a.pain_area}
+                          onSelect={(v) => update("pain_area", v)}
+                        />
+                      </div>
+                      <div>
+                        <div className="text-sm font-medium mb-2">
+                          Wie stark?
+                        </div>
+                        <Grid
+                          options={painSeverityOptions}
+                          value={a.pain_severity}
+                          onSelect={(v) => update("pain_severity", v)}
+                        />
+                      </div>
+                      <textarea
+                        value={painText}
+                        onChange={(e) => setPainText(e.target.value)}
+                        placeholder="Optional genauer beschreiben..."
+                        rows={2}
+                        className="w-full rounded-xl border border-border bg-background p-3 text-sm outline-none focus:ring-2 focus:ring-accent"
+                      />
+                    </div>
+                  )}
+                </section>
+
+                <Button
+                  size="lg"
+                  className="w-full bg-[#ff6b35] hover:bg-[#ff6b35]/90 text-white rounded-2xl min-h-[56px] font-semibold"
+                  disabled={!page1Valid}
+                  onClick={() => setPage(2)}
+                >
+                  Weiter
+                </Button>
+              </>
+            )}
           </div>
         )}
-        {/* PAGE 1 — TRAINING */}
-        {page === 1 && (
-          <TrainingQuestionPage
-            plannedWorkout={plannedWorkout ?? null}
-            plannedCompletionStatus={plannedCompletionStatus}
-            discipline={a.discipline}
-            workoutType={a.workout_type}
-            rpe={a.rpe}
-            expectedDifficulty={a.expected_difficulty}
-            sessionText={sessionText}
-            performanceText={performanceText}
-            onUsePlannedWorkout={usePlannedWorkout}
-            notCompletedReason={notCompletedReason}
-            notCompletedNote={notCompletedNote}
-            isSavingNotCompleted={mutate.isPending}
-            onNotCompletedReasonChange={setNotCompletedReason}
-            onNotCompletedNoteChange={setNotCompletedNote}
-            onNotCompleted={markPlannedWorkoutNotCompleted}
-            onSaveRestDay={saveRestDay}
-            onDisciplineChange={async (value) => {
-              if (value === "Ruhetag") {
-                await saveRestDay();
-                return;
-              }
-              update("discipline", value);
-              update("is_rest_day", false);
-            }}
-            onWorkoutTypeChange={(value) => update("workout_type", value)}
-            onRpeChange={(value) => update("rpe", value)}
-            onExpectedDifficultyChange={(value) => update("expected_difficulty", value)}
-            onSessionTextChange={setSessionText}
-            onPerformanceTextChange={setPerformanceText}
-            onContinue={() => setPage(2)}
-          />
-        )}
-        {/* PAGE 2 — LEISTUNG */}
+
         {page === 2 && (
-          <PerformanceQuestionPage
-            performanceQuality={a.performance_quality}
-            sessionGoalAchieved={a.session_goal_achieved}
-            sessionGoalText={sessionGoalText}
-            onPerformanceQualityChange={(value) => update("performance_quality", value)}
-            onSessionGoalChange={(value) => {
-              update("session_goal_achieved", value);
-              if (value === "Ja" || value === "Weiß ich nicht") {
-                setSessionGoalText("");
-              }
-            }}
-            onSessionGoalTextChange={setSessionGoalText}
-            onContinue={() => setPage(3)}
-          />
+          <div className="space-y-5">
+            <section className="rounded-2xl border border-accent/20 bg-accent/5 p-5">
+              <h2 className="text-lg font-semibold">
+                Willst du noch etwas hinzufügen?
+              </h2>
+              <p className="text-sm text-muted-foreground mt-1">
+                Alles hier ist optional. Du kannst direkt speichern.
+              </p>
+            </section>
+
+            {hasPlannedWorkout && (
+              <section className="rounded-2xl border border-border bg-card p-5">
+                <h2 className="text-base font-semibold mb-3">
+                  Hast du das Hauptziel der Einheit erreicht?
+                </h2>
+                <Grid
+                  options={goalOptions}
+                  value={a.session_goal_achieved}
+                  onSelect={(v) => {
+                    update("session_goal_achieved", v);
+                    if (v === "Ja") setSessionGoalText("");
+                  }}
+                />
+                {(a.session_goal_achieved === "Teilweise" ||
+                  a.session_goal_achieved === "Nein") && (
+                  <textarea
+                    value={sessionGoalText}
+                    onChange={(e) => setSessionGoalText(e.target.value)}
+                    placeholder="Optional: Was hat gefehlt?"
+                    rows={2}
+                    className="w-full mt-3 rounded-xl border border-border bg-background p-3 text-sm outline-none focus:ring-2 focus:ring-accent"
+                  />
+                )}
+              </section>
+            )}
+
+            <section className="rounded-2xl border border-border bg-card p-5">
+              <h2 className="text-base font-semibold mb-3">
+                Wie warst du mental?
+              </h2>
+              <Grid
+                options={mentalStateOptions}
+                value={a.mental_state}
+                onSelect={(v) => update("mental_state", v)}
+              />
+              {a.mental_state === "Sonstiges" && (
+                <textarea
+                  value={mentalOtherText}
+                  onChange={(e) => setMentalOtherText(e.target.value)}
+                  placeholder="Kurz beschreiben..."
+                  rows={2}
+                  className="w-full mt-3 rounded-xl border border-border bg-background p-3 text-sm outline-none focus:ring-2 focus:ring-accent"
+                />
+              )}
+            </section>
+
+            <section className="rounded-2xl border border-border bg-card p-5">
+              <h2 className="text-base font-semibold mb-1">
+                Hat etwas deine Leistung beeinflusst?
+              </h2>
+              <p className="text-sm text-muted-foreground mb-3">
+                Mehrere Antworten möglich.
+              </p>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                {performanceFactorOptions.map((factor) => {
+                  const selected = a.performance_factors.includes(factor);
+                  return (
+                    <button
+                      key={factor}
+                      type="button"
+                      onClick={() => {
+                        update(
+                          "performance_factors",
+                          selected
+                            ? a.performance_factors.filter(
+                                (f) => f !== factor,
+                              )
+                            : [...a.performance_factors, factor],
+                        );
+                      }}
+                      className={`min-h-[48px] px-3 py-2 rounded-xl border text-sm font-semibold transition ${
+                        selected
+                          ? "border-accent bg-accent text-accent-foreground"
+                          : "border-border bg-background hover:border-accent/40"
+                      }`}
+                    >
+                      {factor}
+                    </button>
+                  );
+                })}
+              </div>
+              {a.performance_factors.includes("Sonstiges") && (
+                <textarea
+                  value={factorOtherText}
+                  onChange={(e) => setFactorOtherText(e.target.value)}
+                  placeholder="Was hat deine Leistung beeinflusst?"
+                  rows={2}
+                  className="w-full mt-3 rounded-xl border border-border bg-background p-3 text-sm outline-none focus:ring-2 focus:ring-accent"
+                />
+              )}
+            </section>
+
+            <section className="rounded-2xl border border-border bg-card p-5">
+              <h2 className="text-base font-semibold mb-3">
+                Sonst noch etwas?
+              </h2>
+              <textarea
+                value={extraText}
+                onChange={(e) => setExtraText(e.target.value)}
+                placeholder="Optional: Noch etwas Wichtiges zur Session?"
+                rows={3}
+                className="w-full rounded-xl border border-border bg-background p-3 text-sm outline-none focus:ring-2 focus:ring-accent"
+              />
+            </section>
+
+            <button
+              type="button"
+              onClick={async () => {
+                alert("CLICK REGISTERED");
+                try {
+                  await finishCheckin();
+                  alert("SAVED OK");
+                } catch (err) {
+                  alert("ERROR: " + (err && err.message ? err.message : String(err)));
+                }
+              }}
+              style={{
+                width: "100%",
+                minHeight: 56,
+                background: "#ff6b35",
+                color: "white",
+                borderRadius: 16,
+                fontWeight: 600,
+                fontSize: 16,
+                border: "none",
+                cursor: "pointer",
+                padding: "12px 16px",
+              }}
+            >
+              Check-In speichern
+            </button>
+          </div>
         )}
-        {/* PAGE 3 — BODY & MIND */}
+
         {page === 3 && (
-          <BodyMindQuestionPage
-            physicalFeeling={a.physical_feeling}
-            mentalState={a.mental_state}
-            hasPain={a.has_pain}
-            painArea={a.pain_area}
-            painSeverity={a.pain_severity}
-            mentalOtherText={mentalOtherText}
-            painText={painText}
-            onPhysicalFeelingChange={(value) => update("physical_feeling", value)}
-            onMentalStateChange={(value) => update("mental_state", value)}
-            onMentalOtherTextChange={setMentalOtherText}
-            onPainChange={(value) => update("has_pain", value)}
-            onPainAreaChange={(value) => update("pain_area", value)}
-            onPainSeverityChange={(value) => update("pain_severity", value)}
-            onPainTextChange={setPainText}
-            onContinue={() => setPage(4)}
-          />
-        )}
-        {/* PAGE 4 — CONTEXT */}
-        {page === 4 && (
-          <ContextQuestionPage
-            performanceFactors={a.performance_factors}
-            factorOtherText={factorOtherText}
-            extraText={extraText}
-            isSaving={mutate.isPending}
-            onToggleFactor={togglePerformanceFactor}
-            onFactorOtherTextChange={setFactorOtherText}
-            onExtraTextChange={setExtraText}
-            onSave={finishCheckin}
-          />
-        )}
-        {/* SUMMARY */}
-        {page === 5 && (
           <CheckinSuccess
             aiSummary={aiSummary}
             onViewWorkoutAnalysis={() => {
@@ -593,22 +905,8 @@ export function DailyCheckin({ name, onClose }: Props) {
             }}
           />
         )}
-
       </div>
-    </div>
-    ),
+    </div>,
     document.body,
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-
