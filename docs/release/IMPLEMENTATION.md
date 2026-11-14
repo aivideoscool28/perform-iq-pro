@@ -66,3 +66,21 @@ See `VALIDATION.md` for final results, test scope and commands. Browser tests ru
 9. Review this draft PR and its CI results. Do not merge/deploy until the database and staging gates are satisfied.
 
 The app is closer to a supervised beta; this change is not a declaration that it is ready for unrestricted public launch.
+
+## Delivery status
+
+The implementation was committed locally on the dedicated branch. Both the Git push and the connected GitHub branch-creation API returned HTTP 403; the API says "Resource not accessible by integration." Repository permission metadata did not establish actual integration write permission. No remote branch, draft PR or remote CI result is claimed.
+
+Reconnect an authorized GitHub connection with repository Contents and Pull Requests write access, or push from an owner-authorized checkout. The exact prepared PR description is in `docs/release/DRAFT_PR.md`.
+
+```sh
+git push --set-upstream origin fix/release-readiness-athlete-coach
+gh pr create --draft --base week2-architecture-refactor --head fix/release-readiness-athlete-coach --title "Harden athlete and coach release paths" --body-file docs/release/DRAFT_PR.md
+```
+
+A Git bundle can transfer this committed branch to another checkout that already contains the audited base commit. After downloading the bundle:
+
+```sh
+git fetch /path/to/aether-release-readiness.bundle refs/heads/fix/release-readiness-athlete-coach:refs/heads/fix/release-readiness-athlete-coach
+git switch fix/release-readiness-athlete-coach
+```

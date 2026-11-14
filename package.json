@@ -18,7 +18,7 @@
     "test": "vitest run",
     "test:database": "bash scripts/test-database.sh",
     "test:release:browser": "playwright test --config=playwright.release.config.ts",
-    "format:check": "prettier --check src/lib/security src/lib/dates.ts src/lib/profile-schema.ts tests/release vitest.config.ts"
+    "format:check": "prettier --check src/lib/security src/lib/dates.ts src/lib/profile-schema.ts src/lib/dashboard-data.ts src/lib/athlete-date.server.ts src/hooks/use-auth.ts src/lib/auth-session.ts src/components/profile src/components/common/AuthBoundary.tsx tests/release vitest.config.ts playwright.release.config.ts scripts"
   },
   "dependencies": {
     "@ai-sdk/google": "^3.0.146",

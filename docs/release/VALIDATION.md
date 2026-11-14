@@ -56,3 +56,5 @@ PLAYWRIGHT_USE_BUNDLED_CHROMIUM=1 npm run test:release:browser
 ```
 
 Use the standard `test:coach-manager:browser` suite only with a reviewed staging account and staging environment. It has live CRUD scenarios and is not part of these isolated checks. No production credentials are required by the new CI workflow.
+
+One browser run under concurrent build load timed out during development-server hydration. The isolated rerun passed all six tests with a 10-second assertion timeout and no retries. This does not establish production performance.
