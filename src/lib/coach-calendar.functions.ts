@@ -1,4 +1,5 @@
-﻿import { createServerFn } from "@tanstack/react-start";
+import { dateSchema } from "@/lib/dates";
+import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
 import { requireCoachManagerAuth } from "@/integrations/supabase/coach-manager-auth-middleware";
@@ -15,7 +16,7 @@ const CalendarEventTypeSchema = z.enum([
 const CalendarEventInputSchema = z.object({
   title: z.string().min(1).max(160),
 
-  eventDate: z.string().min(10).max(10),
+  eventDate: dateSchema,
 
   eventType: CalendarEventTypeSchema,
 
@@ -26,11 +27,9 @@ const CalendarEventInputSchema = z.object({
   notes: z.string().max(2000).optional().nullable(),
 });
 
-export type CoachCalendarEventType =
-  z.infer<typeof CalendarEventTypeSchema>;
+export type CoachCalendarEventType = z.infer<typeof CalendarEventTypeSchema>;
 
-export type CoachCalendarEventInput =
-  z.infer<typeof CalendarEventInputSchema>;
+export type CoachCalendarEventInput = z.infer<typeof CalendarEventInputSchema>;
 
 export type CoachCalendarEvent = {
   id: string;
@@ -57,7 +56,7 @@ export const fetchCoachCalendarEvents = createServerFn({
   method: "GET",
 })
   .middleware([requireCoachManagerAuth])
-  .inputValidator((input) =>
+  .validator((input) =>
     z
       .object({
         startDate: z.string(),
@@ -95,9 +94,7 @@ export const createCoachCalendarEvent = createServerFn({
   method: "POST",
 })
   .middleware([requireCoachManagerAuth])
-  .inputValidator((input) =>
-    CalendarEventInputSchema.parse(input),
-  )
+  .validator((input) => CalendarEventInputSchema.parse(input))
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
 
@@ -133,7 +130,7 @@ export const updateCoachCalendarEvent = createServerFn({
   method: "POST",
 })
   .middleware([requireCoachManagerAuth])
-  .inputValidator((input) =>
+  .validator((input) =>
     z
       .object({
         eventId: z.string().uuid(),
@@ -180,7 +177,7 @@ export const deleteCoachCalendarEvent = createServerFn({
   method: "POST",
 })
   .middleware([requireCoachManagerAuth])
-  .inputValidator((input) =>
+  .validator((input) =>
     z
       .object({
         eventId: z.string().uuid(),

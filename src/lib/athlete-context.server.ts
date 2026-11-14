@@ -1,4 +1,6 @@
-﻿/*
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Database, Tables } from "@/integrations/supabase/types";
+/*
 ===============================================================================
                     ATHLETIC IQ — ATHLETE CONTEXT SYSTEM
 ===============================================================================
@@ -48,7 +50,6 @@ For now, this is the first foundation of that system.
 ===============================================================================
 */
 
-
 // Tells the context system WHY athlete information is being requested.
 //
 // Later this allows Athletic IQ to select different information for different
@@ -58,11 +59,7 @@ For now, this is the first foundation of that system.
 // AI Coach may need recent workouts + check-ins + conversation history.
 // Workout Analysis may mainly need today's workout + check-in.
 // Video Analysis may need discipline + goals + relevant technique history.
-export type AthleteContextPurpose =
-  | "ai-coach"
-  | "workout-analysis"
-  | "video-analysis";
-
+export type AthleteContextPurpose = "ai-coach" | "workout-analysis" | "video-analysis";
 
 // Temporary flexible Supabase client type.
 //
@@ -70,8 +67,7 @@ export type AthleteContextPurpose =
 // exists inside Athletic IQ's server functions.
 //
 // Later we can replace "any" with a proper generated Supabase TypeScript type.
-type SupabaseClientLike = any;
-
+type SupabaseClientLike = SupabaseClient<Database>;
 
 /*
 loadAthleteContext()
@@ -94,7 +90,18 @@ The function then loads several useful categories of athlete information
 at the same time and returns them in one structured object.
 */
 function buildPurposeProfile(
-  profile: any,
+  profile: Pick<
+    Tables<"profiles">,
+    | "id"
+    | "age"
+    | "disciplines"
+    | "experience"
+    | "goal_text"
+    | "current_focus"
+    | "training_days_per_week"
+    | "training_setup"
+    | "injuries"
+  > | null,
   purpose: AthleteContextPurpose,
 ) {
   if (!profile) return null;
@@ -143,7 +150,6 @@ export async function loadAthleteContext({
   userId: string;
   purpose: AthleteContextPurpose;
 }) {
-
   /*
   Promise.all runs these database requests together instead of waiting for:
 
@@ -157,7 +163,6 @@ export async function loadAthleteContext({
     { data: checkins, error: checkinsError },
     { data: analyses, error: analysesError },
   ] = await Promise.all([
-
     /*
     ---------------------------------------------------------------------------
     ATHLETE PROFILE
@@ -194,7 +199,6 @@ export async function loadAthleteContext({
       .eq("id", userId)
       .maybeSingle(),
 
-
     /*
     ---------------------------------------------------------------------------
     RECENT WORKOUTS
@@ -225,7 +229,6 @@ export async function loadAthleteContext({
       .eq("user_id", userId)
       .order("created_at", { ascending: false })
       .limit(5),
-
 
     /*
     ---------------------------------------------------------------------------
@@ -278,7 +281,6 @@ export async function loadAthleteContext({
       .order("checkin_date", { ascending: false })
       .limit(5),
 
-
     /*
     ---------------------------------------------------------------------------
     RECENT WORKOUT ANALYSES
@@ -312,7 +314,6 @@ export async function loadAthleteContext({
       .limit(5),
   ]);
 
-
   /*
   ---------------------------------------------------------------------------
   ERROR CHECKING
@@ -327,6 +328,9 @@ export async function loadAthleteContext({
   database/query problem.
   */
 
+  if ([profileError, workoutsError, checkinsError, analysesError].some(Boolean)) {
+    throw new Error("Athlete context could not be loaded. Please retry.");
+  }
   if (profileError) {
     console.error("Athlete context profile error:", profileError);
   }
@@ -342,7 +346,6 @@ export async function loadAthleteContext({
   if (analysesError) {
     console.error("Athlete context analyses error:", analysesError);
   }
-
 
   /*
   ---------------------------------------------------------------------------
@@ -423,7 +426,6 @@ type WorkoutContextRecord = {
   created_at?: string | null;
 };
 
-
 /*
 Athletics-specific vocabulary.
 
@@ -461,11 +463,7 @@ const WORKOUT_TYPE_KEYWORDS: Record<string, string[]> = {
     "fliegend",
   ],
 
-  speed_endurance: [
-    "speed endurance",
-    "schnelligkeitsausdauer",
-    "tempo endurance",
-  ],
+  speed_endurance: ["speed endurance", "schnelligkeitsausdauer", "tempo endurance"],
 
   hurdle_technique: [
     "hurdle technique",
@@ -496,14 +494,8 @@ const WORKOUT_TYPE_KEYWORDS: Record<string, string[]> = {
     "gym",
   ],
 
-  recovery: [
-    "recovery",
-    "regeneration",
-    "mobility",
-    "regenerationstraining",
-  ],
+  recovery: ["recovery", "regeneration", "mobility", "regenerationstraining"],
 };
-
 
 /*
 Try to determine the workout type.
@@ -514,10 +506,7 @@ Priority:
 3. Count keyword matches.
 4. Return the category with the highest score.
 */
-function inferWorkoutType(
-  workout: WorkoutContextRecord,
-): string | null {
-
+function inferWorkoutType(workout: WorkoutContextRecord): string | null {
   // Best and most reliable case.
   if (workout.workout_type) {
     return workout.workout_type.toLowerCase();
@@ -533,9 +522,7 @@ function inferWorkoutType(
   let bestType: string | null = null;
   let bestScore = 0;
 
-  for (const [workoutType, keywords] of Object.entries(
-    WORKOUT_TYPE_KEYWORDS,
-  )) {
+  for (const [workoutType, keywords] of Object.entries(WORKOUT_TYPE_KEYWORDS)) {
     let score = 0;
 
     for (const keyword of keywords) {
@@ -553,7 +540,6 @@ function inferWorkoutType(
   return bestType;
 }
 
-
 /*
 Find the most relevant previous workout.
 
@@ -568,7 +554,6 @@ export function getRelevantPreviousWorkout(
   currentWorkout: WorkoutContextRecord,
   workouts: WorkoutContextRecord[],
 ): WorkoutContextRecord | null {
-
   const currentType = inferWorkoutType(currentWorkout);
 
   // If we cannot identify the current workout type,
@@ -578,23 +563,10 @@ export function getRelevantPreviousWorkout(
   }
 
   const previousMatches = workouts
-    .filter(
-      (workout) =>
-        workout.id !== currentWorkout.id,
-    )
-    .filter(
-      (workout) =>
-        workout.workout_date < currentWorkout.workout_date,
-    )
-    .filter(
-      (workout) =>
-        inferWorkoutType(workout) === currentType,
-    )
-    .sort(
-      (a, b) =>
-        new Date(b.workout_date).getTime() -
-        new Date(a.workout_date).getTime(),
-    );
+    .filter((workout) => workout.id !== currentWorkout.id)
+    .filter((workout) => workout.workout_date < currentWorkout.workout_date)
+    .filter((workout) => inferWorkoutType(workout) === currentType)
+    .sort((a, b) => new Date(b.workout_date).getTime() - new Date(a.workout_date).getTime());
 
   return previousMatches[0] ?? null;
 }
@@ -631,7 +603,6 @@ type WorkoutAnalysisContextRecord = {
   created_at?: string | null;
 };
 
-
 /*
 Find the Workout Analysis that belongs to a specific workout.
 
@@ -641,14 +612,8 @@ export function getWorkoutAnalysisForWorkout(
   workoutId: string,
   analyses: WorkoutAnalysisContextRecord[],
 ): WorkoutAnalysisContextRecord | null {
-  return (
-    analyses.find(
-      (analysis) =>
-        analysis.workout_id === workoutId,
-    ) ?? null
-  );
+  return analyses.find((analysis) => analysis.workout_id === workoutId) ?? null;
 }
-
 
 /*
 Build the first structured workout-comparison context.
@@ -667,25 +632,13 @@ export function buildWorkoutComparisonContext(
   workouts: WorkoutContextRecord[],
   analyses: WorkoutAnalysisContextRecord[],
 ) {
-  const previousWorkout =
-    getRelevantPreviousWorkout(
-      currentWorkout,
-      workouts,
-    );
+  const previousWorkout = getRelevantPreviousWorkout(currentWorkout, workouts);
 
-  const currentAnalysis =
-    getWorkoutAnalysisForWorkout(
-      currentWorkout.id,
-      analyses,
-    );
+  const currentAnalysis = getWorkoutAnalysisForWorkout(currentWorkout.id, analyses);
 
-  const previousAnalysis =
-    previousWorkout
-      ? getWorkoutAnalysisForWorkout(
-          previousWorkout.id,
-          analyses,
-        )
-      : null;
+  const previousAnalysis = previousWorkout
+    ? getWorkoutAnalysisForWorkout(previousWorkout.id, analyses)
+    : null;
 
   return {
     currentWorkout,
@@ -694,7 +647,3 @@ export function buildWorkoutComparisonContext(
     previousAnalysis,
   };
 }
-
-
-
-

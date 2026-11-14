@@ -1,4 +1,8 @@
-﻿import { createFileRoute } from "@tanstack/react-router";
+import { useEffect } from "react";
+import { useAuth } from "@/hooks/use-auth";
+import { fetchMyProfile } from "@/lib/features/profile.functions";
+import { calendarDate } from "@/lib/dates";
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -6,10 +10,7 @@ import { AppShell } from "@/components/athleticiq/AppShell";
 import { WeekNavigation } from "@/components/training/WeekNavigation";
 import { WeeklyCalendar } from "@/components/training/WeeklyCalendar";
 import { WorkoutDetails } from "@/components/training/WorkoutDetails";
-import {
-  fetchPlannedWorkouts,
-  type PlannedWorkout,
-} from "@/lib/planned-workouts.functions";
+import { fetchPlannedWorkouts, type PlannedWorkout } from "@/lib/planned-workouts.functions";
 import { explainPlannedWorkout } from "@/lib/training-explanation.functions";
 
 export const Route = createFileRoute("/training")({
@@ -60,85 +61,15 @@ function formatWeek(start: Date) {
   return `${startText} – ${endText}`;
 }
 
-function createDemoWorkouts(weekStart: Date): PlannedWorkout[] {
-  const now = new Date().toISOString();
-
-  return [
-    {
-      id: "demo-monday",
-      athlete_id: "demo",
-      coach_id: null,
-      workout_date: toDateString(addDays(weekStart, 0)),
-      title: "Beschleunigung",
-      discipline: "Sprint",
-      duration_minutes: 60,
-      session_goal: "Explosive erste 30 Meter.",
-      coach_note: "Qualität vor Quantität.",
-      exercises: [],
-      status: "completed",
-      source: "coach",
-      is_published: true,
-      completed_at: now,
-      created_at: now,
-      updated_at: now,
-    },
-    {
-      id: "demo-tuesday",
-      athlete_id: "demo",
-      coach_id: null,
-      workout_date: toDateString(addDays(weekStart, 1)),
-      title: "Kraft",
-      discipline: "Sprint",
-      duration_minutes: 50,
-      session_goal: "Sprintrelevante Kraft.",
-      coach_note: "Saubere Technik.",
-      exercises: [],
-      status: "completed",
-      source: "coach",
-      is_published: true,
-      completed_at: now,
-      created_at: now,
-      updated_at: now,
-    },
-    {
-      id: "demo-thursday",
-      athlete_id: "demo",
-      coach_id: null,
-      workout_date: toDateString(addDays(weekStart, 3)),
-      title: "Hürden · Rhythmus",
-      discipline: "Hürden",
-      duration_minutes: 70,
-      session_goal: "Konstanter Rhythmus.",
-      coach_note: "Fokus auf Hürde 3–5.",
-      exercises: [],
-      status: "planned",
-      source: "coach",
-      is_published: true,
-      completed_at: null,
-      created_at: now,
-      updated_at: now,
-    },
-    {
-      id: "demo-saturday",
-      athlete_id: "demo",
-      coach_id: null,
-      workout_date: toDateString(addDays(weekStart, 5)),
-      title: "Speed Endurance",
-      discipline: "Sprint",
-      duration_minutes: 65,
-      session_goal: "Geschwindigkeit länger halten.",
-      coach_note: "Volle Pausen nutzen.",
-      exercises: [],
-      status: "planned",
-      source: "coach",
-      is_published: true,
-      completed_at: null,
-      created_at: now,
-      updated_at: now,
-    },
-  ];
-}
 function TrainingPage() {
+  const { user } = useAuth();
+  const getProfile = useServerFn(fetchMyProfile);
+  const { data: profileData } = useQuery({
+    queryKey: ["my-profile", user?.id],
+    queryFn: () => getProfile(),
+    enabled: !!user,
+  });
+  const today = calendarDate(new Date(), profileData?.profile?.timezone ?? "UTC");
   const fetchWorkouts = useServerFn(fetchPlannedWorkouts);
   const explainWorkout = useServerFn(explainPlannedWorkout);
 
@@ -151,15 +82,15 @@ function TrainingPage() {
       }),
   });
 
-  const [weekStart, setWeekStart] = useState(() =>
-    startOfWeek(new Date()),
-  );
+  const [weekStart, setWeekStart] = useState(() => startOfWeek(new Date()));
 
-  const [selectedWorkout, setSelectedWorkout] =
-    useState<PlannedWorkout | null>(null);
+  const [selectedWorkout, setSelectedWorkout] = useState<PlannedWorkout | null>(null);
 
   const [whyOpen, setWhyOpen] = useState(false);
 
+  useEffect(() => {
+    setWeekStart(startOfWeek(new Date(today + "T12:00:00")));
+  }, [today]);
   const weekEnd = addDays(weekStart, 6);
 
   const startDate = toDateString(weekStart);
@@ -181,31 +112,23 @@ function TrainingPage() {
       }),
   });
 
-  const displayWorkouts =
-    workouts.length > 0
-      ? workouts
-      : createDemoWorkouts(weekStart);
+  const displayWorkouts = workouts;
 
-  const weekDays =
-    Array.from({ length: 7 }, (_, index) =>
-      addDays(weekStart, index),
-    );
+  const weekDays = Array.from({ length: 7 }, (_, index) => addDays(weekStart, index));
 
   const workoutForDate = (date: Date) =>
-    displayWorkouts.find(
-      (workout) =>
-        workout.workout_date === toDateString(date),
-    );
+    displayWorkouts.find((workout) => workout.workout_date === toDateString(date));
 
   return (
     <AppShell
       title="Training"
       subtitle="Dein Trainingsplan vom Coach"
-      breadcrumbs={[
-        { label: "Dashboard", to: "/" },
-        { label: "Training" },
-      ]}
+      breadcrumbs={[{ label: "Dashboard", to: "/" }, { label: "Training" }]}
     >
+      {error && <p role="alert">Trainingsplan konnte nicht geladen werden. Bitte erneut laden.</p>}
+      {!isLoading && !error && workouts.length === 0 && (
+        <p role="status">Für diese Woche wurde noch kein Trainingsplan veröffentlicht.</p>
+      )}
       <WeekNavigation
         weekStart={weekStart}
         setWeekStart={setWeekStart}
@@ -213,12 +136,13 @@ function TrainingPage() {
         isLoading={isLoading}
         workoutCount={displayWorkouts.length}
         formatWeek={formatWeek}
-        startOfWeek={startOfWeek}
+        startOfWeek={() => startOfWeek(new Date(today + "T12:00:00"))}
         addDays={addDays}
       />
       {/* 7-DAY TRAINING CALENDAR */}
       <WeeklyCalendar
         weekDays={weekDays}
+        todayDate={today}
         workoutForDate={workoutForDate}
         onSelectWorkout={(workout) => {
           setSelectedWorkout(workout);
@@ -232,22 +156,13 @@ function TrainingPage() {
       {selectedWorkout && (
         <WorkoutDetails
           selectedWorkout={selectedWorkout}
+          onStatusChange={setSelectedWorkout}
           whyOpen={whyOpen}
           setWhyOpen={setWhyOpen}
           onClose={() => setSelectedWorkout(null)}
           explanationMutation={explanationMutation}
         />
       )}
-
-
     </AppShell>
   );
 }
-
-
-
-
-
-
-
-

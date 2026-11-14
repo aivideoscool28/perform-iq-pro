@@ -1,21 +1,18 @@
+import { videoOutputSchema } from "./security/ai-output";
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { callAi } from "@/lib/ai-gateway.server";
-import { VIDEO_ANALYSIS_SYSTEM_PROMPT, buildVideoAnalysisUserPrompt } from "@/prompts/video-analysis.prompt";
+import {
+  VIDEO_ANALYSIS_SYSTEM_PROMPT,
+  buildVideoAnalysisUserPrompt,
+} from "@/prompts/video-analysis.prompt";
 
-const FrameSchema = z.object({
-  t: z.number().min(0),
-  image: z.string().min(50).max(4_000_000), // data URL
-});
-
-const InputSchema = z.object({
-  discipline: z.string().min(1).max(64).default("Sprint"),
-  durationSec: z.number().min(0).max(3600).optional(),
-  frames: z.array(FrameSchema).min(2).max(10),
-});
+import { videoInputSchema as InputSchema } from "./security/ai-input";
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 export const analyzeVideoFrames = createServerFn({ method: "POST" })
-  .inputValidator((input) => InputSchema.parse(input))
+  .middleware([requireSupabaseAuth])
+  .validator((input) => InputSchema.parse(input))
   .handler(async ({ data }) => {
     const content: Array<Record<string, unknown>> = [
       {
@@ -49,15 +46,13 @@ export const analyzeVideoFrames = createServerFn({ method: "POST" })
           type: "function",
           function: {
             name: "report_video_analysis",
-            description:
-              "Strukturierte Videoanalyse mit Score, Findings und KPIs.",
+            description: "Strukturierte Videoanalyse mit Score, Findings und KPIs.",
             parameters: {
               type: "object",
               properties: {
                 detected_movement: {
                   type: "string",
-                  description:
-                    "Erkannte Bewegung, z.B. 'Sprintstart aus dem Block'",
+                  description: "Erkannte Bewegung, z.B. 'Sprintstart aus dem Block'",
                 },
                 overall_score: {
                   type: "number",
@@ -201,34 +196,5 @@ export const analyzeVideoFrames = createServerFn({ method: "POST" })
       throw new Error("Keine strukturierte Antwort vom Modell.");
     }
 
-    return JSON.parse(call.function.arguments) as {
-      detected_movement: string;
-      overall_score: number;
-      overall_reasoning: string;
-      overall_recommendation: string;
-      score_breakdown: {
-        label: string;
-        value: string;
-      }[];
-      findings: {
-        joint: string;
-        val: number;
-        unit: string;
-        ideal: string;
-        status: "ok" | "warn";
-        reasoning: string;
-        recommendation: string;
-        data: {
-          label: string;
-          value: string;
-        }[];
-      }[];
-      kpis: {
-        title: string;
-        val: string;
-        note: string;
-      }[];
-    };
+    return videoOutputSchema.parse(JSON.parse(call.function.arguments));
   });
-
-

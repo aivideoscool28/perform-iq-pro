@@ -1,83 +1,50 @@
-﻿import {
-  createFileRoute,
-  Outlet,
-  redirect,
-} from "@tanstack/react-router";
+import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 
-import {
-  supabase,
-} from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/supabase/client";
 
-import {
-  CoachAppFrame,
-} from "@/components/coach-manager/layout/CoachAppFrame";
+import { CoachAppFrame } from "@/components/coach-manager/layout/CoachAppFrame";
 
-export const Route =
-  createFileRoute("/coach-manager")({
-    beforeLoad:
-      async () => {
-        const {
-          data: sessionData,
-          error: sessionError,
-        } =
-          await supabase.auth.getSession();
+export const Route = createFileRoute("/coach-manager")({
+  ssr: false,
+  beforeLoad: async () => {
+    const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
 
-        if (
-          sessionError ||
-          !sessionData.session
-        ) {
-          throw redirect({
-            to: "/auth",
-          });
-        }
+    if (sessionError || !sessionData.session) {
+      throw redirect({
+        to: "/auth",
+      });
+    }
 
-        const user =
-          sessionData.session.user;
+    const user = sessionData.session.user;
 
-        const {
-          data: profile,
-          error: profileError,
-        } =
-          await supabase
-            .from("profiles")
-            .select("role")
-            .eq(
-              "id",
-              user.id,
-            )
-            .single();
+    const { data: profile, error: profileError } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", user.id)
+      .single();
 
-        if (
-          profileError
-        ) {
-          console.error(
-            "Could not verify coach role:",
-            profileError,
-          );
+    if (profileError) {
+      console.error("Could not verify coach role:", profileError);
 
-          throw redirect({
-            to: "/auth",
-          });
-        }
+      throw redirect({
+        to: "/auth",
+      });
+    }
 
-        if (
-          profile.role !==
-          "coach"
-        ) {
-          throw redirect({
-            to: "/",
-          });
-        }
+    if (profile.role !== "coach") {
+      throw redirect({
+        to: "/",
+      });
+    }
 
-        return {
-          user,
-          role: profile.role,
-        };
-      },
+    return {
+      user,
+      role: profile.role,
+    };
+  },
 
-    component:
-      CoachManagerRoute,
-  });
+  component: CoachManagerRoute,
+});
 
 function CoachManagerRoute() {
   return (

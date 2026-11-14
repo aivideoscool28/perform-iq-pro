@@ -1,13 +1,16 @@
+import type { Tables, Database } from "@/integrations/supabase/types";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import { dateSchema } from "@/lib/dates";
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
 import { requireCoachManagerAuth } from "@/integrations/supabase/coach-manager-auth-middleware";
 
 const TemplateExerciseSchema = z.object({
-  section: z.string().optional(),
+  section: z.string().max(100).optional(),
   name: z.string().min(1).max(120),
-  details: z.string().optional(),
-  rest: z.string().optional(),
+  details: z.string().max(2000).optional(),
+  rest: z.string().max(100).optional(),
 });
 
 const CreateTemplateSchema = z.object({
@@ -22,11 +25,9 @@ const CreateTemplateSchema = z.object({
   exercises: z.array(TemplateExerciseSchema).max(50).default([]),
 });
 
-export type CoachTrainingTemplateExercise =
-  z.infer<typeof TemplateExerciseSchema>;
+export type CoachTrainingTemplateExercise = z.infer<typeof TemplateExerciseSchema>;
 
-export type CoachTrainingTemplateInput =
-  z.infer<typeof CreateTemplateSchema>;
+export type CoachTrainingTemplateInput = z.infer<typeof CreateTemplateSchema>;
 
 export type CoachTrainingTemplate = {
   id: string;
@@ -50,128 +51,84 @@ export type CoachTrainingTemplate = {
   updated_at: string;
 };
 
-function normalizeTemplate(
-  row: any,
-): CoachTrainingTemplate {
+function normalizeTemplate(row: Tables<"coach_training_templates">): CoachTrainingTemplate {
   return {
     ...row,
-    exercises: Array.isArray(row.exercises)
-      ? row.exercises
-      : [],
+    exercises: Array.isArray(row.exercises) ? row.exercises : [],
   } as CoachTrainingTemplate;
 }
-
 
 /**
  * Load official Aether templates plus templates
  * created by the logged-in coach.
  */
-export const fetchCoachTrainingTemplates =
-  createServerFn({
-    method: "GET",
-  })
-    .middleware([
-      requireCoachManagerAuth,
-    ])
-    .handler(async ({ context }) => {
-      const { supabase } = context;
+export const fetchCoachTrainingTemplates = createServerFn({
+  method: "GET",
+})
+  .middleware([requireCoachManagerAuth])
+  .handler(async ({ context }) => {
+    const { supabase } = context;
 
-      const {
-        data,
-        error,
-      } = await supabase
-        .from("coach_training_templates")
-        .select("*")
-        .order("template_type", {
-          ascending: true,
-        })
-        .order("category", {
-          ascending: true,
-        })
-        .order("name", {
-          ascending: true,
-        });
+    const { data, error } = await supabase
+      .from("coach_training_templates")
+      .select("*")
+      .order("template_type", {
+        ascending: true,
+      })
+      .order("category", {
+        ascending: true,
+      })
+      .order("name", {
+        ascending: true,
+      });
 
-      if (error) {
-        throw new Error(error.message);
-      }
+    if (error) {
+      throw new Error(error.message);
+    }
 
-      return (data ?? []).map(
-        normalizeTemplate,
-      );
-    });
-
+    return (data ?? []).map(normalizeTemplate);
+  });
 
 /**
  * Save one reusable template owned by the coach.
  */
-export const createCoachTrainingTemplate =
-  createServerFn({
-    method: "POST",
-  })
-    .middleware([
-      requireCoachManagerAuth,
-    ])
-    .inputValidator((input) =>
-      CreateTemplateSchema.parse(input),
-    )
-    .handler(
-      async ({
-        data,
-        context,
-      }) => {
-        const {
-          supabase,
-          userId,
-        } = context;
+export const createCoachTrainingTemplate = createServerFn({
+  method: "POST",
+})
+  .middleware([requireCoachManagerAuth])
+  .validator((input) => CreateTemplateSchema.parse(input))
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context;
 
-        const {
-          data: template,
-          error,
-        } = await supabase
-          .from(
-            "coach_training_templates",
-          )
-          .insert({
-            coach_id: userId,
-            template_type: "coach",
+    const { data: template, error } = await supabase
+      .from("coach_training_templates")
+      .insert({
+        coach_id: userId,
+        template_type: "coach",
 
-            name: data.name,
-            description:
-              data.description ?? null,
+        name: data.name,
+        description: data.description ?? null,
 
-            category:
-              data.category,
+        category: data.category,
 
-            discipline:
-              data.discipline ?? null,
+        discipline: data.discipline ?? null,
 
-            intensity:
-              data.intensity ?? null,
+        intensity: data.intensity ?? null,
 
-            duration_minutes:
-              data.durationMinutes ?? null,
+        duration_minutes: data.durationMinutes ?? null,
 
-            session_goal:
-              data.sessionGoal ?? null,
+        session_goal: data.sessionGoal ?? null,
 
-            coach_note:
-              data.coachNote ?? null,
+        coach_note: data.coachNote ?? null,
 
-            exercises:
-              data.exercises,
-          })
-          .select("*")
-          .single();
+        exercises: data.exercises,
+      })
+      .select("*")
+      .single();
 
-        if (error) {
-          throw new Error(
-            error.message,
-          );
-        }
+    if (error) {
+      throw new Error(error.message);
+    }
 
-        return normalizeTemplate(
-          template,
-        );
-      },
-    );
+    return normalizeTemplate(template);
+  });

@@ -40,3 +40,8 @@ test-reports/
 tests/coach-manager/.auth/
 
 .env.e2e
+
+# Credentials and local configuration
+.env
+.env.*
+!.env.example

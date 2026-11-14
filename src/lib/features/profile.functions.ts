@@ -1,3 +1,5 @@
+import { timeZoneSchema } from "@/lib/dates";
+import { profileEditSchema } from "@/lib/profile-schema";
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
@@ -7,27 +9,30 @@ import { ONBOARDING_GOAL_REPLY_PROMPT } from "@/prompts/onboarding-goal-reply.pr
 /* ------------------------ ONBOARDING ------------------------ */
 export const saveOnboarding = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input) =>
-    z.object({
-      display_name: z.string().min(1).max(60),
-      age: z.number().int().min(8).max(99),
-      disciplines: z.array(z.string()).min(1).max(2),
-      goal_text: z.string().min(2).max(500),
-      goal_motivation: z.array(z.string().min(1).max(250)).min(1).max(2),
-      current_focus: z.array(z.string().min(1).max(120)).min(1).max(2),
-      experience: z.string().min(1).max(60),
-      training_days_per_week: z.number().int().min(1).max(7),
-      training_setup: z.string().min(1).max(80),
-      injuries: z.string().max(1000).optional().nullable(),
-      favouriteAthlete: z.string().max(100).optional().nullable(),
-    }).parse(input),
+  .validator((input) =>
+    z
+      .object({
+        timezone: timeZoneSchema.default("UTC"),
+        display_name: z.string().min(1).max(60),
+        age: z.number().int().min(8).max(99),
+        disciplines: z.array(z.string()).min(1).max(2),
+        goal_text: z.string().min(2).max(500),
+        goal_motivation: z.array(z.string().min(1).max(250)).min(1).max(2),
+        current_focus: z.array(z.string().min(1).max(120)).min(1).max(2),
+        experience: z.string().min(1).max(60),
+        training_days_per_week: z.number().int().min(1).max(7),
+        training_setup: z.string().min(1).max(80),
+        injuries: z.string().max(1000).optional().nullable(),
+        favouriteAthlete: z.string().max(100).optional().nullable(),
+      })
+      .parse(input),
   )
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
     const { error } = await supabase
       .from("profiles")
-      .upsert({
-        id: userId,
+      .update({
+        timezone: data.timezone,
         display_name: data.display_name,
         age: data.age,
         disciplines: data.disciplines,
@@ -39,23 +44,26 @@ export const saveOnboarding = createServerFn({ method: "POST" })
         training_days_per_week: data.training_days_per_week,
         training_setup: data.training_setup,
         injuries: data.injuries ?? null,
-        favourite_athlete: data.favouriteAthlete?.trim()
-          ? data.favouriteAthlete.trim()
-          : null,
+        favourite_athlete: data.favouriteAthlete?.trim() ? data.favouriteAthlete.trim() : null,
         onboarded_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
-      }, { onConflict: "id" });
+      })
+      .eq("id", userId)
+      .select("id")
+      .single();
     if (error) throw new Error(error.message);
     return { ok: true };
   });
 
 export const updateProfilePersonalization = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input) =>
-    z.object({
-      favouriteAthlete: z.string().max(100).optional().nullable(),
-      receiveNewsAndMotivation: z.boolean().optional(),
-    }).parse(input),
+  .validator((input) =>
+    z
+      .object({
+        favouriteAthlete: z.string().max(100).optional().nullable(),
+        receiveNewsAndMotivation: z.boolean().optional(),
+      })
+      .parse(input),
   )
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
@@ -74,7 +82,11 @@ export const updateProfilePersonalization = createServerFn({ method: "POST" })
 /* ------------------------ ONBOARDING: GOAL REPLY ------------------------ */
 export const generateGoalReply = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input) => z.object({ goal: z.string().min(2).max(500), name: z.string().max(60).optional() }).parse(input))
+  .validator((input) =>
+    z
+      .object({ goal: z.string().min(2).max(500), name: z.string().max(60).optional() })
+      .parse(input),
+  )
   .handler(async ({ data }) => {
     try {
       const ai = await callAi({
@@ -135,6 +147,7 @@ export const resetOnboarding = createServerFn({ method: "POST" })
 export const resetToNewUser = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
+    if (process.env.NODE_ENV !== "development") throw new Error("Development only");
     const { supabase, userId } = context;
 
     const [checkins, boards, workouts] = await Promise.all([
@@ -159,10 +172,20 @@ export const resetToNewUser = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
-
-
-
-
-
-
-
+export const updateAthleteProfile = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .validator((input) => profileEditSchema.parse(input))
+  .handler(async ({ data, context }) => {
+    const { data: profile, error } = await context.supabase
+      .from("profiles")
+      .update({
+        ...data,
+        goals: data.goal_text ? [data.goal_text] : [],
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", context.userId)
+      .select("*")
+      .single();
+    if (error) throw new Error("Profil konnte nicht gespeichert werden.");
+    return { profile };
+  });

@@ -1,4 +1,5 @@
-﻿import { createServerFn } from "@tanstack/react-start";
+import { athleteToday } from "@/lib/athlete-date.server";
+import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
@@ -40,7 +41,7 @@ export const fetchTodayRegeneration = createServerFn({
   .handler(async ({ context }) => {
     const { supabase, userId } = context;
 
-    const today = new Date().toISOString().slice(0, 10);
+    const today = await athleteToday(supabase, userId);
 
     const { data, error } = await supabase
       .from("regeneration_checkins")
@@ -68,11 +69,11 @@ export const saveRegeneration = createServerFn({
   method: "POST",
 })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input) => regenerationSchema.parse(input))
+  .validator((input) => regenerationSchema.parse(input))
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
 
-    const today = new Date().toISOString().slice(0, 10);
+    const today = await athleteToday(supabase, userId);
 
     const { data: row, error } = await supabase
       .from("regeneration_checkins")

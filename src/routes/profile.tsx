@@ -1,4 +1,6 @@
-﻿import {useAuth} from "@/hooks/use-auth";
+import { CoachConnections } from "@/components/profile/CoachConnections";
+import { ProfileEditor } from "@/components/profile/ProfileEditor";
+import { useAuth } from "@/hooks/use-auth";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -13,13 +15,39 @@ import { fetchMyProfile, resetOnboarding, resetToNewUser } from "@/lib/features/
 import { SignOutButton } from "@/components/athleticiq/SignOutButton";
 import { isDevPreview, markTourPending } from "@/lib/tour";
 import {
-  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
-  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import {
-  User, MapPin, Calendar, Ruler, Weight, Flag, Sparkles, Watch, Activity,
-  Heart, Settings, Check, Plus, Trash2, Pencil, Trophy, Star, Target,
-  Dumbbell, RefreshCcw, Loader2, HeartPulse, FlaskConical,
+  User,
+  MapPin,
+  Calendar,
+  Ruler,
+  Weight,
+  Flag,
+  Sparkles,
+  Watch,
+  Activity,
+  Heart,
+  Settings,
+  Check,
+  Plus,
+  Trash2,
+  Pencil,
+  Trophy,
+  Star,
+  Target,
+  Dumbbell,
+  RefreshCcw,
+  Loader2,
+  HeartPulse,
+  FlaskConical,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -37,7 +65,7 @@ function Page() {
   const showDevTools = isDevPreview();
 
   const { data: profileData, isLoading: profileLoading } = useQuery({
-    queryKey: ["my-profile"],
+    queryKey: ["my-profile", session?.user.id],
     queryFn: () => fetchProfileFn(),
     enabled: !!session,
   });
@@ -47,7 +75,7 @@ function Page() {
   const reset = useMutation({
     mutationFn: () => resetFn(),
     onSuccess: async () => {
-      await qc.invalidateQueries({ queryKey: ["my-profile"] });
+      await qc.invalidateQueries({ queryKey: ["my-profile", session?.user.id] });
       toast.success("Onboarding zurückgesetzt – los geht's!");
       navigate({ to: "/onboarding" });
     },
@@ -76,6 +104,12 @@ function Page() {
         { label: "Athletenprofil" },
       ]}
     >
+      {profile && (
+        <>
+          <ProfileEditor profile={profile} />
+          <CoachConnections role={profile.role} inviteCode={profile.invite_code} />
+        </>
+      )}
       {/* Account actions */}
       <div className="flex justify-end mb-4">
         <SignOutButton />
@@ -100,8 +134,8 @@ function Page() {
           <AlertDialogHeader>
             <AlertDialogTitle>Auf neuen Nutzer zurücksetzen?</AlertDialogTitle>
             <AlertDialogDescription>
-              Dies setzt deine Check-ins, deinen Streak und deine Analyse-Historie zurück.
-              Dein Onboarding-Profil (Name, Disziplin, Ziele usw.) bleibt unverändert. Fortfahren?
+              Dies setzt deine Check-ins, deinen Streak und deine Analyse-Historie zurück. Dein
+              Onboarding-Profil (Name, Disziplin, Ziele usw.) bleibt unverändert. Fortfahren?
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -131,7 +165,9 @@ function Page() {
             </AvatarFallback>
           </Avatar>
           <div className="flex-1 min-w-0">
-            <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Onboarding-Daten</div>
+            <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+              Onboarding-Daten
+            </div>
             <h2 className="text-2xl font-bold tracking-tight mt-0.5">
               {profile?.display_name ?? "—"}
             </h2>
@@ -148,7 +184,11 @@ function Page() {
             onClick={() => reset.mutate()}
             disabled={reset.isPending}
           >
-            {reset.isPending ? <Loader2 className="h-4 w-4 mr-1.5 animate-spin" /> : <RefreshCcw className="h-4 w-4 mr-1.5" />}
+            {reset.isPending ? (
+              <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />
+            ) : (
+              <RefreshCcw className="h-4 w-4 mr-1.5" />
+            )}
             Onboarding wiederholen
           </Button>
         </div>
@@ -157,16 +197,26 @@ function Page() {
           {[
             { icon: User, label: "Alter", value: profile?.age ? `${profile.age}` : "—" },
             { icon: Trophy, label: "Erfahrung", value: profile?.experience ?? "—" },
-            { icon: Calendar, label: "Tage/Woche", value: profile?.training_days_per_week ? `${profile.training_days_per_week}` : "—" },
-
+            {
+              icon: Calendar,
+              label: "Tage/Woche",
+              value: profile?.training_days_per_week ? `${profile.training_days_per_week}` : "—",
+            },
           ].map((s) => {
             const Icon = s.icon;
             return (
-              <div key={s.label} className="rounded-2xl border border-border/50 bg-white/[0.02] p-4 flex flex-col items-center justify-center text-center gap-1.5 min-h-[86px]">
+              <div
+                key={s.label}
+                className="rounded-2xl border border-border/50 bg-white/[0.02] p-4 flex flex-col items-center justify-center text-center gap-1.5 min-h-[86px]"
+              >
                 <Icon className="h-4 w-4 text-accent shrink-0" />
                 <div className="min-w-0">
-                  <div className="text-[10px] uppercase tracking-widest text-muted-foreground">{s.label}</div>
-                  <div className="text-sm font-semibold text-center leading-snug break-words">{s.value}</div>
+                  <div className="text-[10px] uppercase tracking-widest text-muted-foreground">
+                    {s.label}
+                  </div>
+                  <div className="text-sm font-semibold text-center leading-snug break-words">
+                    {s.value}
+                  </div>
                 </div>
               </div>
             );
@@ -175,7 +225,9 @@ function Page() {
 
         {profile?.disciplines && profile.disciplines.length > 0 && (
           <div className="relative mt-4">
-            <div className="text-[10px] uppercase tracking-widest text-muted-foreground mb-2">Disziplinen</div>
+            <div className="text-[10px] uppercase tracking-widest text-muted-foreground mb-2">
+              Disziplinen
+            </div>
             <div className="flex flex-wrap gap-1.5">
               {profile.disciplines.map((d) => (
                 <Badge key={d} variant="outline" className="border-accent/30 text-accent">
@@ -190,7 +242,6 @@ function Page() {
           profile?.current_focus?.length ||
           profile?.favourite_athlete) && (
           <div className="relative grid grid-cols-1 md:grid-cols-3 gap-3 mt-4">
-
             <div className="rounded-2xl border border-border/50 bg-white/[0.02] p-4">
               <div className="text-[10px] uppercase tracking-widest text-muted-foreground mb-2">
                 Was dich antreibt
@@ -234,14 +285,15 @@ function Page() {
                 {profile?.favourite_athlete || "—"}
               </div>
             </div>
-
           </div>
         )}
         {profile?.injuries && (
           <div className="relative mt-4 rounded-2xl border border-border/50 bg-white/[0.02] p-3 flex items-start gap-2.5">
             <HeartPulse className="h-4 w-4 text-accent shrink-0 mt-0.5" />
             <div className="min-w-0">
-              <div className="text-[10px] uppercase tracking-widest text-muted-foreground">Verletzungen / Hinweise</div>
+              <div className="text-[10px] uppercase tracking-widest text-muted-foreground">
+                Verletzungen / Hinweise
+              </div>
               <div className="text-sm">{profile.injuries}</div>
             </div>
           </div>
@@ -250,26 +302,15 @@ function Page() {
         {!profile?.onboarded_at && (
           <div className="relative mt-4 rounded-2xl border border-neon-amber/30 bg-neon-amber/5 p-3 text-sm">
             Du hast das Onboarding noch nicht abgeschlossen.{" "}
-            <button onClick={() => navigate({ to: "/onboarding" })} className="underline text-neon-amber">
+            <button
+              onClick={() => navigate({ to: "/onboarding" })}
+              className="underline text-neon-amber"
+            >
               Jetzt starten →
             </button>
           </div>
         )}
       </div>
-
-
     </AppShell>
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-

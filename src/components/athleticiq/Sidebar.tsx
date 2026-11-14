@@ -41,11 +41,7 @@ export function Sidebar() {
     <>
       <aside className="hidden lg:flex w-64 shrink-0 flex-col h-screen sticky top-0 px-3 pb-4 pt-1 border-r border-border/60 glass-strong z-10">
         <Link to="/" className="mb-4 block py-1">
-          <img
-            src={logoLong}
-            alt="Aether Athlete IQ"
-            className="h-auto w-[150px] object-contain"
-          />
+          <img src={logoLong} alt="Aether Athlete IQ" className="h-auto w-[150px] object-contain" />
         </Link>
 
         <nav className="flex flex-col gap-1 flex-1">
@@ -79,7 +75,7 @@ export function Sidebar() {
             KI-Coach aktiv
           </div>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            Heute leichtes Training empfohlen. HRV unter Baseline.
+            Empfehlungen findest du in deinen persönlichen Analysen.
           </p>
         </div>
       </aside>
@@ -105,11 +101,10 @@ export function Sidebar() {
                   {active && (
                     <span className="absolute inset-x-2 top-1 h-[3px] rounded-full bg-gradient-to-r from-neon-cyan to-neon-lime shadow-[0_0_12px_oklch(0.78_0.2_235/0.8)]" />
                   )}
-                  <Icon
-                    className="h-5 w-5"
-                    strokeWidth={active ? 2.5 : 2}
-                  />
-                  <span className="text-[10px] font-semibold tracking-wide whitespace-nowrap">{label}</span>
+                  <Icon className="h-5 w-5" strokeWidth={active ? 2.5 : 2} />
+                  <span className="text-[10px] font-semibold tracking-wide whitespace-nowrap">
+                    {label}
+                  </span>
                 </Link>
               );
             })}
@@ -119,7 +114,3 @@ export function Sidebar() {
     </>
   );
 }
-
-
-
-

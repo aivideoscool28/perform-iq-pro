@@ -1,40 +1,66 @@
-import { useEffect, useState } from "react";
+import {
+  createContext,
+  createElement,
+  useContext,
+  useEffect,
+  useState,
+  type ReactNode,
+} from "react";
+import type { Session } from "@supabase/supabase-js";
+import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { shouldDropSession, clearAuthFlags } from "@/lib/auth-session";
-import type { Session, User } from "@supabase/supabase-js";
-
-export function useAuth() {
-  const [session, setSession] = useState<Session | null>(null);
-  const [loading, setLoading] = useState(true);
-
+const AuthContext = createContext<{
+  session: Session | null;
+  loading: boolean;
+  error: string | null;
+}>({ session: null, loading: true, error: null });
+export function AuthProvider({ children }: { children: ReactNode }) {
+  const qc = useQueryClient();
+  const [state, setState] = useState({
+    session: null as Session | null,
+    loading: true,
+    error: null as string | null,
+  });
   useEffect(() => {
-    let mounted = true;
-
-    (async () => {
-      // Enforce the "Remember me" choice before trusting a stored session.
-      if (shouldDropSession()) {
-        await supabase.auth.signOut();
-        clearAuthFlags();
-        if (mounted) {
-          setSession(null);
-          setLoading(false);
-        }
-        return;
-      }
-      const { data } = await supabase.auth.getSession();
-      if (!mounted) return;
-      setSession(data.session);
-      setLoading(false);
-    })();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, s) => {
-      setSession(s);
+    let active = true;
+    let version = 0;
+    let previousId: string | null | undefined;
+    const accept = (session: Session | null) => {
+      if (!active) return;
+      if (previousId !== undefined && previousId !== (session?.user.id ?? null)) qc.clear();
+      previousId = session?.user.id ?? null;
+      setState({ session, loading: false, error: null });
+    };
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      version++;
+      accept(session);
     });
+    const initialVersion = version;
+    void supabase.auth
+      .getSession()
+      .then(({ data, error }) => {
+        if (!active || initialVersion !== version) return;
+        if (error)
+          setState({
+            session: null,
+            loading: false,
+            error: "Session could not be loaded. Please sign in again.",
+          });
+        else accept(data.session);
+      })
+      .catch(() => {
+        if (active) setState({ session: null, loading: false, error: "Session unavailable" });
+      });
     return () => {
-      mounted = false;
+      active = false;
       subscription.unsubscribe();
     };
-  }, []);
-
-  return { session, user: session?.user as User | undefined, loading };
+  }, [qc]);
+  return createElement(AuthContext.Provider, { value: state }, children);
+}
+export function useAuth() {
+  const state = useContext(AuthContext);
+  return { ...state, user: state.session?.user };
 }

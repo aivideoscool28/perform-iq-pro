@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useNavigate } from "@tanstack/react-router";
@@ -11,8 +11,14 @@ import {
 import { X, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import { createPortal } from "react-dom";
-import { TrainingQuestionPage, PerformanceQuestionPage } from "@/components/daily-checkin/Checkin12Training";
-import { BodyMindQuestionPage, ContextQuestionPage } from "@/components/daily-checkin/Checkin34BodyContext";
+import {
+  TrainingQuestionPage,
+  PerformanceQuestionPage,
+} from "@/components/daily-checkin/Checkin12Training";
+import {
+  BodyMindQuestionPage,
+  ContextQuestionPage,
+} from "@/components/daily-checkin/Checkin34BodyContext";
 import { CheckinSuccess } from "@/components/daily-checkin/CheckinSuccess";
 import { Button } from "@/components/ui/button";
 
@@ -106,18 +112,17 @@ export function DailyCheckin({ name, onClose }: Props) {
   const qc = useQueryClient();
   const navigate = useNavigate();
   const saveFn = useServerFn(saveDailyCheckin);
-  const fetchTodayPlannedWorkoutFn =
-    useServerFn(fetchTodayPlannedWorkout);
-  const updatePlannedWorkoutStatusFn =
-    useServerFn(updatePlannedWorkoutStatus);
+  const fetchTodayPlannedWorkoutFn = useServerFn(fetchTodayPlannedWorkout);
+  const updatePlannedWorkoutStatusFn = useServerFn(updatePlannedWorkoutStatus);
 
   const { data: plannedWorkout } = useQuery({
     queryKey: ["today-planned-workout"],
     queryFn: () => fetchTodayPlannedWorkoutFn(),
   });
 
-  const [plannedCompletionStatus, setPlannedCompletionStatus] =
-    useState<"completed" | "changed" | null>(null);
+  const [plannedCompletionStatus, setPlannedCompletionStatus] = useState<
+    "completed" | "changed" | null
+  >(null);
 
   /*
   ==========================================================================
@@ -167,20 +172,18 @@ export function DailyCheckin({ name, onClose }: Props) {
   const [notCompletedReason, setNotCompletedReason] = useState<string | null>(null);
   const [notCompletedNote, setNotCompletedNote] = useState("");
 
-
   // Only used when the athlete says the session goal was
   // partly achieved or not achieved.
   const [sessionGoalText, setSessionGoalText] = useState("");
 
   const mutate = useMutation({
-    mutationFn: async (payload: Answers) =>
-      saveFn({ data: payload }),
+    mutationFn: async (payload: Answers) => saveFn({ data: payload }),
 
     onSuccess: (res) => {
-      setAiSummary(
-        (res as { checkin: { ai_summary: string | null } })
-          .checkin.ai_summary ?? null,
-      );
+      if (res.analysisStatus === "unavailable")
+        toast.info("Check-in gespeichert. KI-Analyse derzeit nicht verfügbar.");
+      const summary = res.checkin.ai_summary;
+      setAiSummary(typeof summary === "string" ? summary : null);
 
       qc.invalidateQueries({
         queryKey: ["today-checkin"],
@@ -196,10 +199,7 @@ export function DailyCheckin({ name, onClose }: Props) {
     },
   });
 
-  function update<K extends keyof Answers>(
-    key: K,
-    value: Answers[K],
-  ) {
+  function update<K extends keyof Answers>(key: K, value: Answers[K]) {
     setA((current) => ({
       ...current,
       [key]: value,
@@ -216,39 +216,27 @@ export function DailyCheckin({ name, onClose }: Props) {
         };
       }
 
-      const withoutNothing =
-        current.performance_factors.filter(
-          (item) => item !== "Nichts Besonderes",
-        );
+      const withoutNothing = current.performance_factors.filter(
+        (item) => item !== "Nichts Besonderes",
+      );
 
-      const alreadySelected =
-        withoutNothing.includes(value);
+      const alreadySelected = withoutNothing.includes(value);
 
       return {
         ...current,
         performance_factors: alreadySelected
-          ? withoutNothing.filter(
-              (item) => item !== value,
-            )
+          ? withoutNothing.filter((item) => item !== value)
           : [...withoutNothing, value],
       };
     });
   }
 
-  function usePlannedWorkout(
-    status: "completed" | "changed",
-  ) {
+  function usePlannedWorkout(status: "completed" | "changed") {
     if (!plannedWorkout) return;
 
     const plannedSession = plannedWorkout.exercises
       .map((exercise) =>
-        [
-          exercise.name,
-          exercise.details,
-          exercise.rest
-            ? `Pause: ${exercise.rest}`
-            : null,
-        ]
+        [exercise.name, exercise.details, exercise.rest ? `Pause: ${exercise.rest}` : null]
           .filter(Boolean)
           .join(" · "),
       )
@@ -258,8 +246,7 @@ export function DailyCheckin({ name, onClose }: Props) {
 
     setA((current) => ({
       ...current,
-      discipline:
-        plannedWorkout.discipline ?? current.discipline,
+      discipline: plannedWorkout.discipline ?? current.discipline,
       workout_type: plannedWorkout.title,
       is_rest_day: false,
     }));
@@ -313,35 +300,28 @@ export function DailyCheckin({ name, onClose }: Props) {
     const payload: Answers = {
       ...a,
 
-      session_details:
-        sessionText.trim() || null,
+      session_details: sessionText.trim() || null,
 
-      performance_results:
-        performanceText.trim()
-          ? {
-              raw: performanceText.trim(),
-            }
-          : null,
+      performance_results: performanceText.trim()
+        ? {
+            raw: performanceText.trim(),
+          }
+        : null,
 
-      pain_note:
-        painText.trim() || null,
+      pain_note: painText.trim() || null,
 
-      session_goal_note:
-        sessionGoalText.trim() || null,
+      session_goal_note: sessionGoalText.trim() || null,
 
-      extra_note: [
-        mentalOtherText.trim()
-          ? `Mental: ${mentalOtherText.trim()}`
-          : null,
+      extra_note:
+        [
+          mentalOtherText.trim() ? `Mental: ${mentalOtherText.trim()}` : null,
 
-        factorOtherText.trim()
-          ? `Einflussfaktor: ${factorOtherText.trim()}`
-          : null,
+          factorOtherText.trim() ? `Einflussfaktor: ${factorOtherText.trim()}` : null,
 
-        extraText.trim() || null,
-      ]
-        .filter(Boolean)
-        .join("\n") || null,
+          extraText.trim() || null,
+        ]
+          .filter(Boolean)
+          .join("\n") || null,
     };
 
     setA(payload);
@@ -393,10 +373,7 @@ export function DailyCheckin({ name, onClose }: Props) {
             ? "Wichtiger Kontext"
             : "";
 
-  const progress =
-    page >= 1 && page <= 4
-      ? (page / 4) * 100
-      : 0;
+  const progress = page >= 1 && page <= 4 ? (page / 4) * 100 : 0;
 
   // document.body only exists after mounting in the browser.
   if (!mounted) {
@@ -404,23 +381,16 @@ export function DailyCheckin({ name, onClose }: Props) {
   }
 
   return createPortal(
-    (
     <div
       className="fixed inset-0 z-[9999] bg-white text-slate-950 flex flex-col overflow-hidden overscroll-none"
       style={{ isolation: "isolate" }}
     >
-
       {/* HEADER */}
       <div className="border-b border-border bg-card/70 backdrop-blur-xl">
         <div className="max-w-3xl mx-auto w-full px-5 py-4 flex items-center gap-4">
-
           {page >= 1 && page <= 4 ? (
             <button
-              onClick={() =>
-                setPage((current) =>
-                  Math.max(1, current - 1)
-                )
-              }
+              onClick={() => setPage((current) => Math.max(1, current - 1))}
               className="p-2 rounded-xl hover:bg-muted transition"
               aria-label="Zurück"
             >
@@ -434,13 +404,9 @@ export function DailyCheckin({ name, onClose }: Props) {
             {page >= 1 && page <= 4 && (
               <>
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-semibold">
-                    {pageTitle}
-                  </span>
+                  <span className="text-sm font-semibold">{pageTitle}</span>
 
-                  <span className="text-xs text-muted-foreground">
-                    {page} / 4
-                  </span>
+                  <span className="text-xs text-muted-foreground">{page} / 4</span>
                 </div>
 
                 <div className="h-1.5 rounded-full bg-muted overflow-hidden">
@@ -470,19 +436,13 @@ export function DailyCheckin({ name, onClose }: Props) {
         className="flex-1 max-w-3xl w-full mx-auto px-5 py-6 flex flex-col overflow-y-auto overscroll-contain bg-white"
         style={{ WebkitOverflowScrolling: "touch" }}
       >
-
         {/* GREETING */}
         {page === 0 && (
           <div className="flex-1 flex flex-col justify-center">
             <div className="rounded-3xl border border-border bg-card p-7 shadow-sm">
+              <div className="text-sm font-medium text-accent mb-2">Athletic IQ Daily Check-In</div>
 
-              <div className="text-sm font-medium text-accent mb-2">
-                Athletic IQ Daily Check-In
-              </div>
-
-              <h1 className="text-3xl font-bold tracking-tight">
-                Hey {name} 👋
-              </h1>
+              <h1 className="text-3xl font-bold tracking-tight">Hey {name} 👋</h1>
 
               <p className="text-muted-foreground mt-3 mb-7">
                 Vier kurze Bereiche. Ziel: unter einer Minute.
@@ -593,22 +553,8 @@ export function DailyCheckin({ name, onClose }: Props) {
             }}
           />
         )}
-
       </div>
-    </div>
-    ),
+    </div>,
     document.body,
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-

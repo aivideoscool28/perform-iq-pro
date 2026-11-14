@@ -1,6 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { Flame, ChevronLeft, ChevronRight, Sparkles, CalendarDays, Moon, AlertCircle } from "lucide-react";
+import {
+  Flame,
+  ChevronLeft,
+  ChevronRight,
+  Sparkles,
+  CalendarDays,
+  Moon,
+  AlertCircle,
+} from "lucide-react";
 
 type LogEntry = { id: string; discipline: string; date: string; note?: string };
 export type CheckinEntry = {
@@ -71,8 +79,18 @@ const mondayIndex = (d: Date) => (d.getDay() + 6) % 7;
 
 const WEEKDAYS = ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"];
 const MONTHS = [
-  "Januar", "Februar", "März", "April", "Mai", "Juni",
-  "Juli", "August", "September", "Oktober", "November", "Dezember",
+  "Januar",
+  "Februar",
+  "März",
+  "April",
+  "Mai",
+  "Juni",
+  "Juli",
+  "August",
+  "September",
+  "Oktober",
+  "November",
+  "Dezember",
 ];
 
 // Empfehlungs-Rotation: nach Belastung wechseln
@@ -149,7 +167,7 @@ export function StreakManager({
     // Determine earliest date to evaluate
     const dates = checkins.map((c) => c.checkin_date).sort();
     const earliest = dates[0] ?? todayISO;
-    let cursorDate = new Date(earliest);
+    const cursorDate = new Date(earliest);
     const endDate = new Date(todayISO);
     let runStreak = 0;
     let longest = 0;
@@ -266,7 +284,9 @@ export function StreakManager({
 
           <div className="grid grid-cols-7 gap-1.5 text-[10px] uppercase tracking-widest text-muted-foreground mb-2">
             {WEEKDAYS.map((w) => (
-              <div key={w} className="text-center">{w}</div>
+              <div key={w} className="text-center">
+                {w}
+              </div>
             ))}
           </div>
 
@@ -275,21 +295,21 @@ export function StreakManager({
               if (!c.iso) return <div key={i} className="aspect-square" />;
               const entries = byDate.get(c.iso);
               const ci = checkinByDate.get(c.iso);
-              const dayStatus: DayStatus = statusByDate.get(c.iso) ?? (c.iso > todayISO ? "future" : "empty");
+              const dayStatus: DayStatus =
+                statusByDate.get(c.iso) ?? (c.iso > todayISO ? "future" : "empty");
               const isToday = c.iso === todayISO;
               const isSelected = c.iso === selected;
-              const cellClass =
-                isSelected
-                  ? "border-neon-cyan bg-neon-cyan/15 text-neon-cyan glow-cyan"
-                  : dayStatus === "training"
+              const cellClass = isSelected
+                ? "border-neon-cyan bg-neon-cyan/15 text-neon-cyan glow-cyan"
+                : dayStatus === "training"
                   ? "border-neon-amber/50 bg-neon-amber/15 hover:border-neon-amber"
                   : dayStatus === "rest"
-                  ? "border-border/60 bg-muted/20 text-muted-foreground hover:border-border"
-                  : dayStatus === "grace"
-                  ? "border-amber-400/40 bg-amber-400/5 hover:border-amber-400/70"
-                  : dayStatus === "broken"
-                  ? "border-border/40 bg-transparent text-muted-foreground/60"
-                  : "border-border/50 bg-white/[0.02] hover:border-border";
+                    ? "border-border/60 bg-muted/20 text-muted-foreground hover:border-border"
+                    : dayStatus === "grace"
+                      ? "border-amber-400/40 bg-amber-400/5 hover:border-amber-400/70"
+                      : dayStatus === "broken"
+                        ? "border-border/40 bg-transparent text-muted-foreground/60"
+                        : "border-border/50 bg-white/[0.02] hover:border-border";
               return (
                 <button
                   key={c.iso}
@@ -325,10 +345,18 @@ export function StreakManager({
 
           {/* Legend */}
           <div className="mt-3 flex flex-wrap gap-3 text-[10px] text-muted-foreground">
-            <span className="inline-flex items-center gap-1"><Flame className="h-3 w-3 text-neon-amber" /> Training</span>
-            <span className="inline-flex items-center gap-1"><Moon className="h-3 w-3" /> Ruhetag</span>
-            <span className="inline-flex items-center gap-1"><AlertCircle className="h-3 w-3 text-amber-400/80" /> Verpasst (Schonfrist)</span>
-            <span className="inline-flex items-center gap-1"><span className="h-2.5 w-2.5 rounded-sm border border-border/40" /> Streak gebrochen</span>
+            <span className="inline-flex items-center gap-1">
+              <Flame className="h-3 w-3 text-neon-amber" /> Training
+            </span>
+            <span className="inline-flex items-center gap-1">
+              <Moon className="h-3 w-3" /> Ruhetag
+            </span>
+            <span className="inline-flex items-center gap-1">
+              <AlertCircle className="h-3 w-3 text-amber-400/80" /> Verpasst (Schonfrist)
+            </span>
+            <span className="inline-flex items-center gap-1">
+              <span className="h-2.5 w-2.5 rounded-sm border border-border/40" /> Streak gebrochen
+            </span>
           </div>
 
           {/* Details für gewählten Tag */}
@@ -362,18 +390,19 @@ export function StreakManager({
                 );
               }
               return selectedEntries.length === 0 ? (
-              <div className="text-sm text-muted-foreground mt-2">
-                Kein Training eingetragen. {selected === todayISO && "Logge eine Einheit, um deinen Streak zu halten."}
-              </div>
-            ) : (
-              <div className="mt-2 space-y-1.5">
-                {selectedEntries.map((e) => (
-                  <div key={e.id} className="flex items-center justify-between text-sm">
-                    <span className="font-semibold">{e.discipline}</span>
-                    {e.note && <span className="text-xs text-muted-foreground">{e.note}</span>}
-                  </div>
-                ))}
-              </div>
+                <div className="text-sm text-muted-foreground mt-2">
+                  Kein Training eingetragen.{" "}
+                  {selected === todayISO && "Logge eine Einheit, um deinen Streak zu halten."}
+                </div>
+              ) : (
+                <div className="mt-2 space-y-1.5">
+                  {selectedEntries.map((e) => (
+                    <div key={e.id} className="flex items-center justify-between text-sm">
+                      <span className="font-semibold">{e.discipline}</span>
+                      {e.note && <span className="text-xs text-muted-foreground">{e.note}</span>}
+                    </div>
+                  ))}
+                </div>
               );
             })()}
           </div>

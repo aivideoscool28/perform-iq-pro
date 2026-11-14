@@ -1,162 +1,103 @@
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
-import { generateText, jsonSchema } from "ai";
-
+import { generateText, jsonSchema, type ModelMessage } from "ai";
+import { authorizePaidAi } from "./security/ai-access.server";
+type AiTool = {
+  type: string;
+  function: { name: string; description?: string; parameters: Record<string, unknown> };
+};
+type AiRequest = {
+  model?: string;
+  messages: { role: string; content: unknown }[];
+  tools?: AiTool[];
+  tool_choice?: { type: string; function: { name: string } };
+};
+type ContentPart =
+  { type: "text"; text: string } | { type: "image"; image: string | URL; mediaType?: string };
 export function createAiProvider(apiKey: string) {
-  return createGoogleGenerativeAI({
-    apiKey,
+  return createGoogleGenerativeAI({ apiKey });
+}
+function record(value: unknown): Record<string, unknown> {
+  if (!value || typeof value !== "object") throw new Error("Invalid AI content");
+  return value as Record<string, unknown>;
+}
+function normalizeMessageContent(content: unknown): string | ContentPart[] {
+  if (typeof content === "string") return content;
+  if (!Array.isArray(content)) throw new Error("Invalid AI content");
+  return content.map((value): ContentPart => {
+    const part = record(value);
+    if (part.type === "text" && typeof part.text === "string")
+      return { type: "text", text: part.text };
+    if (part.type === "image_url") {
+      const imageUrl = record(part.image_url).url;
+      if (typeof imageUrl !== "string") throw new Error("AI image missing");
+      const match = imageUrl.match(
+        /^data:(image\/(?:jpeg|png|webp));base64,([A-Za-z0-9+/]+={0,2})$/,
+      );
+      if (!match) throw new Error("Unsupported AI image");
+      return { type: "image", image: match[2], mediaType: match[1] };
+    }
+    throw new Error("Unsupported AI content");
   });
 }
-
-function getGeminiApiKey() {
+/** Compatibility response shape for existing feature functions, with one paid-call gate. */
+export async function callAi(body: AiRequest) {
+  await authorizePaidAi();
   const apiKey = process.env.GEMINI_API_KEY;
-
-  if (!apiKey) {
-    throw new Error("GEMINI_API_KEY missing");
-  }
-
-  return apiKey;
-}
-
-/**
- * Compatibility layer for the existing Athletic IQ AI functions.
- *
- * The old code used Lovable's OpenAI-compatible response format:
- *
- *   choices[0].message.content
- *   choices[0].message.tool_calls
- *
- * This function keeps that format so the existing workout,
- * food, check-in, training and video code does not need
- * to be rewritten all at once.
- */
-export async function callAi(body: any) {
-  const apiKey = getGeminiApiKey();
-  const google = createAiProvider(apiKey);
-
-  const modelName =
-    typeof body.model === "string"
-      ? body.model.replace(/^google\//, "")
-      : "gemini-3.5-flash";
-
-  const tools = Array.isArray(body.tools)
+  if (!apiKey) throw new Error("AI service is not configured");
+  const tools = body.tools
     ? Object.fromEntries(
-        body.tools
-          .filter(
-            (t: any) =>
-              t?.type === "function" &&
-              t?.function?.name &&
-              t?.function?.parameters,
-          )
-          .map((t: any) => [
-            t.function.name,
-            {
-              description: t.function.description,
-              inputSchema: jsonSchema(t.function.parameters),
-            },
-          ]),
+        body.tools.map((tool) => [
+          tool.function.name,
+          {
+            description: tool.function.description,
+            inputSchema: jsonSchema(tool.function.parameters as Parameters<typeof jsonSchema>[0]),
+          },
+        ]),
       )
     : undefined;
-
-  const messages = Array.isArray(body.messages)
-    ? body.messages.map((message: any) => ({
-        role: message.role,
-        content: normalizeMessageContent(message.content),
-      }))
-    : [];
-
-  const toolChoice = body.tool_choice?.function?.name
-    ? {
-        type: "tool" as const,
-        toolName: body.tool_choice.function.name,
-      }
-    : undefined;
-
+  const messages = body.messages.map((message): ModelMessage => {
+    if (message.role !== "user" && message.role !== "assistant" && message.role !== "system")
+      throw new Error("Invalid AI message role");
+    const content = normalizeMessageContent(message.content);
+    if (message.role === "system") {
+      if (typeof content !== "string") throw new Error("Invalid system message");
+      return { role: message.role, content };
+    }
+    if (message.role === "assistant") {
+      if (typeof content === "string") return { role: "assistant", content };
+      return {
+        role: "assistant",
+        content: content.map((part) => {
+          if (part.type !== "text") throw new Error("Invalid assistant content");
+          return part;
+        }),
+      };
+    }
+    return { role: "user", content };
+  });
   const result = await generateText({
-    model: google(modelName),
+    model: createAiProvider(apiKey)((body.model ?? "gemini-3.5-flash").replace(/^google\//, "")),
     messages,
     tools,
-    toolChoice,
+    toolChoice: body.tool_choice
+      ? { type: "tool", toolName: body.tool_choice.function.name }
+      : undefined,
+    maxOutputTokens: 4096,
+    maxRetries: 1,
+    abortSignal: AbortSignal.timeout(45_000),
   });
-
-  const toolCalls = (result.toolCalls ?? []).map((toolCall: any) => ({
-    id: toolCall.toolCallId,
-    type: "function",
-    function: {
-      name: toolCall.toolName,
-      arguments: JSON.stringify(toolCall.input),
-    },
-  }));
-
   return {
     choices: [
       {
         message: {
           content: result.text || null,
-          tool_calls: toolCalls,
+          tool_calls: result.toolCalls.map((toolCall) => ({
+            id: toolCall.toolCallId,
+            type: "function",
+            function: { name: toolCall.toolName, arguments: JSON.stringify(toolCall.input) },
+          })),
         },
       },
     ],
   };
 }
-
-function normalizeMessageContent(content: any) {
-  if (typeof content === "string") {
-    return content;
-  }
-
-  if (!Array.isArray(content)) {
-    return String(content ?? "");
-  }
-
-  return content.map((part: any) => {
-    if (part?.type === "text") {
-      return {
-        type: "text",
-        text: part.text ?? "",
-      };
-    }
-
-    /*
-     * Video Analysis sends extracted frames using the old
-     * OpenAI-compatible image_url format:
-     *
-     * data:image/jpeg;base64,...
-     *
-     * The AI SDK should receive the actual base64 payload and
-     * its media type separately rather than the complete data URL.
-     */
-    if (part?.type === "image_url") {
-      const imageUrl = part.image_url?.url;
-
-      if (typeof imageUrl !== "string" || !imageUrl.trim()) {
-        throw new Error("AI image input is missing.");
-      }
-
-      const dataUrlMatch = imageUrl.match(
-        /^data:([^;,]+);base64,(.+)$/s,
-      );
-
-      if (dataUrlMatch) {
-        const [, mediaType, base64Data] =
-          dataUrlMatch;
-
-        return {
-          type: "image",
-          image: base64Data,
-          mediaType,
-        };
-      }
-
-      /*
-       * Keep normal remote image URLs supported too.
-       */
-      return {
-        type: "image",
-        image: new URL(imageUrl),
-      };
-    }
-
-    return part;
-  });
-}
-

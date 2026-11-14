@@ -1,9 +1,4 @@
-import {
-  ArrowRight,
-  CheckCircle2,
-  Mail,
-  Users,
-} from "lucide-react";
+import { ArrowRight, CheckCircle2, Mail, Users } from "lucide-react";
 
 export function ContactSection() {
   return (
@@ -23,11 +18,10 @@ export function ContactSection() {
         </h2>
 
         <p className="contact-section__lead">
-          If you're a coach or athletics club interested in connecting your
-          athletes to Aether Athlete IQ, we'd like to hear from you. Get in
-          touch to discuss your training environment, how your athletes could
-          use the platform and how Coach Manager could fit into your coaching
-          workflow.
+          If you're a coach or athletics club interested in connecting your athletes to Aether
+          Athlete IQ, we'd like to hear from you. Get in touch to discuss your training environment,
+          how your athletes could use the platform and how Coach Manager could fit into your
+          coaching workflow.
         </p>
 
         <div className="contact-section__points">
@@ -47,14 +41,14 @@ export function ContactSection() {
           </div>
         </div>
 
-        <a className="contact-section__button" href="mailto:YOUR_EMAIL_HERE">
-          Contact us
+        <a className="contact-section__button" href="https://aether-athlete-iq.netlify.app/auth">
+          Open Aether Athlete IQ
           <ArrowRight size={17} />
         </a>
 
         <p className="contact-section__note">
-          Tell us a little about your club, coaching group and what you would
-          like to use Aether Athlete IQ for.
+          Tell us a little about your club, coaching group and what you would like to use Aether
+          Athlete IQ for.
         </p>
       </div>
     </section>

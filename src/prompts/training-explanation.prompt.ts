@@ -1,5 +1,9 @@
+import type { Tables } from "@/integrations/supabase/types";
 type TrainingExplanationPromptInput = {
-  workout: any;
+  workout: Pick<
+    Tables<"planned_workouts">,
+    "workout_date" | "title" | "discipline" | "duration_minutes" | "session_goal" | "coach_note"
+  >;
   exercises: unknown[];
   workoutHistory: unknown[];
   checkinHistory: unknown[];

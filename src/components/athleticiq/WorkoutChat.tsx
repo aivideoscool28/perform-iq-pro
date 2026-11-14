@@ -1,3 +1,4 @@
+import { useAuth } from "@/hooks/use-auth";
 import { useState, useRef, useEffect } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -12,15 +13,42 @@ interface ChatMessage {
 }
 
 export function WorkoutChat({ name }: { name: string }) {
+  const { user } = useAuth();
+  const pendingKey = "aether.workout.pending." + user?.id;
   const fn = useServerFn(logWorkoutFromText);
   const qc = useQueryClient();
   const [text, setText] = useState("");
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const request = useRef<{ text: string; id: string } | null>(null);
   const mutation = useMutation({
-    mutationFn: (text: string) => fn({ data: { text } }),
+    mutationFn: (text: string) => {
+      if (!request.current) {
+        try {
+          const saved = JSON.parse(sessionStorage.getItem(pendingKey) ?? "null");
+          if (saved?.text === text && typeof saved.id === "string") request.current = saved;
+        } catch {
+          /* Unavailable storage does not block saving. */
+        }
+      }
+      if (request.current?.text !== text) request.current = { text, id: crypto.randomUUID() };
+      try {
+        sessionStorage.setItem(pendingKey, JSON.stringify(request.current));
+      } catch {
+        /* In-memory retry identity remains available. */
+      }
+      return fn({ data: { text, requestId: request.current.id } });
+    },
     onSuccess: (res) => {
+      request.current = null;
+      try {
+        sessionStorage.removeItem(pendingKey);
+      } catch {
+        /* Ignore local-storage failures. */
+      }
+      if (res.analysisStatus === "failed")
+        toast.info("Workout gespeichert. KI-Analyse derzeit nicht verfügbar.");
       const w = res.workout as { summary?: string; duration_minutes?: number | null };
       setMessages((m) => [
         ...m,
@@ -35,6 +63,7 @@ export function WorkoutChat({ name }: { name: string }) {
       toast.success("Workout gespeichert");
     },
     onError: (e) => {
+      if (request.current) setText(request.current.text);
       const msg = e instanceof Error ? e.message : "Fehler";
       setMessages((m) => [...m, { role: "ai", text: `⚠️ ${msg}` }]);
       toast.error(msg);
@@ -118,10 +147,13 @@ export function WorkoutChat({ name }: { name: string }) {
           disabled={!text.trim() || mutation.isPending}
           className="h-9 w-9 rounded-xl bg-gradient-to-br from-neon-cyan to-neon-violet text-background grid place-items-center disabled:opacity-40 transition hover:opacity-90"
         >
-          {mutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+          {mutation.isPending ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <Send className="h-4 w-4" />
+          )}
         </button>
       </form>
     </div>
   );
 }
-

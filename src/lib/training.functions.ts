@@ -1,3 +1,4 @@
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { callAi } from "@/lib/ai-gateway.server";
@@ -41,7 +42,8 @@ const PlanSchema = z.object({
 export type TrainingPlan = z.infer<typeof PlanSchema>;
 
 export const generateTrainingPlan = createServerFn({ method: "POST" })
-  .inputValidator((input) => InputSchema.parse(input))
+  .middleware([requireSupabaseAuth])
+  .validator((input) => InputSchema.parse(input))
   .handler(async ({ data }) => {
     const json = await callAi({
       model: "google/gemini-3.5-flash",
@@ -66,8 +68,7 @@ Balance zwischen Speed, Kraft, Technik, Ausdauer und Regeneration. Variiere Inte
           type: "function",
           function: {
             name: "create_training_plan",
-            description:
-              "Erstellt einen strukturierten 7-Tage-Trainingsplan.",
+            description: "Erstellt einen strukturierten 7-Tage-Trainingsplan.",
             parameters: {
               type: "object",
               properties: {
@@ -77,13 +78,11 @@ Balance zwischen Speed, Kraft, Technik, Ausdauer und Regeneration. Variiere Inte
                 },
                 focus: {
                   type: "string",
-                  description:
-                    "Wochenschwerpunkt, z.B. 'Speed-Endurance Block'.",
+                  description: "Wochenschwerpunkt, z.B. 'Speed-Endurance Block'.",
                 },
                 coach_note: {
                   type: "string",
-                  description:
-                    "Kurze persönliche Coach-Notiz an den Athleten.",
+                  description: "Kurze persönliche Coach-Notiz an den Athleten.",
                 },
                 days: {
                   type: "array",
@@ -138,33 +137,15 @@ Balance zwischen Speed, Kraft, Technik, Ausdauer und Regeneration. Variiere Inte
                               maximum: 120,
                             },
                           },
-                          required: [
-                            "name",
-                            "detail",
-                            "zone",
-                            "duration_min",
-                          ],
+                          required: ["name", "detail", "zone", "duration_min"],
                         },
                       },
                     },
-                    required: [
-                      "day",
-                      "label",
-                      "focus",
-                      "load",
-                      "duration_min",
-                      "rest",
-                      "blocks",
-                    ],
+                    required: ["day", "label", "focus", "load", "duration_min", "rest", "blocks"],
                   },
                 },
               },
-              required: [
-                "weekly_load_tss",
-                "focus",
-                "coach_note",
-                "days",
-              ],
+              required: ["weekly_load_tss", "focus", "coach_note", "days"],
             },
           },
         },
@@ -177,8 +158,7 @@ Balance zwischen Speed, Kraft, Technik, Ausdauer und Regeneration. Variiere Inte
       },
     });
 
-    const args =
-      json?.choices?.[0]?.message?.tool_calls?.[0]?.function?.arguments;
+    const args = json?.choices?.[0]?.message?.tool_calls?.[0]?.function?.arguments;
 
     if (!args) {
       throw new Error("Kein Plan vom Modell zurückgegeben");

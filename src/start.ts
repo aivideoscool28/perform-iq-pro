@@ -1,8 +1,5 @@
-﻿import {
-  createStart,
-  createMiddleware,
-  createCsrfMiddleware,
-} from "@tanstack/react-start";
+import { enforceRequestSize } from "@/lib/security/ai-input";
+import { createStart, createMiddleware, createCsrfMiddleware } from "@tanstack/react-start";
 
 import { renderErrorPage } from "./lib/error-page";
 import { attachSupabaseAuth } from "@/integrations/supabase/auth-attacher";
@@ -26,14 +23,22 @@ const errorMiddleware = createMiddleware().server(async ({ next }) => {
   }
 });
 
+const inputLimitMiddleware = createMiddleware().server(async ({ request, next }) => {
+  if (request.method !== "GET" && request.method !== "HEAD") {
+    try {
+      await enforceRequestSize(request);
+    } catch {
+      return new Response("Request too large", { status: 413 });
+    }
+  }
+  return next();
+});
+
 const csrfMiddleware = createCsrfMiddleware({
   filter: (ctx) => ctx.handlerType === "serverFn",
 });
 
 export const startInstance = createStart(() => ({
-  requestMiddleware: [
-    csrfMiddleware,
-    errorMiddleware,
-  ],
+  requestMiddleware: [inputLimitMiddleware, csrfMiddleware, errorMiddleware],
   functionMiddleware: [attachSupabaseAuth],
 }));

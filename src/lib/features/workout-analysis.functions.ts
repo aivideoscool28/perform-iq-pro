@@ -5,13 +5,15 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 /* ------------------------ ANALYSIS UPDATE ------------------------ */
 export const updateAnalysis = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input) =>
-    z.object({
-      id: z.string().uuid(),
-      positives: z.array(z.string()).max(10),
-      negatives: z.array(z.string()).max(10),
-      improvements: z.array(z.string()).max(10),
-    }).parse(input),
+  .validator((input) =>
+    z
+      .object({
+        id: z.string().uuid(),
+        positives: z.array(z.string()).max(10),
+        negatives: z.array(z.string()).max(10),
+        improvements: z.array(z.string()).max(10),
+      })
+      .parse(input),
   )
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;

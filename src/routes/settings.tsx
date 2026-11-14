@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -12,7 +13,10 @@ export const Route = createFileRoute("/settings")({
   head: () => ({
     meta: [
       { title: "Einstellungen — AthleticIQ" },
-      { name: "description", content: "Persönliche Einstellungen, Benachrichtigungen, Privatsphäre und Darstellung." },
+      {
+        name: "description",
+        content: "Persönliche Einstellungen, Benachrichtigungen, Privatsphäre und Darstellung.",
+      },
       { property: "og:title", content: "Einstellungen — AthleticIQ" },
       { property: "og:description", content: "Verwalte deine AthleticIQ-Präferenzen." },
     ],
@@ -59,7 +63,10 @@ function SettingsPage() {
     queryFn: () => fetchProfileFn(),
   });
 
-  const profile = (profileData?.profile as { favourite_athlete?: string | null; receive_news_and_motivation?: boolean | null } | undefined) ?? undefined;
+  const profile =
+    (profileData?.profile as
+      | { favourite_athlete?: string | null; receive_news_and_motivation?: boolean | null }
+      | undefined) ?? undefined;
 
   const savePersonalization = useMutation({
     mutationFn: (vars: { favouriteAthlete: string; receiveNewsAndMotivation: boolean }) =>
@@ -100,12 +107,18 @@ function SettingsPage() {
     setSettings((s) => ({ ...s, [key]: value }));
 
   const saveFavoriteAthlete = () => {
-    savePersonalization.mutate({ favouriteAthlete: favoriteAthlete.trim(), receiveNewsAndMotivation });
+    savePersonalization.mutate({
+      favouriteAthlete: favoriteAthlete.trim(),
+      receiveNewsAndMotivation,
+    });
   };
 
   const toggleNews = (value: boolean) => {
     setReceiveNewsAndMotivation(value);
-    savePersonalization.mutate({ favouriteAthlete: favoriteAthlete.trim(), receiveNewsAndMotivation: value });
+    savePersonalization.mutate({
+      favouriteAthlete: favoriteAthlete.trim(),
+      receiveNewsAndMotivation: value,
+    });
   };
 
   return (
@@ -136,7 +149,9 @@ function SettingsPage() {
                 className="h-11 w-full rounded-2xl border border-border bg-background/70 px-3 text-sm outline-none focus:ring-2 focus:ring-neon-cyan/40"
               />
               <div className="mt-2 flex items-center justify-between gap-3">
-                <p className="text-xs text-muted-foreground">Diese Auswahl beeinflusst die Motivation und Inhalte auf dem Dashboard.</p>
+                <p className="text-xs text-muted-foreground">
+                  Diese Auswahl beeinflusst die Motivation und Inhalte auf dem Dashboard.
+                </p>
                 <button
                   type="button"
                   onClick={saveFavoriteAthlete}
@@ -156,104 +171,21 @@ function SettingsPage() {
           </div>
         </SettingsCard>
 
-        <SettingsCard
-          icon={<Bell className="h-5 w-5 text-neon-cyan" />}
-          title="Benachrichtigungen"
-          description="Wann darf AthleticIQ dich erreichen?"
-        >
-          <Toggle
-            label="Trainings-Erinnerungen"
-            hint="Push-Notifications vor geplanten Einheiten"
-            value={settings.pushTraining}
-            onChange={(v) => update("pushTraining", v)}
-          />
-          <Toggle
-            label="Regenerations-Alerts"
-            hint="Wenn HRV oder Schlaf unter Baseline fallen"
-            value={settings.pushRecovery}
-            onChange={(v) => update("pushRecovery", v)}
-          />
-          <Toggle
-            label="Freundes-Aktivitäten"
-            hint="Streaks, PRs und Wettkämpfe deiner Crew"
-            value={settings.pushFriends}
-            onChange={(v) => update("pushFriends", v)}
-          />
-          <Toggle
-            label="Wochen-Report (E-Mail)"
-            hint="Jeden Montagmorgen, kompakt aufbereitet"
-            value={settings.emailWeekly}
-            onChange={(v) => update("emailWeekly", v)}
-          />
-        </SettingsCard>
-
-        <SettingsCard
-          icon={<Shield className="h-5 w-5 text-neon-lime" />}
-          title="Privatsphäre"
-          description="Wer sieht deine Daten?"
-        >
-          <Toggle
-            label="Daten mit KI-Coach teilen"
-            hint="Erforderlich für personalisierte Empfehlungen"
-            value={settings.shareWithCoach}
-            onChange={(v) => update("shareWithCoach", v)}
-          />
-          <Toggle
-            label="Öffentliches Profil"
-            hint="Erlaubt Freunden, dein Profil zu finden"
-            value={settings.publicProfile}
-            onChange={(v) => update("publicProfile", v)}
-          />
-        </SettingsCard>
-
-        <SettingsCard
-          icon={<Palette className="h-5 w-5 text-neon-violet" />}
-          title="Darstellung & Region"
-          description="Sprache, Einheiten und Theme"
-        >
-          <Segmented
-            label="Einheiten"
-            value={settings.units}
-            onChange={(v) => update("units", v as Settings["units"])}
-            options={[
-              { value: "metric", label: "Metrisch (kg/km)" },
-              { value: "imperial", label: "Imperial (lb/mi)" },
-            ]}
-          />
-          <Segmented
-            label="Sprache"
-            value={settings.language}
-            onChange={(v) => update("language", v as Settings["language"])}
-            options={[
-              { value: "de", label: "Deutsch" },
-              { value: "en", label: "English" },
-            ]}
-          />
-          <Segmented
-            label="Theme"
-            value={settings.theme}
-            onChange={(v) => update("theme", v as Settings["theme"])}
-            options={[
-              { value: "dark", label: "Dark (Stadion)" },
-              { value: "auto", label: "Auto (Systemwahl)" },
-            ]}
-          />
-        </SettingsCard>
-
-        <SettingsCard
-          icon={<Lock className="h-5 w-5 text-neon-red" />}
-          title="Konto & Sicherheit"
-          description="Passwort, Sessions, Datenexport"
-        >
-          <div className="flex flex-wrap gap-2">
-            <ActionButton icon={<Lock className="h-4 w-4" />} label="Passwort ändern" />
-            <ActionButton icon={<Globe className="h-4 w-4" />} label="Sessions anzeigen" />
-            <ActionButton icon={<Moon className="h-4 w-4" />} label="Daten exportieren" />
-          </div>
-          <div className="pt-2">
-            <SignOutButton className="w-full sm:w-auto" />
-          </div>
-        </SettingsCard>
+        <section className="glass-strong rounded-3xl p-6">
+          <h2 className="font-semibold">Privatsphäre & Konto</h2>
+          <p className="text-sm text-muted-foreground mt-2">
+            KI-Verarbeitung, Coach-Freigabe und Zeitzone werden in deinem Profil gespeichert und
+            serverseitig berücksichtigt.
+          </p>
+          <Link to="/profile" className="inline-block mt-4 underline text-accent">
+            Profil und Freigaben bearbeiten
+          </Link>
+          <p className="mt-4 text-xs text-muted-foreground">
+            Benachrichtigungen, Einheiten, Sessions und automatischer Datenexport sind noch nicht
+            verfügbar.
+          </p>
+          <SignOutButton className="mt-4" />
+        </section>
       </div>
     </AppShell>
   );
@@ -373,4 +305,3 @@ function ActionButton({ icon, label }: { icon: React.ReactNode; label: string })
     </button>
   );
 }
-

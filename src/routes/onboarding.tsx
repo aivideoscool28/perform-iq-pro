@@ -6,16 +6,10 @@ import { Loader2, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 
 import { useAuth } from "@/hooks/use-auth";
-import {
-  generateGoalReply,
-  saveOnboarding,
-} from "@/lib/features/profile.functions";
+import { generateGoalReply, saveOnboarding } from "@/lib/features/profile.functions";
 import { markTourPending } from "@/lib/tour";
 
-import {
-  OnboardingFlow,
-  type OnboardingAnswers,
-} from "@/components/onboarding/OnboardingFlow";
+import { OnboardingFlow, type OnboardingAnswers } from "@/components/onboarding/OnboardingFlow";
 import { OnboardingReveal } from "@/components/onboarding/OnboardingReveal";
 
 export const Route = createFileRoute("/onboarding")({
@@ -33,8 +27,7 @@ function OnboardingPage() {
   const saveFn = useServerFn(saveOnboarding);
   const goalReplyFn = useServerFn(generateGoalReply);
 
-  const [completedAnswers, setCompletedAnswers] =
-    useState<OnboardingAnswers | null>(null);
+  const [completedAnswers, setCompletedAnswers] = useState<OnboardingAnswers | null>(null);
 
   useEffect(() => {
     if (!loading && !session) {
@@ -45,9 +38,7 @@ function OnboardingPage() {
   const saveMutation = useMutation({
     mutationFn: async (answers: OnboardingAnswers) => {
       const disciplines =
-        answers.discipline === "Sprint & Hürden"
-          ? ["Sprint", "Hürden"]
-          : [answers.discipline];
+        answers.discipline === "Sprint & Hürden" ? ["Sprint", "Hürden"] : [answers.discipline];
 
       return saveFn({
         data: {
@@ -62,31 +53,29 @@ function OnboardingPage() {
           training_setup: answers.trainingSetup,
           injuries: answers.injuries,
           favouriteAthlete: answers.favouriteAthlete,
+          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
         },
       });
     },
 
     onSuccess: async () => {
-      queryClient.setQueryData(
-        ["dashboard"],
-        (old: unknown) => {
-          if (!old || typeof old !== "object") {
-            return old;
-          }
+      queryClient.setQueryData(["dashboard"], (old: unknown) => {
+        if (!old || typeof old !== "object") {
+          return old;
+        }
 
-          const current = old as {
-            profile?: Record<string, unknown>;
-          };
+        const current = old as {
+          profile?: Record<string, unknown>;
+        };
 
-          return {
-            ...current,
-            profile: {
-              ...(current.profile ?? {}),
-              onboarded_at: new Date().toISOString(),
-            },
-          };
-        },
-      );
+        return {
+          ...current,
+          profile: {
+            ...(current.profile ?? {}),
+            onboarded_at: new Date().toISOString(),
+          },
+        };
+      });
 
       await queryClient.refetchQueries({
         queryKey: ["dashboard"],
@@ -104,17 +93,12 @@ function OnboardingPage() {
     onError: (error) => {
       console.error("ONBOARDING SAVE ERROR:", error);
       toast.error(
-        error instanceof Error
-          ? error.message
-          : "Profil konnte nicht gespeichert werden.",
+        error instanceof Error ? error.message : "Profil konnte nicht gespeichert werden.",
       );
     },
   });
 
-  const handleGoalReply = async (
-    goal: string,
-    name: string,
-  ) => {
+  const handleGoalReply = async (goal: string, name: string) => {
     try {
       const response = await goalReplyFn({
         data: {
@@ -139,32 +123,26 @@ function OnboardingPage() {
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-background">
-
       <div className="pointer-events-none absolute -right-32 -top-32 h-80 w-80 rounded-full bg-accent/10 blur-3xl" />
       <div className="pointer-events-none absolute -bottom-32 -left-32 h-80 w-80 rounded-full bg-orange-500/5 blur-3xl" />
 
       <header className="relative border-b border-border/60">
         <div className="mx-auto flex max-w-5xl items-center gap-3 px-5 py-4">
-
           <div className="grid h-9 w-9 place-items-center rounded-xl bg-accent text-accent-foreground">
             <Sparkles className="h-4 w-4" />
           </div>
 
           <div>
-            <div className="text-sm font-black tracking-tight">
-              Athletic IQ
-            </div>
+            <div className="text-sm font-black tracking-tight">Athletic IQ</div>
 
             <div className="text-xs text-muted-foreground">
               Lass uns dich als Athlet kennenlernen.
             </div>
           </div>
-
         </div>
       </header>
 
       <div className="relative mx-auto max-w-5xl px-5 py-8 sm:py-12">
-
         {completedAnswers ? (
           <OnboardingReveal
             name={completedAnswers.name}
@@ -193,11 +171,7 @@ function OnboardingPage() {
             }}
           />
         )}
-
       </div>
-
     </main>
   );
 }
-
-

@@ -1,4 +1,5 @@
-﻿import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { shiftDate } from "@/lib/dates";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -19,9 +20,7 @@ import { isTourPending, clearTourPending } from "@/lib/tour";
 import { useAuth } from "@/hooks/use-auth";
 import { consumeJustLoggedIn } from "@/lib/auth-session";
 import { toast } from "sonner";
-import {
-  Loader2,
-} from "lucide-react";
+import { Loader2 } from "lucide-react";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -34,17 +33,15 @@ export const Route = createFileRoute("/")({
 });
 
 /** Count non-rest check-ins within the current calendar week (Mon–Sun). */
-function trainingsThisWeek(checkins: Array<{ checkin_date: string; is_rest_day?: boolean | null }>): number {
-  const now = new Date();
-  const day = (now.getDay() + 6) % 7; // 0 = Monday
-  const monday = new Date(now);
-  monday.setHours(0, 0, 0, 0);
-  monday.setDate(now.getDate() - day);
-  return checkins.filter((c) => {
-    if (c.is_rest_day) return false;
-    const d = new Date(c.checkin_date);
-    return d >= monday;
-  }).length;
+function trainingsThisWeek(
+  checkins: Array<{ checkin_date: string; is_rest_day?: boolean | null }>,
+  today: string,
+): number {
+  const weekday = (new Date(today + "T12:00:00Z").getUTCDay() + 6) % 7;
+  const monday = shiftDate(today, -weekday);
+  return checkins.filter(
+    (c) => !c.is_rest_day && c.checkin_date >= monday && c.checkin_date <= today,
+  ).length;
 }
 
 function Dashboard() {
@@ -63,8 +60,13 @@ function Dashboard() {
     if (!loading && !session) navigate({ to: "/auth" });
   }, [loading, session, navigate]);
 
-  const { data, isLoading } = useQuery({
-    queryKey: ["dashboard"],
+  const {
+    data,
+    isLoading,
+    error: dashboardError,
+    refetch,
+  } = useQuery({
+    queryKey: ["dashboard", session?.user.id],
     queryFn: () => fetchFn(),
     enabled: !!session,
   });
@@ -80,10 +82,7 @@ function Dashboard() {
     enabled: !!session,
   });
 
-  const {
-    data: regenerationData,
-    isLoading: regenerationLoading,
-  } = useQuery({
+  const { data: regenerationData, isLoading: regenerationLoading } = useQuery({
     queryKey: ["today-regeneration"],
     queryFn: () => fetchRegeneration(),
     enabled: !!session,
@@ -136,6 +135,17 @@ function Dashboard() {
     setShowTour(false);
   };
 
+  if (dashboardError)
+    return (
+      <AppShell title="Dashboard">
+        <div role="alert">
+          Dashboard konnte nicht geladen werden.{" "}
+          <button onClick={() => void refetch()} className="underline">
+            Erneut versuchen
+          </button>
+        </div>
+      </AppShell>
+    );
   if (loading || !session) {
     return (
       <div className="min-h-screen grid place-items-center">
@@ -148,9 +158,19 @@ function Dashboard() {
   const checkins = data?.checkins ?? [];
   const currentStreak = data?.computedStreak ?? 0;
   const name = profile?.display_name ?? "Athlet";
-  const today = new Date().toLocaleDateString("de", { weekday: "long", day: "2-digit", month: "long" });
-  const weeklyGoal = (profile as { training_days_per_week?: number | null } | undefined)?.training_days_per_week ?? 4;
-  const trainings = trainingsThisWeek(checkins as Array<{ checkin_date: string; is_rest_day?: boolean | null }>);
+  const today = new Date((data?.today ?? "2000-01-01") + "T12:00:00Z").toLocaleDateString("de", {
+    timeZone: "UTC",
+    weekday: "long",
+    day: "2-digit",
+    month: "long",
+  });
+  const weeklyGoal =
+    (profile as { training_days_per_week?: number | null } | undefined)?.training_days_per_week ??
+    4;
+  const trainings = trainingsThisWeek(
+    checkins as Array<{ checkin_date: string; is_rest_day?: boolean | null }>,
+    data?.today ?? "2000-01-01",
+  );
 
   // Latest useful Athletic IQ insight.
   // Prefer a real takeaway from the latest saved Workout Analysis.
@@ -172,14 +192,11 @@ function Dashboard() {
       }
     | undefined;
 
-  const latestImprovement =
-    latestBoard?.improvements?.find((item) => item?.trim())?.trim() ?? null;
+  const latestImprovement = latestBoard?.improvements?.find((item) => item?.trim())?.trim() ?? null;
 
-  const latestObservation =
-    latestBoard?.negatives?.find((item) => item?.trim())?.trim() ?? null;
+  const latestObservation = latestBoard?.negatives?.find((item) => item?.trim())?.trim() ?? null;
 
-  const latestPositive =
-    latestBoard?.positives?.find((item) => item?.trim())?.trim() ?? null;
+  const latestPositive = latestBoard?.positives?.find((item) => item?.trim())?.trim() ?? null;
 
   const latestInsight =
     latestImprovement ||
@@ -188,20 +205,18 @@ function Dashboard() {
     latestCheckin?.ai_summary?.trim() ||
     null;
 
-  const latestInsightType =
-    latestImprovement
-      ? "NÄCHSTER FOKUS"
-      : latestObservation
-        ? "BEOBACHTUNG"
-        : latestPositive
-          ? "STÄRKE"
-          : latestInsight
-            ? "CHECK-IN"
-            : "ATHLETIC IQ";
+  const latestInsightType = latestImprovement
+    ? "NÄCHSTER FOKUS"
+    : latestObservation
+      ? "BEOBACHTUNG"
+      : latestPositive
+        ? "STÄRKE"
+        : latestInsight
+          ? "CHECK-IN"
+          : "ATHLETIC IQ";
 
   const latestInsightDiscipline =
-    latestCheckin?.discipline?.trim() ||
-    (profile?.disciplines?.[0] ?? null);
+    latestCheckin?.discipline?.trim() || (profile?.disciplines?.[0] ?? null);
 
   return (
     <AppShell title={`Hallo ${name}`} subtitle={today}>
@@ -214,9 +229,7 @@ function Dashboard() {
           <TodaysTrainingCard
             workout={todayTraining}
             loading={todayTrainingLoading}
-            onViewTraining={() =>
-              navigate({ to: "/training" })
-            }
+            onViewTraining={() => navigate({ to: "/training" })}
           />
 
           {/* CHECK-IN + MOTIVATION */}
@@ -230,7 +243,7 @@ function Dashboard() {
             />
             {/* MOTIVATION QUOTE */}
             <MotivationCard />
-</section>
+          </section>
           {/* STREAK + TRAININGS THIS WEEK */}
           <WeeklyProgressCards
             currentStreak={currentStreak}
@@ -240,38 +253,21 @@ function Dashboard() {
             weeklyGoal={weeklyGoal}
           />
           {/* KI INSIGHT */}
-          <KIInsightCard
-            insight={latestInsight}
-            discipline={latestInsightDiscipline}
-          />
-
-
-
+          <KIInsightCard insight={latestInsight} discipline={latestInsightDiscipline} />
         </>
       )}
-      {checkinOpen && (
-        <DailyCheckin name={name} onClose={() => setCheckinOpen(false)} />
+      {checkinOpen && <DailyCheckin name={name} onClose={() => setCheckinOpen(false)} />}
+      {!regenerationLoading && !regenerationData?.regeneration && !showTour && (
+        <RegenerationCheckin
+          onComplete={() => {
+            qc.invalidateQueries({
+              queryKey: ["today-regeneration"],
+            });
+          }}
+        />
       )}
-      {!regenerationLoading &&
-        !regenerationData?.regeneration &&
-        !showTour && (
-          <RegenerationCheckin
-            onComplete={() => {
-              qc.invalidateQueries({
-                queryKey: ["today-regeneration"],
-              });
-            }}
-          />
-        )}
 
       {showTour && <FeatureTour onClose={closeTour} />}
     </AppShell>
   );
 }
-
-
-
-
-
-
-

@@ -1,10 +1,6 @@
 ﻿import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import {
-  CircleHelp,
-  Search,
-  Users,
-} from "lucide-react";
+import { CircleHelp, Search, Users } from "lucide-react";
 
 import type { CoachAthlete } from "@/hooks/useCoachAthletes";
 
@@ -23,18 +19,12 @@ function getInitials(name: string) {
     .join("");
 }
 
-export function AthletesTable({
-  athletes,
-  loading,
-  error,
-}: AthletesTableProps) {
+export function AthletesTable({ athletes, loading, error }: AthletesTableProps) {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
 
   const filteredAthletes = athletes.filter((athlete) =>
-    athlete.display_name
-      .toLowerCase()
-      .includes(searchQuery.trim().toLowerCase()),
+    athlete.display_name.toLowerCase().includes(searchQuery.trim().toLowerCase()),
   );
 
   return (
@@ -69,21 +59,15 @@ export function AthletesTable({
       {!loading && error && (
         <div className="px-4 py-8 text-center">
           <CircleHelp className="mx-auto h-5 w-5 text-red-500" />
-          <p className="mt-2 text-xs font-semibold text-red-600">
-            Could not load athletes
-          </p>
-          <p className="mt-1 text-[14px] text-muted-foreground">
-            {error}
-          </p>
+          <p className="mt-2 text-xs font-semibold text-red-600">Could not load athletes</p>
+          <p className="mt-1 text-[14px] text-muted-foreground">{error}</p>
         </div>
       )}
 
       {!loading && !error && athletes.length === 0 && (
         <div className="px-4 py-10 text-center">
           <Users className="mx-auto h-5 w-5 text-muted-foreground" />
-          <p className="mt-2 text-xs font-semibold">
-            No athletes linked yet
-          </p>
+          <p className="mt-2 text-xs font-semibold">No athletes linked yet</p>
           <p className="mt-1 text-[14px] text-muted-foreground">
             Athletes linked to this coach will appear here.
           </p>
@@ -93,10 +77,9 @@ export function AthletesTable({
       {!loading &&
         !error &&
         filteredAthletes.map((athlete) => {
-          const disciplines =
-            athlete.disciplines?.length
-              ? athlete.disciplines.join(" / ")
-              : "Not set";
+          const disciplines = athlete.disciplines?.length
+            ? athlete.disciplines.join(" / ")
+            : "Not set";
 
           return (
             <button
@@ -117,13 +100,9 @@ export function AthletesTable({
                 </div>
 
                 <div>
-                  <p className="text-xs font-semibold">
-                    {athlete.display_name}
-                  </p>
+                  <p className="text-xs font-semibold">{athlete.display_name}</p>
 
-                  <p className="text-[13px] text-muted-foreground">
-                    Linked athlete
-                  </p>
+                  <p className="text-[13px] text-muted-foreground">Linked athlete</p>
                 </div>
               </div>
 
@@ -131,31 +110,20 @@ export function AthletesTable({
                 {disciplines}
               </span>
 
-              <p className="text-xs">
-                {athlete.age ?? "—"}
-              </p>
+              <p className="text-xs">{athlete.age ?? "—"}</p>
 
               <div>
                 <p className="text-[11px] font-semibold">
-                  {athlete.current_focus ?? "Not set"}
+                  {athlete.current_focus?.join(" / ") || "Not set"}
                 </p>
 
-                <p className="text-[13px] text-muted-foreground">
-                  Performance data connecting
-                </p>
+                <p className="text-[13px] text-muted-foreground">Performance data connecting</p>
               </div>
 
-              <span className="text-xs text-muted-foreground">
-                •••
-              </span>
+              <span className="text-xs text-muted-foreground">•••</span>
             </button>
           );
         })}
     </section>
   );
 }
-
-
-
-
-

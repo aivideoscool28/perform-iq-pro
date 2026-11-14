@@ -1,3 +1,7 @@
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { updatePlannedWorkoutStatus } from "@/lib/planned-workouts.functions";
+import { Button } from "@/components/ui/button";
 import ReactMarkdown from "react-markdown";
 import {
   CheckCircle2,
@@ -25,6 +29,7 @@ type WorkoutDetailsProps = {
   whyOpen: boolean;
   setWhyOpen: (open: boolean) => void;
   onClose: () => void;
+  onStatusChange: (workout: PlannedWorkout) => void;
   explanationMutation: {
     mutate: (workoutId: string) => void;
     isPending: boolean;
@@ -41,7 +46,19 @@ export function WorkoutDetails({
   setWhyOpen,
   onClose,
   explanationMutation,
+  onStatusChange,
 }: WorkoutDetailsProps) {
+  const updateStatus = useServerFn(updatePlannedWorkoutStatus);
+  const qc = useQueryClient();
+  const completion = useMutation({
+    mutationFn: (status: "completed" | "changed" | "not_completed") =>
+      updateStatus({ data: { workoutId: selectedWorkout.id, status } }),
+    onSuccess: async (workout) => {
+      onStatusChange(workout);
+      await qc.invalidateQueries({ queryKey: ["planned-workouts"] });
+      await qc.invalidateQueries({ queryKey: ["today-planned-workout"] });
+    },
+  });
   return (
     <section className="mt-5 grid gap-4 lg:grid-cols-[minmax(0,1.55fr)_minmax(300px,0.8fr)] lg:items-start">
       <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
@@ -63,9 +80,7 @@ export function WorkoutDetails({
         </div>
 
         <div className="mt-3 flex items-start justify-between gap-4">
-          <h2 className="text-2xl font-bold tracking-tight break-words">
-            {selectedWorkout.title}
-          </h2>
+          <h2 className="text-2xl font-bold tracking-tight break-words">{selectedWorkout.title}</h2>
 
           <button
             type="button"
@@ -88,6 +103,28 @@ export function WorkoutDetails({
           <span>{selectedWorkout.exercises.length} Trainingsblöcke</span>
         </div>
 
+        <div className="mt-4 flex flex-wrap gap-2">
+          {(
+            [
+              ["completed", "Abgeschlossen"],
+              ["changed", "Geändert"],
+              ["not_completed", "Nicht absolviert"],
+            ] as const
+          ).map(([status, label]) => (
+            <Button
+              key={status}
+              variant="outline"
+              disabled={completion.isPending}
+              aria-pressed={selectedWorkout.status === status}
+              onClick={() => completion.mutate(status)}
+            >
+              {label}
+            </Button>
+          ))}
+        </div>
+        {completion.isError && (
+          <p role="alert">Status konnte nicht gespeichert werden. Bitte erneut versuchen.</p>
+        )}
         {selectedWorkout.session_goal && (
           <div className="mt-5 flex gap-4 rounded-xl border border-accent/15 bg-accent/5 p-4">
             <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-orange-100 text-orange-500">
@@ -112,8 +149,7 @@ export function WorkoutDetails({
           {selectedWorkout.exercises.length > 0 ? (
             <div className="overflow-hidden rounded-xl border border-border bg-background">
               {selectedWorkout.exercises.map((exercise, index) => {
-                const visual =
-                  EXERCISE_VISUALS[index % EXERCISE_VISUALS.length];
+                const visual = EXERCISE_VISUALS[index % EXERCISE_VISUALS.length];
 
                 const ExerciseIcon = visual.icon;
 
@@ -128,10 +164,9 @@ export function WorkoutDetails({
                     ].join(" ")}
                   >
                     <div
-                      className={[
-                        "grid h-9 w-9 place-items-center rounded-xl",
-                        visual.box,
-                      ].join(" ")}
+                      className={["grid h-9 w-9 place-items-center rounded-xl", visual.box].join(
+                        " ",
+                      )}
                     >
                       <ExerciseIcon className="h-4 w-4" />
                     </div>
@@ -163,7 +198,7 @@ export function WorkoutDetails({
             </div>
           ) : (
             <div className="rounded-xl border border-dashed border-border p-4 text-sm text-muted-foreground">
-              Für diese Demo-Einheit sind noch keine Übungen hinterlegt.
+              Für diese Einheit sind noch keine Übungen hinterlegt.
             </div>
           )}
         </div>
@@ -186,18 +221,14 @@ export function WorkoutDetails({
             className="flex w-full items-center justify-between gap-4 rounded-xl border border-accent/20 bg-accent/5 px-4 py-3 text-left transition hover:border-accent/40 hover:bg-accent/10"
           >
             <div>
-              <div className="text-sm font-bold">
-                ✨ Warum dieses Training?
-              </div>
+              <div className="text-sm font-bold">✨ Warum dieses Training?</div>
 
               <div className="mt-1 text-[11px] font-medium text-muted-foreground">
                 Verstehe den Zweck hinter der Einheit.
               </div>
             </div>
 
-            <span className="text-lg font-bold text-accent">
-              {whyOpen ? "−" : "+"}
-            </span>
+            <span className="text-lg font-bold text-accent">{whyOpen ? "−" : "+"}</span>
           </button>
         </div>
       </div>
@@ -225,8 +256,8 @@ export function WorkoutDetails({
                 <div className="mt-2 text-sm font-bold">Demo-Training</div>
 
                 <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                  Die echte Athletic IQ Erklärung wird mit einem realen
-                  Coach-Training aus Supabase getestet.
+                  Die echte Athletic IQ Erklärung wird mit einem realen Coach-Training aus Supabase
+                  getestet.
                 </p>
               </div>
             ) : explanationMutation.isPending ? (
@@ -235,13 +266,11 @@ export function WorkoutDetails({
                   Athletic IQ Erklärung
                 </div>
 
-                <div className="mt-2 text-sm font-bold">
-                  Athletic IQ analysiert dein Training…
-                </div>
+                <div className="mt-2 text-sm font-bold">Athletic IQ analysiert dein Training…</div>
 
                 <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                  Trainingsziel, Übungen, Coach-Fokus und relevante vergangene
-                  Analysen werden berücksichtigt.
+                  Trainingsziel, Übungen, Coach-Fokus und relevante vergangene Analysen werden
+                  berücksichtigt.
                 </p>
               </div>
             ) : explanationMutation.isError ? (
@@ -254,15 +283,11 @@ export function WorkoutDetails({
                   Erklärung konnte nicht erstellt werden.
                 </div>
 
-                <p className="mt-2 text-sm text-muted-foreground">
-                  Bitte versuche es erneut.
-                </p>
+                <p className="mt-2 text-sm text-muted-foreground">Bitte versuche es erneut.</p>
 
                 <button
                   type="button"
-                  onClick={() =>
-                    explanationMutation.mutate(selectedWorkout.id)
-                  }
+                  onClick={() => explanationMutation.mutate(selectedWorkout.id)}
                   className="mt-3 text-sm font-semibold text-accent hover:underline"
                 >
                   Erneut versuchen
@@ -277,9 +302,7 @@ export function WorkoutDetails({
                 <ReactMarkdown
                   components={{
                     h1: ({ children }) => (
-                      <h3 className="mb-3 text-base font-bold tracking-tight">
-                        {children}
-                      </h3>
+                      <h3 className="mb-3 text-base font-bold tracking-tight">{children}</h3>
                     ),
 
                     h2: ({ children }) => (
@@ -291,30 +314,29 @@ export function WorkoutDetails({
                     h3: ({ children }) => {
                       const label = String(children);
 
-                      const visual =
-                        label.includes("Fokus")
+                      const visual = label.includes("Fokus")
+                        ? {
+                            icon: Lightbulb,
+                            color: "text-green-600",
+                            box: "bg-green-100",
+                          }
+                        : label.includes("gute Einheit")
                           ? {
-                              icon: Lightbulb,
-                              color: "text-green-600",
-                              box: "bg-green-100",
+                              icon: Trophy,
+                              color: "text-amber-600",
+                              box: "bg-amber-100",
                             }
-                          : label.includes("gute Einheit")
+                          : label.includes("letzten Training")
                             ? {
-                                icon: Trophy,
-                                color: "text-amber-600",
-                                box: "bg-amber-100",
+                                icon: History,
+                                color: "text-violet-600",
+                                box: "bg-violet-100",
                               }
-                            : label.includes("letzten Training")
-                              ? {
-                                  icon: History,
-                                  color: "text-violet-600",
-                                  box: "bg-violet-100",
-                                }
-                              : {
-                                  icon: Target,
-                                  color: "text-sky-600",
-                                  box: "bg-sky-100",
-                                };
+                            : {
+                                icon: Target,
+                                color: "text-sky-600",
+                                box: "bg-sky-100",
+                              };
 
                       const SectionIcon = visual.icon;
 
@@ -343,20 +365,14 @@ export function WorkoutDetails({
                     },
 
                     p: ({ children }) => (
-                      <p className="mb-3 text-sm leading-relaxed text-foreground">
-                        {children}
-                      </p>
+                      <p className="mb-3 text-sm leading-relaxed text-foreground">{children}</p>
                     ),
 
                     strong: ({ children }) => (
-                      <strong className="font-bold text-foreground">
-                        {children}
-                      </strong>
+                      <strong className="font-bold text-foreground">{children}</strong>
                     ),
 
-                    ul: ({ children }) => (
-                      <ul className="mb-3 space-y-2 pl-1">{children}</ul>
-                    ),
+                    ul: ({ children }) => <ul className="mb-3 space-y-2 pl-1">{children}</ul>,
 
                     li: ({ children }) => (
                       <li className="flex gap-2 text-sm leading-relaxed text-foreground">
@@ -371,8 +387,7 @@ export function WorkoutDetails({
               </div>
             ) : (
               <div className="text-sm text-muted-foreground">
-                Klicke erneut auf „Warum dieses Training?“, um die Erklärung
-                zu laden.
+                Klicke erneut auf „Warum dieses Training?“, um die Erklärung zu laden.
               </div>
             )}
           </div>

@@ -1,4 +1,4 @@
-﻿import { buildTrainingExplanationPrompt } from "../prompts/training-explanation.prompt";
+import { buildTrainingExplanationPrompt } from "../prompts/training-explanation.prompt";
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
@@ -17,16 +17,15 @@ const ExplainTrainingInputSchema = z.object({
 
 export const explainPlannedWorkout = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input) =>
-    ExplainTrainingInputSchema.parse(input),
-  )
+  .validator((input) => ExplainTrainingInputSchema.parse(input))
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
 
     // 1. Load the coach-prescribed workout.
     const { data: workout, error: workoutError } = await supabase
       .from("planned_workouts")
-      .select(`
+      .select(
+        `
         id,
         athlete_id,
         workout_date,
@@ -37,78 +36,68 @@ export const explainPlannedWorkout = createServerFn({ method: "POST" })
         coach_note,
         exercises,
         status
-      `)
+      `,
+      )
       .eq("id", data.workoutId)
       .eq("athlete_id", userId)
       .single();
 
     if (workoutError || !workout) {
-      throw new Error(
-        workoutError?.message ?? "Geplantes Training nicht gefunden.",
-      );
+      throw new Error(workoutError?.message ?? "Geplantes Training nicht gefunden.");
     }
 
     // 2. Normalize the exercises stored as JSON.
-    const parsedExercises = z
-      .array(ExerciseSchema)
-      .safeParse(workout.exercises);
+    const parsedExercises = z.array(ExerciseSchema).safeParse(workout.exercises);
 
-    const exercises = parsedExercises.success
-      ? parsedExercises.data
-      : [];
+    const exercises = parsedExercises.success ? parsedExercises.data : [];
 
     // 3. Load a small amount of recent athlete history.
     // These are secondary context only.
-    const [{ data: recentBoards }, { data: recentCheckins }] =
-      await Promise.all([
-        supabase
-          .from("analysis_boards")
-          .select(`
+    const [{ data: recentBoards }, { data: recentCheckins }] = await Promise.all([
+      supabase
+        .from("analysis_boards")
+        .select(
+          `
             positives,
             negatives,
             improvements,
             created_at,
             workout_id
-          `)
-          .eq("user_id", userId)
-          .order("created_at", { ascending: false })
-          .limit(3),
+          `,
+        )
+        .eq("user_id", userId)
+        .order("created_at", { ascending: false })
+        .limit(3),
 
-        supabase
-          .from("daily_checkins")
-          .select(`
+      supabase
+        .from("daily_checkins")
+        .select(
+          `
             checkin_date,
             discipline,
             ai_summary
-          `)
-          .eq("user_id", userId)
-          .not("ai_summary", "is", null)
-          .order("checkin_date", { ascending: false })
-          .limit(3),
-      ]);
+          `,
+        )
+        .eq("user_id", userId)
+        .not("ai_summary", "is", null)
+        .order("checkin_date", { ascending: false })
+        .limit(3),
+    ]);
 
-    const workoutHistory =
-      (recentBoards ?? []).map((board) => ({
-        date: board.created_at,
-        positives: Array.isArray(board.positives)
-          ? board.positives
-          : [],
-        negatives: Array.isArray(board.negatives)
-          ? board.negatives
-          : [],
-        improvements: Array.isArray(board.improvements)
-          ? board.improvements
-          : [],
+    const workoutHistory = (recentBoards ?? []).map((board) => ({
+      date: board.created_at,
+      positives: Array.isArray(board.positives) ? board.positives : [],
+      negatives: Array.isArray(board.negatives) ? board.negatives : [],
+      improvements: Array.isArray(board.improvements) ? board.improvements : [],
+    }));
+
+    const checkinHistory = (recentCheckins ?? [])
+      .filter((checkin) => checkin.ai_summary)
+      .map((checkin) => ({
+        date: checkin.checkin_date,
+        discipline: checkin.discipline,
+        summary: checkin.ai_summary,
       }));
-
-    const checkinHistory =
-      (recentCheckins ?? [])
-        .filter((checkin) => checkin.ai_summary)
-        .map((checkin) => ({
-          date: checkin.checkin_date,
-          discipline: checkin.discipline,
-          summary: checkin.ai_summary,
-        }));
     // 4. Build the Athletic IQ training-explanation prompt.
     const prompt = buildTrainingExplanationPrompt({
       workout,
@@ -136,9 +125,7 @@ export const explainPlannedWorkout = createServerFn({ method: "POST" })
     const reply = ai?.choices?.[0]?.message?.content;
 
     if (typeof reply !== "string" || !reply.trim()) {
-      throw new Error(
-        "Athletic IQ konnte keine Trainingserklärung erstellen.",
-      );
+      throw new Error("Athletic IQ konnte keine Trainingserklärung erstellen.");
     }
 
     const explanation = reply.trim();
@@ -148,4 +135,3 @@ export const explainPlannedWorkout = createServerFn({ method: "POST" })
       workoutId: workout.id,
     };
   });
-

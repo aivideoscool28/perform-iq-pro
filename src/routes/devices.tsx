@@ -1,3 +1,4 @@
+import { PreviewNotice } from "@/components/common/PreviewNotice";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { AppShell } from "@/components/athleticiq/AppShell";
@@ -126,9 +127,11 @@ function DevicesPage() {
 
       setDevices((d) => d.map((x) => (x.id === id ? { ...x, connected: true, server } : x)));
       toast.success(`${name} verbunden`, { description: "Live-Herzfrequenz wird gestreamt." });
-    } catch (err: any) {
-      if (err?.name !== "NotFoundError") {
-        toast.error("Verbindung fehlgeschlagen", { description: err?.message ?? String(err) });
+    } catch (err: unknown) {
+      if (!(err instanceof Error && err.name === "NotFoundError")) {
+        toast.error("Verbindung fehlgeschlagen", {
+          description: err instanceof Error ? err.message : String(err),
+        });
       }
     } finally {
       setScanning(false);
@@ -138,7 +141,9 @@ function DevicesPage() {
   const disconnect = (d: BTDevice) => {
     try {
       d.device.gatt?.disconnect();
-    } catch {}
+    } catch {
+      /* Device may already be disconnected. */
+    }
     setDevices((arr) => arr.filter((x) => x.id !== d.id));
   };
 
@@ -154,6 +159,7 @@ function DevicesPage() {
         { label: "Geräte" },
       ]}
     >
+      <PreviewNotice />
       {/* HERO */}
       <section className="rounded-3xl border border-border bg-card p-6 md:p-8 mb-6 shadow-sm">
         <div className="flex flex-col md:flex-row md:items-center gap-6">
@@ -177,14 +183,20 @@ function DevicesPage() {
           </div>
           <div className="flex gap-2">
             <div className="rounded-xl border border-border bg-background px-3 py-2 text-center">
-              <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Verbunden</div>
+              <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                Verbunden
+              </div>
               <div className="text-xl font-bold text-foreground">
                 {devices.filter((d) => d.connected).length}
               </div>
             </div>
             <div className="rounded-xl border border-border bg-background px-3 py-2 text-center">
-              <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Metriken</div>
-              <div className="text-xl font-bold">{Object.values(permissions).filter(Boolean).length}/6</div>
+              <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                Metriken
+              </div>
+              <div className="text-xl font-bold">
+                {Object.values(permissions).filter(Boolean).length}/6
+              </div>
             </div>
           </div>
         </div>
@@ -195,8 +207,8 @@ function DevicesPage() {
             <div>
               <div className="font-medium text-foreground">Browser nicht unterstützt</div>
               <p className="text-muted-foreground text-xs mt-1">
-                Web Bluetooth funktioniert in Chrome / Edge auf Desktop und Android.
-                Auf iOS (Safari) ist es systemseitig nicht verfügbar — nutze dort die native Companion-App.
+                Web Bluetooth funktioniert in Chrome / Edge auf Desktop und Android. Auf iOS
+                (Safari) ist es systemseitig nicht verfügbar — nutze dort die native Companion-App.
               </p>
             </div>
           </div>
@@ -214,7 +226,11 @@ function DevicesPage() {
               disabled={scanning || supported === false}
               className="gap-1.5"
             >
-              {scanning ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plug className="h-4 w-4" />}
+              {scanning ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Plug className="h-4 w-4" />
+              )}
               {scanning ? "Suche…" : "Gerät hinzufügen"}
             </Button>
           </div>
@@ -225,7 +241,8 @@ function DevicesPage() {
                 <Bluetooth className="h-7 w-7 text-muted-foreground" />
               </div>
               <p className="text-sm text-muted-foreground">
-                Noch kein Gerät verbunden. Klick auf „Gerät hinzufügen" und wähle deine Uhr / deinen Brustgurt.
+                Noch kein Gerät verbunden. Klick auf „Gerät hinzufügen" und wähle deine Uhr / deinen
+                Brustgurt.
               </p>
             </div>
           )}
@@ -373,9 +390,10 @@ function DevicesPage() {
               Hinweis
             </h4>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              Web Bluetooth erkennt Geräte, die den Standard-Heart-Rate-Service (0x180D) bereitstellen —
-              z. B. Polar H10, Wahoo TICKR, Garmin HRM, viele Sportuhren im Broadcast-Modus.
-              Apple Watch sendet HR nicht direkt via BT — dafür ist die Companion-App nötig.
+              Web Bluetooth erkennt Geräte, die den Standard-Heart-Rate-Service (0x180D)
+              bereitstellen — z. B. Polar H10, Wahoo TICKR, Garmin HRM, viele Sportuhren im
+              Broadcast-Modus. Apple Watch sendet HR nicht direkt via BT — dafür ist die
+              Companion-App nötig.
             </p>
           </div>
         </aside>
@@ -401,7 +419,9 @@ function Metric({
         <Icon className="h-4 w-4" />
       </div>
       <div className="flex-1 min-w-0">
-        <div className="text-[11px] uppercase tracking-wider text-muted-foreground truncate">{label}</div>
+        <div className="text-[11px] uppercase tracking-wider text-muted-foreground truncate">
+          {label}
+        </div>
         <div className="font-semibold">
           {value}
           {unit && <span className="text-xs text-muted-foreground ml-1">{unit}</span>}

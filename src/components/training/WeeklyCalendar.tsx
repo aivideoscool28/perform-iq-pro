@@ -3,6 +3,7 @@ import type { PlannedWorkout } from "@/lib/planned-workouts.functions";
 
 type WeeklyCalendarProps = {
   weekDays: Date[];
+  todayDate: string;
   workoutForDate: (date: Date) => PlannedWorkout | undefined;
   onSelectWorkout: (workout: PlannedWorkout) => void;
   hasRealWorkouts: boolean;
@@ -12,6 +13,7 @@ type WeeklyCalendarProps = {
 
 export function WeeklyCalendar({
   weekDays,
+  todayDate,
   workoutForDate,
   onSelectWorkout,
   hasRealWorkouts,
@@ -24,8 +26,7 @@ export function WeeklyCalendar({
         {weekDays.map((date) => {
           const workout = workoutForDate(date);
 
-          const isToday =
-            toDateString(date) === toDateString(new Date());
+          const isToday = toDateString(date) === todayDate;
 
           const completed = workout?.status === "completed";
 
@@ -44,9 +45,7 @@ export function WeeklyCalendar({
                 workout
                   ? "cursor-pointer hover:-translate-y-0.5 hover:shadow-sm"
                   : "cursor-default",
-                isToday
-                  ? "border-accent bg-accent/5"
-                  : "border-border bg-background/60",
+                isToday ? "border-accent bg-accent/5" : "border-border bg-background/60",
               ].join(" ")}
             >
               <div className="flex items-start justify-between">
@@ -54,9 +53,7 @@ export function WeeklyCalendar({
                   <div
                     className={[
                       "text-[10px] font-bold uppercase tracking-[0.18em]",
-                      isToday
-                        ? "text-accent"
-                        : "text-muted-foreground",
+                      isToday ? "text-accent" : "text-muted-foreground",
                     ].join(" ")}
                   >
                     {date.toLocaleDateString("de-DE", {
@@ -64,14 +61,10 @@ export function WeeklyCalendar({
                     })}
                   </div>
 
-                  <div className="mt-1 text-lg font-bold">
-                    {date.getDate()}
-                  </div>
+                  <div className="mt-1 text-lg font-bold">{date.getDate()}</div>
                 </div>
 
-                {completed && (
-                  <CheckCircle2 className="h-4 w-4 text-accent" />
-                )}
+                {completed && <CheckCircle2 className="h-4 w-4 text-accent" />}
               </div>
 
               {workout ? (
@@ -92,9 +85,7 @@ export function WeeklyCalendar({
                   )}
                 </div>
               ) : (
-                <div className="mt-4 text-xs font-medium text-muted-foreground">
-                  Frei
-                </div>
+                <div className="mt-4 text-xs font-medium text-muted-foreground">Frei</div>
               )}
 
               {isToday && (
@@ -109,7 +100,7 @@ export function WeeklyCalendar({
 
       {!hasRealWorkouts && !isLoading && (
         <div className="mt-4 text-xs text-muted-foreground">
-          Demo-Vorschau · Noch kein echter Coach-Plan in Supabase.
+          Noch kein veröffentlichter Coach-Plan für diese Woche.
         </div>
       )}
     </section>

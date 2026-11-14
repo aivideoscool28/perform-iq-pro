@@ -17,7 +17,8 @@ export function SignOutButton({ className = "" }: { className?: string }) {
     try {
       await qc.cancelQueries();
       qc.clear();
-      await supabase.auth.signOut();
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
       clearAuthFlags();
       navigate({ to: "/auth", replace: true });
     } catch (e) {
@@ -33,7 +34,11 @@ export function SignOutButton({ className = "" }: { className?: string }) {
       disabled={busy}
       className={`border-neon-red/40 text-neon-red hover:bg-neon-red/10 ${className}`}
     >
-      {busy ? <Loader2 className="h-4 w-4 mr-1.5 animate-spin" /> : <LogOut className="h-4 w-4 mr-1.5" />}
+      {busy ? (
+        <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />
+      ) : (
+        <LogOut className="h-4 w-4 mr-1.5" />
+      )}
       Abmelden
     </Button>
   );
