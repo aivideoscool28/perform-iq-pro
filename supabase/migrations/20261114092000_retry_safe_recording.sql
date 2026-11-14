@@ -4,9 +4,9 @@ alter table public.workouts add column if not exists analysis_status text not nu
 create or replace function public.record_workout(p_request_id uuid,p_text text,p_date date) returns public.workouts
 language plpgsql security definer set search_path=public,pg_temp as $$
 declare result public.workouts; expected_date date; begin
- if auth.uid() is null or length(trim(p_text)) not between 2 and 2000 or p_request_id is null then raise exception 'Invalid workout'; end if;
+ if auth.uid() is null or p_text is null or length(trim(p_text)) not between 2 and 2000 or p_request_id is null then raise exception 'Invalid workout'; end if;
  select (now() at time zone timezone)::date into expected_date from public.profiles where id=auth.uid();
- if p_date<>expected_date then raise exception 'Invalid workout date'; end if;
+ if p_date is null or expected_date is null or p_date<>expected_date then raise exception 'Invalid workout date'; end if;
  insert into public.workouts(user_id,request_id,workout_date,raw_input,summary,exercises,analysis_status)
  values(auth.uid(),p_request_id,p_date,p_text,left(p_text,200),'[]','pending')
  on conflict(user_id,request_id) where request_id is not null do nothing;
@@ -22,7 +22,7 @@ language plpgsql security definer set search_path=public,pg_temp as $$
 declare saved public.daily_checkins; workout public.workouts; expected_date date; clean jsonb; column_names text; value_names text; update_names text; begin
  if auth.uid() is null or octet_length(p_payload::text)>16000 then raise exception 'Invalid check-in'; end if;
  select (now() at time zone timezone)::date into expected_date from public.profiles where id=auth.uid();
- if p_date<>expected_date then raise exception 'Invalid check-in date'; end if;
+ if p_date is null or expected_date is null or p_date<>expected_date then raise exception 'Invalid check-in date'; end if;
  if (p_payload->>'is_rest_day')::boolean is null then raise exception 'Rest day required'; end if;
  if p_payload ? 'rpe' and (p_payload->>'rpe')::numeric not between 1 and 10 then raise exception 'Invalid RPE'; end if;
  if p_payload ? 'duration_min' and (p_payload->>'duration_min')::numeric not between 0 and 1440 then raise exception 'Invalid duration'; end if;
@@ -59,12 +59,12 @@ alter table public.analysis_boards add column if not exists checkin_revision tim
 create or replace function public.save_checkin_analysis(p_checkin_id uuid,p_revision timestamptz,p_analysis jsonb) returns uuid
 language plpgsql security definer set search_path=public,pg_temp as $$
 declare checkin public.daily_checkins; workout public.workouts; board uuid; begin
- if auth.uid() is null or octet_length(p_analysis::text)>16000 then raise exception 'Invalid analysis'; end if;
+ if auth.uid() is null or p_analysis is null or octet_length(p_analysis::text)>16000 then raise exception 'Invalid analysis'; end if;
  select * into checkin from public.daily_checkins where id=p_checkin_id and user_id=auth.uid() for update;
- if not found or checkin.updated_at<>p_revision or checkin.is_rest_day then return null; end if;
+ if not found or checkin.updated_at is distinct from p_revision or checkin.is_rest_day then return null; end if;
  select * into workout from public.workouts where checkin_id=checkin.id and user_id=auth.uid();
  if not found then return null; end if;
- if jsonb_typeof(p_analysis->'positives')<>'array' or jsonb_typeof(p_analysis->'negatives')<>'array' or jsonb_typeof(p_analysis->'improvements')<>'array' then raise exception 'Invalid analysis'; end if;
+ if jsonb_typeof(p_analysis->'positives') is distinct from 'array' or jsonb_typeof(p_analysis->'negatives') is distinct from 'array' or jsonb_typeof(p_analysis->'improvements') is distinct from 'array' then raise exception 'Invalid analysis'; end if;
  insert into public.analysis_boards(workout_id,user_id,positives,negatives,improvements,is_ai_generated,checkin_revision)
  values(workout.id,auth.uid(),p_analysis->'positives',p_analysis->'negatives',p_analysis->'improvements',true,p_revision)
  on conflict(workout_id) do update set positives=excluded.positives,negatives=excluded.negatives,improvements=excluded.improvements,checkin_revision=excluded.checkin_revision,updated_at=now() returning id into board;

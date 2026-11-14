@@ -21,7 +21,7 @@ The design and React/TanStack/Supabase/Gemini stack are retained. The main app i
 - ESLint: zero errors, 10 warnings.
 - Release formatting check: passed.
 - Main and marketing builds: passed.
-- Chromium mock-service suite: 6 passed, with no uncaught page errors. A cold dev-server timeout under concurrent builds passed when rerun separately with a bounded hydration allowance.
+- Chromium mock-service suite: 7 passed, with no uncaught page errors. A cold dev-server timeout under concurrent builds passed when rerun separately with a bounded hydration allowance.
 - Real isolated PostgreSQL 17 auth/workflow/storage tests: passed; forward migration reapplication passed.
 - Main production dependency audit: zero vulnerabilities.
 - Marketing dependency audit: zero vulnerabilities.

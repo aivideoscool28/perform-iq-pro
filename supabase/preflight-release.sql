@@ -7,6 +7,10 @@ from pg_policies where schemaname in ('public','storage') order by schemaname,ta
 select table_name,column_name,data_type,is_nullable,column_default
 from information_schema.columns where table_schema='public' order by table_name,ordinal_position;
 select tablename,indexname,indexdef from pg_indexes where schemaname='public' order by tablename,indexname;
+select c.conrelid::regclass as table_name,c.conname,c.convalidated,pg_get_constraintdef(c.oid) as definition
+from pg_constraint c join pg_namespace n on n.oid=c.connamespace where n.nspname='public' order by table_name,c.conname;
+select p.proname,pg_get_function_identity_arguments(p.oid) as arguments,p.prosecdef,p.proacl
+from pg_proc p join pg_namespace n on n.oid=p.pronamespace where n.nspname='public' order by p.proname;
 select id,public,file_size_limit,allowed_mime_types from storage.buckets where id in ('athlete-videos','avatars');
 -- Counts only; no personal rows are exported. Unique indexes fail closed if
 -- duplicates exist. Do not delete duplicates automatically.

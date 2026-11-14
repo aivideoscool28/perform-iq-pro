@@ -1,49 +1,26 @@
-﻿import {
-  Bell,
-  ChevronDown,
-  LogOut,
-} from "lucide-react";
+import { Link } from "@tanstack/react-router";
+import { Bell, LogOut } from "lucide-react";
 
-import {
-  useNavigate,
-} from "@tanstack/react-router";
+import { useNavigate } from "@tanstack/react-router";
 
-import {
-  useTranslation,
-} from "react-i18next";
+import { useTranslation } from "react-i18next";
 
-import {
-  supabase,
-} from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/supabase/client";
 
-import {
-  clearAuthFlags,
-} from "@/lib/auth-session";
+import { clearAuthFlags } from "@/lib/auth-session";
 
-import {
-  LanguageSwitcher,
-} from "@/components/common/LanguageSwitcher";
+import { LanguageSwitcher } from "@/components/common/LanguageSwitcher";
 
-import {
-  toast,
-} from "sonner";
+import { toast } from "sonner";
 
 export function CoachTopBar() {
-  const navigate =
-    useNavigate();
+  const navigate = useNavigate();
 
-  const {
-    t,
-  } =
-    useTranslation();
+  const { t } = useTranslation();
 
   async function handleLogout() {
     try {
-      const {
-        error,
-      } =
-        await supabase.auth
-          .signOut();
+      const { error } = await supabase.auth.signOut();
 
       if (error) {
         throw error;
@@ -51,50 +28,35 @@ export function CoachTopBar() {
 
       clearAuthFlags();
 
-      toast.success(
-        t("coach.logoutSuccess"),
-      );
+      toast.success(t("coach.logoutSuccess"));
 
       await navigate({
         to: "/auth",
       });
-    } catch (
-      error
-    ) {
-      console.error(
-        "Coach logout failed:",
-        error,
-      );
+    } catch (error) {
+      console.error("Coach logout failed:", error);
 
-      toast.error(
-        t("coach.logoutError"),
-      );
+      toast.error(t("coach.logoutError"));
     }
   }
 
   return (
     <header className="flex min-h-20 items-center justify-between border-b border-border bg-background px-5 lg:px-8">
       <div>
-        <p className="text-sm text-muted-foreground">
-          {t("coach.manager")}
-        </p>
+        <p className="text-sm text-muted-foreground">{t("coach.manager")}</p>
 
-        <h1 className="text-xl font-bold tracking-tight">
-          {t("coach.greeting")}
-        </h1>
+        <h1 className="text-xl font-bold tracking-tight">{t("coach.greeting")}</h1>
       </div>
 
       <div className="flex items-center gap-2">
         <LanguageSwitcher />
 
-        <button
-          type="button"
-          className="hidden items-center gap-2 rounded-xl border border-border bg-background px-3 py-2 text-sm font-medium sm:flex"
+        <Link
+          to="/profile"
+          className="rounded-xl border border-border bg-background px-3 py-2 text-sm font-medium hover:bg-muted/40"
         >
-          Sprint / Hurdles
-
-          <ChevronDown className="h-4 w-4 text-muted-foreground" />
-        </button>
+          Profil & Einladung
+        </Link>
 
         <button
           type="button"
@@ -107,16 +69,12 @@ export function CoachTopBar() {
 
         <button
           type="button"
-          onClick={() =>
-            void handleLogout()
-          }
+          onClick={() => void handleLogout()}
           className="flex h-10 items-center gap-2 rounded-xl border border-border bg-background px-3 text-sm font-medium transition hover:bg-muted/40"
         >
           <LogOut className="h-4 w-4" />
 
-          <span className="hidden sm:inline">
-            {t("coach.logout")}
-          </span>
+          <span className="hidden sm:inline">{t("coach.logout")}</span>
         </button>
       </div>
     </header>

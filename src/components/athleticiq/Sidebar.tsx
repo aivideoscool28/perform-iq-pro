@@ -72,7 +72,7 @@ export function Sidebar() {
         <div className="glass rounded-2xl p-4 mt-4">
           <div className="flex items-center gap-2 text-xs text-neon-cyan mb-1">
             <span className="h-2 w-2 rounded-full bg-neon-cyan pulse-dot" />
-            KI-Coach aktiv
+            KI-Coach
           </div>
           <p className="text-xs text-muted-foreground leading-relaxed">
             Empfehlungen findest du in deinen persönlichen Analysen.

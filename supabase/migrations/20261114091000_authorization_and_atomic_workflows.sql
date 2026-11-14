@@ -118,7 +118,7 @@ create policy plan_athlete_read on public.planned_workouts for select to authent
 create policy plan_coach on public.planned_workouts for all to authenticated using(coach_id=auth.uid() and public.is_coach_for(athlete_id)) with check(coach_id=auth.uid() and public.is_coach_for(athlete_id));
 create or replace function public.complete_planned_workout(p_workout_id uuid,p_status text) returns public.planned_workouts
 language plpgsql security definer set search_path=public,pg_temp as $$ declare result public.planned_workouts; begin
- if auth.uid() is null or p_status not in ('completed','changed','not_completed') then raise exception 'Invalid completion'; end if;
+ if auth.uid() is null or p_status is null or p_status not in ('completed','changed','not_completed') then raise exception 'Invalid completion'; end if;
  update public.planned_workouts set status=p_status,completed_at=case when p_status='completed' then coalesce(completed_at,now()) else null end,updated_at=now()
  where id=p_workout_id and athlete_id=auth.uid() and is_published=true returning * into result;
  if not found then raise exception 'Workout unavailable'; end if; return result;

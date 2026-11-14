@@ -104,3 +104,14 @@ test("athlete cannot open coach manager", async ({ page }) => {
   await page.goto("/coach-manager");
   await expect(page).toHaveURL(/\/$/);
 });
+
+test("coach can reach the private invitation code and return to Coach Manager", async ({
+  page,
+}) => {
+  await login(page, coach);
+  await page.goto("/coach-manager");
+  await page.getByRole("link", { name: "Profil & Einladung", exact: true }).click();
+  await expect(page.getByText("local-test-code", { exact: true })).toBeVisible();
+  await page.getByRole("link", { name: "Zum Coach Manager", exact: true }).click();
+  await expect(page).toHaveURL(/\/coach-manager/);
+});

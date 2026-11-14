@@ -13,7 +13,7 @@ All checks are local unless explicitly stated. Production services were not modi
 | Production npm dependency audit              | Zero vulnerabilities                                                   |
 | Full app dependency audit                    | Seven moderate development-only findings remain after compatible fixes |
 | Marketing dependency audit                   | Zero vulnerabilities after compatible fixes                            |
-| Chromium release flows                       | 6 passed with local mock Supabase; no provider calls                   |
+| Chromium release flows                       | 7 passed with local mock Supabase; no provider calls                   |
 | PostgreSQL authorization/workflow tests      | Passed in disposable PostgreSQL 17 with synthetic auth/storage         |
 | Forward migration reapplication              | Passed on the migrated isolated schema                                 |
 | Original historical migration replay         | **Failed**: missing goal_motivation at 20260818000100                  |
@@ -57,4 +57,4 @@ PLAYWRIGHT_USE_BUNDLED_CHROMIUM=1 npm run test:release:browser
 
 Use the standard `test:coach-manager:browser` suite only with a reviewed staging account and staging environment. It has live CRUD scenarios and is not part of these isolated checks. No production credentials are required by the new CI workflow.
 
-One browser run under concurrent build load timed out during development-server hydration. The isolated rerun passed all six tests with a 10-second assertion timeout and no retries. This does not establish production performance.
+One browser run under concurrent build load timed out during development-server hydration. The isolated rerun passed all seven tests with a 10-second assertion timeout and no retries. This does not establish production performance.

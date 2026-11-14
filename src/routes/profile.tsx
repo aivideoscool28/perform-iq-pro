@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import { CoachConnections } from "@/components/profile/CoachConnections";
 import { ProfileEditor } from "@/components/profile/ProfileEditor";
 import { useAuth } from "@/hooks/use-auth";
@@ -104,6 +105,11 @@ function Page() {
         { label: "Athletenprofil" },
       ]}
     >
+      {profile?.role === "coach" && (
+        <Link to="/coach-manager" className="block mb-4 underline text-accent">
+          Zum Coach Manager
+        </Link>
+      )}
       {profile && (
         <>
           <ProfileEditor profile={profile} />

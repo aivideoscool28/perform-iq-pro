@@ -29,3 +29,12 @@ for migration in supabase/migrations/20261114*.sql; do
   run_sql -d aether_test < "$migration"
 done
 if [ -f tests/release/database.sql ]; then run_sql -d aether_test < tests/release/database.sql; fi
+
+run_sql -d aether_test <<'SQL'
+do $$ declare item record; begin
+ for item in select conrelid::regclass as table_name,conname from pg_constraint
+ where contype='f' and not convalidated and conname like 'release_fk_%' loop
+  execute format('alter table %s validate constraint %I',item.table_name,item.conname);
+ end loop;
+end $$;
+SQL

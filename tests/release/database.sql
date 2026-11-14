@@ -23,6 +23,9 @@ select public.test_denied($q$select public.consume_ai_usage()$q$);
 update public.profiles set ai_consent=true where id=auth.uid();
 do $$ begin for i in 1..20 loop perform public.consume_ai_usage(); end loop; end $$;
 select public.test_denied($q$select public.consume_ai_usage()$q$);
+select public.test_denied($q$select public.record_workout('10000000-0000-0000-0000-000000000099','Sprint training',null)$q$);
+select public.test_denied($q$select public.record_workout('10000000-0000-0000-0000-000000000099',null,current_date)$q$);
+select public.test_denied($q$select public.record_checkin('{"is_rest_day":true}',null)$q$);
 -- Retry safe workout identity and mismatched-key rejection.
 select public.record_workout('10000000-0000-0000-0000-000000000001','Sprint training',current_date);
 select public.record_workout('10000000-0000-0000-0000-000000000001','Sprint training',current_date);
@@ -59,6 +62,7 @@ select public.publish_training_session('20000000-0000-0000-0000-000000000001');
 select public.test_assert((select count(*)=1 from public.planned_workouts),'republish idempotent');
 set request.jwt.claim.sub='00000000-0000-0000-0000-000000000001';
 select public.complete_planned_workout((select id from public.planned_workouts limit 1),'completed');
+select public.test_denied($q$select public.complete_planned_workout((select id from public.planned_workouts limit 1),null)$q$);
 update public.planned_workouts set title='Tampered';
 select public.test_assert((select title='Sprint' and status='completed' and completed_at is not null from public.planned_workouts limit 1),'athlete cannot alter plan content');
 set request.jwt.claim.sub='00000000-0000-0000-0000-000000000011';

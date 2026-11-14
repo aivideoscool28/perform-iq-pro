@@ -855,4 +855,54 @@ create unique index if not exists release_analysis_workout on public.analysis_bo
 
 create unique index if not exists release_friend_pair on public.friendships(user_id,friend_id);
 
+-- Restore relationship metadata required by Supabase joins and account cleanup.
+-- NOT VALID avoids silently discarding legacy orphans; new writes are checked.
+-- Owners must inspect/validate existing rows in staging before live approval.
+do $$ declare item record; constraint_name text; begin
+ for item in select * from (values
+ ('profiles','id','auth.users','CASCADE'),
+ ('coach_athletes','coach_id','public.profiles','CASCADE'),
+ ('coach_athletes','athlete_id','public.profiles','CASCADE'),
+ ('regeneration_checkins','user_id','public.profiles','CASCADE'),
+ ('training_sessions','coach_id','auth.users','CASCADE'),
+ ('coach_calendar_events','coach_id','auth.users','CASCADE'),
+ ('coach_exercise_library','coach_id','auth.users','CASCADE'),
+ ('coach_training_templates','coach_id','auth.users','CASCADE'),
+ ('daily_checkins','user_id','auth.users','CASCADE'),
+ ('workouts','user_id','auth.users','CASCADE'),
+ ('workouts','checkin_id','public.daily_checkins','SET NULL'),
+ ('analysis_boards','user_id','auth.users','CASCADE'),
+ ('analysis_boards','workout_id','public.workouts','CASCADE'),
+ ('planned_workouts','athlete_id','auth.users','CASCADE'),
+ ('planned_workouts','coach_id','auth.users','SET NULL'),
+ ('planned_workouts','training_session_id','public.training_sessions','SET NULL'),
+ ('video_analyses','user_id','auth.users','CASCADE'),
+ ('friendships','user_id','auth.users','CASCADE'),
+ ('friendships','friend_id','auth.users','CASCADE'),
+ ('coach_notes','coach_id','auth.users','CASCADE'),
+ ('coach_notes','athlete_id','auth.users','CASCADE'),
+ ('coach_note_recipients','note_id','public.coach_notes','CASCADE'),
+ ('coach_note_recipients','athlete_id','auth.users','CASCADE'),
+ ('competitions','coach_id','auth.users','CASCADE'),
+ ('competition_entries','competition_id','public.competitions','CASCADE'),
+ ('competition_entries','athlete_id','auth.users','CASCADE'),
+ ('ai_conversations','user_id','auth.users','CASCADE'),
+ ('ai_messages','user_id','auth.users','CASCADE'),
+ ('ai_messages','conversation_id','public.ai_conversations','CASCADE'),
+ ('gear_profile','user_id','auth.users','CASCADE'),
+ ('gear_logs','user_id','auth.users','CASCADE'),
+ ('athlete_questions','athlete_id','auth.users','CASCADE'),
+ ('athlete_questions','coach_id','auth.users','SET NULL')
+ ) as refs(table_name,column_name,parent_table,delete_action) loop
+ constraint_name:='release_fk_'||item.table_name||'_'||item.column_name;
+ if not exists(select 1 from pg_constraint c where c.contype='f'
+   and c.conrelid=to_regclass('public.'||item.table_name) and c.confrelid=to_regclass(item.parent_table)
+   and c.conkey=array[(select attnum from pg_attribute where attrelid=c.conrelid and attname=item.column_name)]) then
+  execute format('alter table public.%I add constraint %I foreign key(%I) references %s(id) on delete %s not valid',item.table_name,constraint_name,item.column_name,item.parent_table,item.delete_action);
+ end if;
+ end loop;
+end $$;
+create unique index if not exists release_profile_invite on public.profiles(invite_code);
+create unique index if not exists release_gear_profile_user on public.gear_profile(user_id);
+
 commit;
