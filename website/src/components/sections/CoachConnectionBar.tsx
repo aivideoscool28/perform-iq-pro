@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import {
   Activity,
   BarChart3,
@@ -12,42 +13,44 @@ import {
 } from "lucide-react";
 
 export function CoachConnectionBar() {
+  const { t } = useTranslation();
+
   return (
     <section className="coach-connection">
       <div className="coach-connection__athlete">
         <p className="coach-connection__label coach-connection__label--athlete">
-          FROM YOUR ATHLETES
+          {t("coachConnectionBar.fromAthletes")}
         </p>
 
         <div className="coach-connection__items">
           <div className="coach-connection__item coach-connection__item--orange">
             <Activity size={25} />
-            <strong>TRAINING</strong>
-            <span>Workouts & performance</span>
+            <strong>{t("coachConnectionBar.training")}</strong>
+            <span>{t("coachConnectionBar.trainingDetail")}</span>
           </div>
 
           <div className="coach-connection__item coach-connection__item--green">
             <HeartPulse size={25} />
-            <strong>CHECK-IN</strong>
-            <span>Feedback & wellbeing</span>
+            <strong>{t("coachConnectionBar.checkIn")}</strong>
+            <span>{t("coachConnectionBar.checkInDetail")}</span>
           </div>
 
           <div className="coach-connection__item coach-connection__item--orange">
             <BarChart3 size={25} />
-            <strong>WORKOUT ANALYSIS</strong>
-            <span>Insights & takeaways</span>
+            <strong>{t("coachConnectionBar.workoutAnalysis")}</strong>
+            <span>{t("coachConnectionBar.workoutDetail")}</span>
           </div>
 
           <div className="coach-connection__item coach-connection__item--purple">
             <Video size={25} />
-            <strong>VIDEO ANALYSIS</strong>
-            <span>Technique & form</span>
+            <strong>{t("coachConnectionBar.videoAnalysis")}</strong>
+            <span>{t("coachConnectionBar.videoDetail")}</span>
           </div>
 
           <div className="coach-connection__item coach-connection__item--teal">
             <ClipboardCheck size={25} />
-            <strong>REGENERATION</strong>
-            <span>Recovery information</span>
+            <strong>{t("coachConnectionBar.recovery")}</strong>
+            <span>{t("coachConnectionBar.recoveryDetail")}</span>
           </div>
         </div>
       </div>
@@ -57,45 +60,45 @@ export function CoachConnectionBar() {
       <div className="coach-connection__aether">
         <span>AETHER</span>
         <strong>ATHLETE IQ</strong>
-        <p>CONNECTS <i>•</i> ORGANIZES <i>•</i> ANALYZES</p>
+        <p>{t("coachConnectionBar.connects")} <i>•</i> {t("coachConnectionBar.organizes")} <i>•</i> {t("coachConnectionBar.analyzes")}</p>
       </div>
 
       <div className="coach-connection__arrow">→</div>
 
       <div className="coach-connection__coach">
         <p className="coach-connection__label coach-connection__label--coach">
-          TO YOU AS COACH
+          {t("coachConnectionBar.toCoach")}
         </p>
 
         <div className="coach-connection__items coach-connection__items--coach">
           <div className="coach-connection__item coach-connection__item--coach">
             <Eye size={25} />
-            <strong>SEE WHAT MATTERS</strong>
-            <span>Important changes first</span>
+            <strong>{t("coachConnectionBar.see")}</strong>
+            <span>{t("coachConnectionBar.seeDetail")}</span>
           </div>
 
           <div className="coach-connection__item coach-connection__item--coach">
             <Lightbulb size={25} />
-            <strong>UNDERSTAND WHY</strong>
-            <span>Context & patterns</span>
+            <strong>{t("coachConnectionBar.understand")}</strong>
+            <span>{t("coachConnectionBar.understandDetail")}</span>
           </div>
 
           <div className="coach-connection__item coach-connection__item--coach">
             <Search size={25} />
-            <strong>INVESTIGATE</strong>
-            <span>Open the evidence</span>
+            <strong>{t("coachConnectionBar.investigate")}</strong>
+            <span>{t("coachConnectionBar.investigateDetail")}</span>
           </div>
 
           <div className="coach-connection__item coach-connection__item--coach">
             <CheckCircle2 size={25} />
-            <strong>MAKE THE DECISION</strong>
-            <span>You stay in control</span>
+            <strong>{t("coachConnectionBar.decide")}</strong>
+            <span>{t("coachConnectionBar.decideDetail")}</span>
           </div>
 
           <div className="coach-connection__item coach-connection__item--coach">
             <Dumbbell size={25} />
-            <strong>CREATE & ADAPT</strong>
-            <span>Turn insight into training</span>
+            <strong>{t("coachConnectionBar.adapt")}</strong>
+            <span>{t("coachConnectionBar.adaptDetail")}</span>
           </div>
         </div>
       </div>

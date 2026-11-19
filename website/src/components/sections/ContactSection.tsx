@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import {
   ArrowRight,
   CheckCircle2,
@@ -6,6 +7,8 @@ import {
 } from "lucide-react";
 
 export function ContactSection() {
+  const { t } = useTranslation();
+
   return (
     <section className="contact-section" id="contact">
       <div className="contact-section__glow" />
@@ -13,48 +16,43 @@ export function ContactSection() {
       <div className="contact-section__content">
         <div className="contact-section__label">
           <Mail size={15} />
-          <span>INTERESTED IN AETHER?</span>
+          <span>{t("contact.label")}</span>
         </div>
 
         <h2>
-          Bring Aether Athlete IQ
+          {t("contact.title1")}
           <br />
-          <span>to your athletes.</span>
+          <span>{t("contact.title2")}</span>
         </h2>
 
         <p className="contact-section__lead">
-          If you're a coach or athletics club interested in connecting your
-          athletes to Aether Athlete IQ, we'd like to hear from you. Get in
-          touch to discuss your training environment, how your athletes could
-          use the platform and how Coach Manager could fit into your coaching
-          workflow.
+          {t("contact.lead")}
         </p>
 
         <div className="contact-section__points">
           <div>
             <Users size={16} />
-            <span>For coaches & clubs</span>
+            <span>{t("contact.point1")}</span>
           </div>
 
           <div>
             <CheckCircle2 size={16} />
-            <span>2-week trial</span>
+            <span>{t("contact.point2")}</span>
           </div>
 
           <div>
             <CheckCircle2 size={16} />
-            <span>Built around your athletes</span>
+            <span>{t("contact.point3")}</span>
           </div>
         </div>
 
-        <a className="contact-section__button" href="mailto:YOUR_EMAIL_HERE">
-          Contact us
+        <a className="contact-section__button" href="mailto:abhiram.chillamcherla@gmail.com">
+          {t("contact.button")}
           <ArrowRight size={17} />
         </a>
 
         <p className="contact-section__note">
-          Tell us a little about your club, coaching group and what you would
-          like to use Aether Athlete IQ for.
+          {t("contact.note")}
         </p>
       </div>
     </section>

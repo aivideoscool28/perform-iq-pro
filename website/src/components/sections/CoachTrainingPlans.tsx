@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import {
   BookOpen,
   CheckCircle2,
@@ -7,6 +8,8 @@ import {
 } from "lucide-react";
 
 export function CoachTrainingPlans() {
+  const { t } = useTranslation();
+
   return (
     <section className="coach-feature-card coach-feature-card--training">
       <div className="coach-feature-card__top">
@@ -16,20 +19,19 @@ export function CoachTrainingPlans() {
 
         <div>
           <p className="coach-feature-card__eyebrow coach-feature-card__eyebrow--training">
-            02 · TRAINING PLANS
+            {t("coachTrainingPlans.eyebrow")}
           </p>
 
           <h2>
-            Less time organizing.
+            {t("coachTrainingPlans.title1")}
             <br />
             <span className="coach-feature-card__accent--training">
-              More time coaching.
+              {t("coachTrainingPlans.title2")}
             </span>
           </h2>
 
           <p className="coach-feature-card__lead">
-            Build sessions from your Exercise Library, plan for the group, then adapt reps,
-            volume and exercises to each athlete.
+            {t("coachTrainingPlans.lead")}
           </p>
         </div>
       </div>
@@ -43,7 +45,7 @@ export function CoachTrainingPlans() {
               <span />
             </div>
 
-            <small>Training Plans</small>
+            <small>{t("coachTrainingPlans.plans")}</small>
           </div>
 
           <div className="coach-feature-card__placeholder coach-feature-card__placeholder--training">
@@ -51,12 +53,12 @@ export function CoachTrainingPlans() {
               <Dumbbell size={27} />
             </span>
 
-            <strong>Training Plans</strong>
+            <strong>{t("coachTrainingPlans.plans")}</strong>
 
             <p>
-              Real Coach Manager screenshot
+              {t("coachVideo.placeholder1")}
               <br />
-              coming here
+              {t("coachVideo.placeholder2")}
             </p>
           </div>
         </div>
@@ -65,24 +67,24 @@ export function CoachTrainingPlans() {
       <div className="coach-feature-card__points">
         <div>
           <BookOpen size={16} />
-          <span>Exercise Library</span>
+          <span>{t("coachTrainingPlans.library")}</span>
         </div>
 
         <div>
           <Layers3 size={16} />
-          <span>Group planning</span>
+          <span>{t("coachTrainingPlans.group")}</span>
         </div>
 
         <div>
           <SlidersHorizontal size={16} />
-          <span>Individual adjustments</span>
+          <span>{t("coachTrainingPlans.adjustments")}</span>
         </div>
       </div>
 
       <div className="coach-feature-card__ending">
-        <span>One plan.</span>
+        <span>{t("coachTrainingPlans.ending1")}</span>
 
-        <strong>Flexible for every athlete.</strong>
+        <strong>{t("coachTrainingPlans.ending2")}</strong>
 
         <CheckCircle2 size={16} />
       </div>

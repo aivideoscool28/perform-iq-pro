@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import {
   CalendarDays,
   LayoutDashboard,
@@ -11,31 +12,33 @@ import {
 } from "lucide-react";
 
 const extras = [
-  { label: "Dashboard", icon: LayoutDashboard },
-  { label: "Competitions", icon: CalendarDays },
-  { label: "Athlete Questions", icon: MessageCircleQuestion },
-  { label: "Group Overview", icon: Users },
-  { label: "AI Assistant", icon: Sparkles },
-  { label: "Check-In Analysis", icon: Activity },
-  { label: "Regeneration", icon: HeartPulse },
-  { label: "Individual Plans", icon: SlidersHorizontal },
+  { label: "coachMoreFeatures.dashboard", icon: LayoutDashboard },
+  { label: "coachMoreFeatures.competitions", icon: CalendarDays },
+  { label: "coachMoreFeatures.questions", icon: MessageCircleQuestion },
+  { label: "coachMoreFeatures.groups", icon: Users },
+  { label: "coachMoreFeatures.assistant", icon: Sparkles },
+  { label: "coachMoreFeatures.checkIn", icon: Activity },
+  { label: "coachMoreFeatures.recovery", icon: HeartPulse },
+  { label: "coachMoreFeatures.plans", icon: SlidersHorizontal },
 ];
 
 export function CoachMoreFeatures() {
+  const { t } = useTranslation();
+
   return (
     <section className="coach-more">
       <div className="coach-more__top">
         <div>
-          <p>AND MANY MORE</p>
+          <p>{t("coachMoreFeatures.eyebrow")}</p>
 
           <h2>
-            Everything your coaching week needs —
-            <span> connected.</span>
+            {t("coachMoreFeatures.title1")}
+            <span> {t("coachMoreFeatures.title2")}</span>
           </h2>
         </div>
 
         <a className="coach-more__cta" href="https://aether-athlete-iq.netlify.app">
-          Explore Aether Athlete IQ
+          {t("coachMoreFeatures.cta")}
           <ArrowRight size={16} />
         </a>
       </div>
@@ -44,7 +47,7 @@ export function CoachMoreFeatures() {
         {extras.map(({ label, icon: Icon }) => (
           <div key={label} className="coach-more__feature">
             <Icon size={15} />
-            <span>{label}</span>
+            <span>{t(label)}</span>
           </div>
         ))}
       </div>

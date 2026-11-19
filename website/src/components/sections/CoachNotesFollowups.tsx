@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import {
   BellRing,  Clock3,
   NotebookPen,
@@ -5,6 +6,8 @@ import {
 } from "lucide-react";
 
 export function CoachNotesFollowups() {
+  const { t } = useTranslation();
+
   return (
     <section className="coach-feature-card coach-feature-card--notes">
       <div className="coach-feature-card__top">
@@ -14,20 +17,19 @@ export function CoachNotesFollowups() {
 
         <div>
           <p className="coach-feature-card__eyebrow coach-feature-card__eyebrow--notes">
-            03 · NOTES & FOLLOW-UPS
+            {t("coachNotesFollowups.eyebrow")}
           </p>
 
           <h2>
-            Notice it. Note it.
+            {t("coachNotesFollowups.title1")}
             <br />
             <span className="coach-feature-card__accent--notes">
-              Follow it up.
+              {t("coachNotesFollowups.title2")}
             </span>
           </h2>
 
           <p className="coach-feature-card__lead">
-            Turn track-side observations into notes and timed follow-ups —
-            so important details come back when they matter.
+            {t("coachNotesFollowups.lead")}
           </p>
         </div>
       </div>
@@ -41,7 +43,7 @@ export function CoachNotesFollowups() {
               <span />
             </div>
 
-            <small>Coach Notes</small>
+            <small>{t("coachNotesFollowups.notes")}</small>
           </div>
 
           <div className="coach-feature-card__placeholder coach-feature-card__placeholder--notes">
@@ -49,12 +51,12 @@ export function CoachNotesFollowups() {
               <Clock3 size={27} />
             </span>
 
-            <strong>Notes & Timed Follow-ups</strong>
+            <strong>{t("coachNotesFollowups.scheduled")}</strong>
 
             <p>
-              Real Coach Manager screenshot
+              {t("coachVideo.placeholder1")}
               <br />
-              coming here
+              {t("coachVideo.placeholder2")}
             </p>
           </div>
         </div>
@@ -63,23 +65,23 @@ export function CoachNotesFollowups() {
       <div className="coach-feature-card__points">
         <div>
           <NotebookPen size={16} />
-          <span>Track-side notes</span>
+          <span>{t("coachNotesFollowups.track")}</span>
         </div>
 
         <div>
           <Clock3 size={16} />
-          <span>Timed follow-ups</span>
+          <span>{t("coachNotesFollowups.reminders")}</span>
         </div>
 
         <div>
           <UserRound size={16} />
-          <span>Athlete context</span>
+          <span>{t("coachNotesFollowups.context")}</span>
         </div>
       </div>
 
       <div className="coach-feature-card__ending">
-        <span>Notice it now.</span>
-        <strong>Act when it matters.</strong>
+        <span>{t("coachNotesFollowups.ending1")}</span>
+        <strong>{t("coachNotesFollowups.ending2")}</strong>
         <BellRing size={16} />
       </div>
     </section>

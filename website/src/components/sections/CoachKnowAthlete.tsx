@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import {
   ArrowRight,
   CheckCircle2,
@@ -5,6 +6,8 @@ import {
 } from "lucide-react";
 
 export function CoachKnowAthlete() {
+  const { t } = useTranslation();
+
   return (
     <section className="coach-feature-card coach-feature-card--athlete">
       <div className="coach-feature-card__top">
@@ -12,18 +15,17 @@ export function CoachKnowAthlete() {
 
         <div>
           <p className="coach-feature-card__eyebrow">
-            01 · KNOW YOUR ATHLETE
+            {t("coachKnowAthlete.eyebrow")}
           </p>
 
           <h2>
-            Know where every
+            {t("coachKnowAthlete.title1")}
             <br />
-            <span>athlete stands.</span>
+            <span>{t("coachKnowAthlete.title2")}</span>
           </h2>
 
           <p className="coach-feature-card__lead">
-            Stay on top of how they’re feeling, their performance, pain and recent training —
-            so you know who’s ready to push and who needs attention.
+            {t("coachKnowAthlete.lead")}
           </p>
         </div>
       </div>
@@ -38,7 +40,7 @@ export function CoachKnowAthlete() {
               <span />
             </div>
 
-            <small>Athlete Overview</small>
+            <small>{t("coachKnowAthlete.overview")}</small>
           </div>
 
           <div className="coach-feature-card__placeholder">
@@ -47,13 +49,13 @@ export function CoachKnowAthlete() {
             </span>
 
             <strong>
-              Athlete Overview
+              {t("coachKnowAthlete.overview")}
             </strong>
 
             <p>
-              Real Coach Manager screenshot
+              {t("coachVideo.placeholder1")}
               <br />
-              coming here
+              {t("coachVideo.placeholder2")}
             </p>
           </div>
         </div>
@@ -63,26 +65,26 @@ export function CoachKnowAthlete() {
       <div className="coach-feature-card__points">
         <div>
           <CheckCircle2 size={16} />
-          <span>Training history & trends</span>
+          <span>{t("coachKnowAthlete.history")}</span>
         </div>
 
         <div>
           <CheckCircle2 size={16} />
-          <span>Check-ins & regeneration</span>
+          <span>{t("coachKnowAthlete.recovery")}</span>
         </div>
 
         <div>
           <CheckCircle2 size={16} />
-          <span>Strengths, patterns & context</span>
+          <span>{t("coachKnowAthlete.strengths")}</span>
         </div>
       </div>
 
 
       <div className="coach-feature-card__ending">
-        <span>One athlete.</span>
+        <span>{t("coachKnowAthlete.ending1")}</span>
 
         <strong>
-          One connected story.
+          {t("coachKnowAthlete.ending2")}
         </strong>
 
         <ArrowRight size={16} />

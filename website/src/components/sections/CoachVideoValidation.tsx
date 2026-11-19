@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import {
   Check,
   CircleDot,
@@ -8,6 +9,8 @@ import {
 } from "lucide-react";
 
 export function CoachVideoValidation() {
+  const { t } = useTranslation();
+
   return (
     <section className="coach-feature-card coach-feature-card--video">
       <div className="coach-feature-card__top">
@@ -17,20 +20,19 @@ export function CoachVideoValidation() {
 
         <div>
           <p className="coach-feature-card__eyebrow coach-feature-card__eyebrow--video">
-            04 · VIDEO ANALYSIS + COACH VALIDATION
+            {t("coachVideo.eyebrow")}
           </p>
 
           <h2>
-            AI analyzes.
+            {t("coachVideo.title1")}
             <br />
             <span className="coach-feature-card__accent--video">
-              You decide.
+              {t("coachVideo.title2")}
             </span>
           </h2>
 
           <p className="coach-feature-card__lead">
-            Review Aether’s video findings, see what it noticed and validate the analysis —
-            your coaching judgement stays final.
+            {t("coachVideo.lead")}
           </p>
         </div>
       </div>
@@ -44,7 +46,7 @@ export function CoachVideoValidation() {
               <span />
             </div>
 
-            <small>Video Analysis</small>
+            <small>{t("coachVideo.analysis")}</small>
           </div>
 
           <div className="coach-feature-card__placeholder coach-feature-card__placeholder--video">
@@ -52,12 +54,12 @@ export function CoachVideoValidation() {
               <Video size={27} />
             </span>
 
-            <strong>Video Analysis</strong>
+            <strong>{t("coachVideo.analysis")}</strong>
 
             <p>
-              Real Coach Manager screenshot
+              {t("coachVideo.placeholder1")}
               <br />
-              coming here
+              {t("coachVideo.placeholder2")}
             </p>
           </div>
         </div>
@@ -66,7 +68,7 @@ export function CoachVideoValidation() {
       <div className="coach-validation">
         <div className="coach-validation__heading">
           <ShieldCheck size={16} />
-          <span>YOUR VALIDATION</span>
+          <span>{t("coachVideo.validation")}</span>
         </div>
 
         <div className="coach-validation__options">
@@ -74,28 +76,28 @@ export function CoachVideoValidation() {
             <span className="coach-validation__icon">
               <Check size={14} />
             </span>
-            <strong>Correct</strong>
+            <strong>{t("coachVideo.correct")}</strong>
           </div>
 
           <div className="coach-validation__option coach-validation__option--partial">
             <span className="coach-validation__icon">
               <CircleDot size={14} />
             </span>
-            <strong>Partly correct</strong>
+            <strong>{t("coachVideo.partial")}</strong>
           </div>
 
           <div className="coach-validation__option coach-validation__option--wrong">
             <span className="coach-validation__icon">
               <X size={14} />
             </span>
-            <strong>Incorrect</strong>
+            <strong>{t("coachVideo.incorrect")}</strong>
           </div>
         </div>
       </div>
 
       <div className="coach-feature-card__ending">
-        <span>Aether provides the analysis.</span>
-        <strong>You provide the judgement.</strong>
+        <span>{t("coachVideo.ending1")}</span>
+        <strong>{t("coachVideo.ending2")}</strong>
         <Eye size={16} />
       </div>
     </section>

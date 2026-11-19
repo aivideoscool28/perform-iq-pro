@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import {
   Activity,
   BarChart3,
@@ -8,6 +9,8 @@ import {
 } from "lucide-react";
 
 export function CoachAnalyses() {
+  const { t } = useTranslation();
+
   return (
     <section className="coach-analyses">
       <div className="coach-analyses__header">
@@ -17,18 +20,17 @@ export function CoachAnalyses() {
 
         <div className="coach-analyses__copy">
           <p className="coach-analyses__eyebrow">
-            05 · ANALYSES
+            {t("coachAnalyses.eyebrow")}
           </p>
 
           <h2>
-            See the patterns behind
+            {t("coachAnalyses.title1")}
             <br />
-            <span>the performance.</span>
+            <span>{t("coachAnalyses.title2")}</span>
           </h2>
 
           <p>
-            Connect check-ins, recovery and training responses to understand
-            what’s changing — across an athlete, a group and over time.
+            {t("coachAnalyses.lead")}
           </p>
         </div>
 
@@ -36,9 +38,9 @@ export function CoachAnalyses() {
           <Sparkles size={18} />
 
           <div>
-            <strong>Less noise. More context.</strong>
+            <strong>{t("coachAnalyses.message")}</strong>
             <span>
-              Focus on meaningful changes instead of another wall of numbers.
+              {t("coachAnalyses.messageDetail")}
             </span>
           </div>
         </div>
@@ -54,7 +56,7 @@ export function CoachAnalyses() {
               <span />
             </div>
 
-            <small>Coach Manager · Analyses</small>
+            <small>{t("coachAnalyses.browser")}</small>
           </div>
 
           <div className="coach-analyses__placeholder">
@@ -62,12 +64,12 @@ export function CoachAnalyses() {
               <LineChart size={30} />
             </span>
 
-            <strong>Analyses</strong>
+            <strong>{t("coachAnalyses.analyses")}</strong>
 
             <p>
-              Real Coach Manager screenshot
+              {t("coachVideo.placeholder1")}
               <br />
-              coming here
+              {t("coachVideo.placeholder2")}
             </p>
           </div>
         </div>
@@ -81,8 +83,8 @@ export function CoachAnalyses() {
           </span>
 
           <div>
-            <strong>Check-In Analysis</strong>
-            <span>How athletes experienced training</span>
+            <strong>{t("coachAnalyses.checkIn")}</strong>
+            <span>{t("coachAnalyses.checkInDetail")}</span>
           </div>
         </div>
 
@@ -92,8 +94,8 @@ export function CoachAnalyses() {
           </span>
 
           <div>
-            <strong>Regeneration</strong>
-            <span>Sleep, soreness and energy patterns</span>
+            <strong>{t("coachAnalyses.recovery")}</strong>
+            <span>{t("coachAnalyses.recoveryDetail")}</span>
           </div>
         </div>
 
@@ -103,8 +105,8 @@ export function CoachAnalyses() {
           </span>
 
           <div>
-            <strong>Training Response</strong>
-            <span>How different sessions are landing</span>
+            <strong>{t("coachAnalyses.response")}</strong>
+            <span>{t("coachAnalyses.responseDetail")}</span>
           </div>
         </div>
 
@@ -114,16 +116,16 @@ export function CoachAnalyses() {
           </span>
 
           <div>
-            <strong>Session Comparison</strong>
-            <span>Understand what changed between sessions</span>
+            <strong>{t("coachAnalyses.comparison")}</strong>
+            <span>{t("coachAnalyses.comparisonDetail")}</span>
           </div>
         </div>
       </div>
 
 
       <div className="coach-analyses__ending">
-        <span>From individual signals</span>
-        <strong>to useful coaching context.</strong>
+        <span>{t("coachAnalyses.ending1")}</span>
+        <strong>{t("coachAnalyses.ending2")}</strong>
       </div>
     </section>
   );
